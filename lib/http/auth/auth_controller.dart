@@ -3,10 +3,10 @@ import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:http/http.dart' as http;
 
 class AuthController {
-  static const String baseUrl = "https://api.boodschappen-app.nl:5000";
+  static const String baseUrl = "https://api.boodschappen-app.nl:80";
   // static const String baseUrl = "http://localhost:7020";
 
-  static Future<String?> login(LoginModel model) async {
+  static Future<RequestResult<String>> login(LoginModel model) async {
     try {
       final uri = Uri.parse("$baseUrl/api/auth/login");
       final response = await http.post(
@@ -16,11 +16,13 @@ class AuthController {
       );
 
       if (response.statusCode == 200) {
-        return response.body;
+        return RequestSuccess(result: response.body);
       }
-      return 'Server returned a status ${response.statusCode}';
+      return RequestError(
+        error: 'Server returned a status ${response.statusCode}',
+      );
     } catch (error) {
-      return error.toString();
+      return RequestError(error: error.toString());
     }
   }
 

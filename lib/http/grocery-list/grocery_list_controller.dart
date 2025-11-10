@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:grocery_flutter/http/auth/auth_controller.dart';
-import 'package:grocery_flutter/http/grocery-list/grocery_list_item.dart';
+import 'package:grocery_flutter/models/grocery_list_item.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
-import 'package:grocery_flutter/pages/create_list/category_model.dart';
-import 'package:grocery_flutter/pages/grocery_lists/grocery_list_display.dart';
-import 'package:grocery_flutter/pages/grocery_lists/grocery_list_item_display.dart';
+import 'package:grocery_flutter/models/category_model.dart';
+import 'package:grocery_flutter/models/grocery_list_display.dart';
+import 'package:grocery_flutter/models/grocery_list_item_display.dart';
 import 'package:http/http.dart' as http;
 
 class GroceryListController {

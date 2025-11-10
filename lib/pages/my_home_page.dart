@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:grocery_flutter/pages/grocery_lists/grocery_lists_page.dart';
-import 'package:grocery_flutter/pages/recipes/recipes_page.dart';
-import 'package:grocery_flutter/pages/social/social_group_page.dart';
+import 'package:grocery_flutter/pages/view/grocery_lists/grocery_lists_page.dart';
+import 'package:grocery_flutter/pages/view/recipes/recipes_page.dart';
+import 'package:grocery_flutter/pages/view/social/social_group_page.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});

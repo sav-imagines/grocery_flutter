@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:grocery_flutter/components/error_message_component.dart';
 import 'package:grocery_flutter/http/auth/auth_controller.dart';
 import 'package:grocery_flutter/http/auth/login_model.dart';
+import 'package:grocery_flutter/http/social/request_result.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -66,23 +67,27 @@ class _LoginPageState extends State<LoginPage> {
 
               FilledButton(
                 onPressed: () async {
-                  String? response = await AuthController.login(
+                  RequestResult<String> response = await AuthController.login(
                     LoginModel(
                       userName: emailController.text,
                       password: passwordController.text,
                     ),
                   );
                   if (!context.mounted) return;
-                  if (response == null) {
-                    Fluttertoast.showToast(msg: "Connection timed out");
-                  } else if (response.length < 300 ||
-                      !response.startsWith("ey")) {
-                    Fluttertoast.showToast(msg: response);
-                  } else {
-                    storage.write(key: 'jwt', value: response);
+                  if (response is RequestSuccess<String>) {
+                    storage.write(key: 'jwt', value: response.result);
                     Navigator.of(
                       context,
                     ).popAndPushNamed('/redirect-group', arguments: response);
+                  } else if (response is RequestError<String>) {
+                    showDialog(
+                      context: context,
+                      builder:
+                          (ctx) =>
+                              ErrorMessageComponent(message: response.error),
+                    );
+                  } else {
+                    throw Exception("Code should be unreachable: $response");
                   }
                 },
                 child: const Text('Login'),
@@ -92,6 +97,16 @@ class _LoginPageState extends State<LoginPage> {
                   Navigator.of(context).pushNamed('/create-account');
                 },
                 child: const Text('Create account'),
+              ),
+              TextButton(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder:
+                        (ctx) => ErrorMessageComponent(message: "Test message"),
+                  );
+                },
+                child: const Text('Test button'),
               ),
             ],
           ),

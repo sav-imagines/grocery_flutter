@@ -1,22 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:grocery_flutter/pages/create_account_page.dart';
-import 'package:grocery_flutter/pages/create_category/create_category_page.dart';
-import 'package:grocery_flutter/pages/create_list_item/create_list_item_page.dart';
-import 'package:grocery_flutter/pages/create_list/create_list_page.dart';
-import 'package:grocery_flutter/pages/create_recipe/create_recipe_page.dart';
-import 'package:grocery_flutter/pages/create_recipe_item_page/create_recipe_item_page.dart';
-import 'package:grocery_flutter/pages/grocery_list_info/grocery_list_info_page.dart';
-import 'package:grocery_flutter/pages/invite/received_invites_page.dart';
-import 'package:grocery_flutter/pages/invite/send_invite_page.dart';
+import 'package:grocery_flutter/pages/complex_forms/create_account/create_account_page.dart';
+import 'package:grocery_flutter/pages/simple_forms/create_category/create_category_page.dart';
+import 'package:grocery_flutter/pages/simple_forms/create_list_item/create_list_item_page.dart';
+import 'package:grocery_flutter/pages/complex_forms/create_list/create_list_page.dart';
+import 'package:grocery_flutter/pages/complex_forms/create_recipe/create_recipe_page.dart';
+import 'package:grocery_flutter/pages/simple_forms/create_recipe_item_page/create_recipe_item_page.dart';
+import 'package:grocery_flutter/pages/view/grocery_list_info/grocery_list_info_page.dart';
+import 'package:grocery_flutter/pages/view/received_invites/received_invites_page.dart';
+import 'package:grocery_flutter/pages/simple_forms/create_invite/create_invite_page.dart';
 import 'package:grocery_flutter/pages/redirect/redirect_group_page.dart';
-import 'package:grocery_flutter/pages/sent_invites_page/sent_invites_page.dart';
+import 'package:grocery_flutter/pages/view/sent_invites_page/sent_invites_page.dart';
 import 'package:grocery_flutter/pages/redirect/redirect_login_page.dart';
 import 'package:grocery_flutter/pages/login_page.dart';
 import 'package:grocery_flutter/pages/my_home_page.dart';
-import 'package:grocery_flutter/pages/person_invite/person_invite_page.dart';
+import 'package:grocery_flutter/pages/view/person_invite/person_invite_page.dart';
 import 'package:grocery_flutter/pages/settings_page.dart';
-import 'package:grocery_flutter/pages/social/create_group_page.dart';
+import 'package:grocery_flutter/pages/simple_forms/create_group/create_group_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
         '/create-account': (context) => const CreateAccountPage(),
         '/create-group': (context) => const CreateGroupPage(),
         '/home': (context) => const MyHomePage(),
-        '/invite': (context) => const SendInvitePage(),
+        '/invite': (context) => const CreateInvitePage(),
         '/invite-person': (context) => const PersonInvitePage(),
         '/received-invites': (context) => const ReceivedInvitesPage(),
         '/sent-invites': (context) => const SentInvitesPage(),

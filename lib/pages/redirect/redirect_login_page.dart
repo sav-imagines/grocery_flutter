@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/auth/auth_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 
@@ -60,25 +60,28 @@ class _RedirectLoginPageState extends State<RedirectLoginPage> {
               ),
             ),
       );
+      if (!mounted) return;
       if (result is RequestSuccess) {
-        if (mounted) {
-          Navigator.of(
-            context,
-          ).popAndPushNamed('/redirect-group', arguments: savedJwt);
-        }
+        Navigator.of(
+          context,
+        ).popAndPushNamed('/redirect-group', arguments: savedJwt);
       } else if (result is RequestErrorConnectionError) {
-        Fluttertoast.showToast(msg: "Connection error: ${result.error}");
+        showError(context, result.error, "Connection error");
         if (mounted) {
           Navigator.of(context).popAndPushNamed('/login');
         }
       } else if (result is RequestError) {
         storage.delete(key: 'jwt');
-        Fluttertoast.showToast(msg: result.error);
+        showError(context, result.error, "Request error");
         if (mounted) {
           Navigator.of(context).popAndPushNamed('/login');
         }
       } else {
-        Fluttertoast.showToast(msg: "Unexpected type ${result.runtimeType}");
+        showError(
+          context,
+          "Unexpected type ${result.runtimeType}",
+          "Programming error",
+        );
       }
     }
   }

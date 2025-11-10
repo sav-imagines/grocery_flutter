@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:grocery_flutter/pages/grocery_lists/grocery_list_item_display.dart';
+import 'package:grocery_flutter/models/grocery_list_item_display.dart';
 
 class CreateRecipeModel {
   final String name;
