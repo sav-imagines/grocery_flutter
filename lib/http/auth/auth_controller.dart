@@ -3,7 +3,7 @@ import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:http/http.dart' as http;
 
 class AuthController {
-  static const String baseUrl = "https://api.boodschappen-app.nl:80";
+  static const String baseUrl = "https://api.boodschappen-app.nl";
   // static const String baseUrl = "http://localhost:7020";
 
   static Future<RequestResult<String>> login(LoginModel model) async {
@@ -39,10 +39,9 @@ class AuthController {
       return switch (response.statusCode) {
         200 => RequestSuccess(result: null),
         _ => RequestError(
-          error:
-              response.body.isEmpty
-                  ? "Status ${response.statusCode}: ${response.reasonPhrase}"
-                  : "Status ${response.statusCode}: ${response.body}",
+          error: response.body.isEmpty
+              ? "Status ${response.statusCode}: ${response.reasonPhrase}"
+              : "Status ${response.statusCode}: ${response.body}",
         ),
       };
     } catch (error) {
