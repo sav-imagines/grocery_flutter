@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/http/social/social_controller.dart';
+import 'package:grocery_flutter/services/create_pdf.dart';
+import 'package:share_plus/share_plus.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -118,6 +120,23 @@ class _SettingsPageState extends State<SettingsPage> {
               );
             },
             child: const Text("Delete account"),
+          ),
+          FilledButton(
+            onPressed: () async {
+              final pdf = createPdf();
+              await SharePlus.instance.share(
+                ShareParams(
+                  files: [
+                    XFile.fromData(
+                      mimeType: "application/pdf",
+                      await pdf.save(),
+                    ),
+                  ],
+                  fileNameOverrides: ["Export.pdf"],
+                ),
+              );
+            },
+            child: const Text("Export PDF"),
           ),
         ],
       ),
