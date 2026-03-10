@@ -8,14 +8,14 @@ import 'package:grocery_flutter/components/category_view.dart';
 import 'package:grocery_flutter/pages/view/grocery_list_info/grocery_list_info_args.dart';
 import 'package:grocery_flutter/models/grocery_list_item_display.dart';
 
-class GroceryListInfoPage extends StatefulWidget {
-  const GroceryListInfoPage({super.key});
+class GroceryListHistoryPage extends StatefulWidget {
+  const GroceryListHistoryPage({super.key});
 
   @override
-  State<StatefulWidget> createState() => _GroceryListInfoPageState();
+  State<StatefulWidget> createState() => _GroceryListHistoryPageState();
 }
 
-class _GroceryListInfoPageState extends State<GroceryListInfoPage> {
+class _GroceryListHistoryPageState extends State<GroceryListHistoryPage> {
   late Map<String, List<GroceryListItemDisplay>>? items = null;
   CarouselSliderController carouselSliderController =
       CarouselSliderController();

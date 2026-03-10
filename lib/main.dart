@@ -47,15 +47,13 @@ class MyApp extends StatelessWidget {
         '/received-invites': (context) => const ReceivedInvitesPage(),
         '/sent-invites': (context) => const SentInvitesPage(),
         '/settings': (context) => const SettingsPage(),
-        '/view-grocery-list': (context) => const GroceryListInfoPage(),
+        '/view-grocery-list': (context) => const GroceryListHistoryPage(),
         '/create-list': (context) => const CreateListPage(),
         '/create-list-item': (context) => const CreateItemPage(),
         '/create-recipe': (context) => const CreateRecipePage(),
         '/create-recipe-item': (context) => const CreateRecipeItemPage(),
         '/create-category': (context) => const CreateCategoryPage(),
         '/request-item': (context) => const RequestItemPage(),
-        //
-        // '/test': (context) => const TestImagePickerPage(),
       },
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(

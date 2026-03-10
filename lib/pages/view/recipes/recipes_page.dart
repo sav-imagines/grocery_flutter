@@ -124,7 +124,6 @@ class _RecipesPageState extends State<RecipesPage> {
                               onTap: () {
                                 // TODO: Navigate to a recipe view that lets you edit
                                 showBottomSheet(
-                                  clipBehavior: Clip.hardEdge,
                                   context: context,
                                   builder: (context) {
                                     final item = recipeDisplays![index];
@@ -134,6 +133,7 @@ class _RecipesPageState extends State<RecipesPage> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           Row(
+                                            // fill full width of modal bottom sheet
                                             mainAxisSize: MainAxisSize.max,
                                             children: [SizedBox.shrink()],
                                           ),
@@ -144,18 +144,34 @@ class _RecipesPageState extends State<RecipesPage> {
                                                 clipBehavior: Clip.hardEdge,
                                                 child: Image.memory(
                                                   item.imageBytes!,
-                                                  // width: 300,
-                                                  // height: 300,
                                                 ),
                                               )
                                               : const Text(
                                                 "No image was detected???",
                                               ),
+                                          Text(
+                                            item.info.name,
+                                            style:
+                                                Theme.of(
+                                                  context,
+                                                ).textTheme.headlineSmall,
+                                          ),
+                                          Text(
+                                            item.info.description,
+                                            style:
+                                                Theme.of(
+                                                  context,
+                                                ).textTheme.bodyLarge,
+                                          ),
 
-                                          Icon(Icons.add),
-                                          Text(item.info.name),
-                                          Text(item.info.description),
-                                          Text(item.info.steps),
+                                          Align(
+                                            alignment: Alignment.centerLeft,
+                                            child: Text(
+                                              textAlign: TextAlign.start,
+                                              item.info.steps,
+                                            ),
+                                          ),
+                                          // TODO: get ingredient list
                                         ],
                                       ),
                                     );
