@@ -6,6 +6,7 @@ import 'package:grocery_flutter/pages/simple_forms/create_list_item/create_list_
 import 'package:grocery_flutter/pages/complex_forms/create_list/create_list_page.dart';
 import 'package:grocery_flutter/pages/complex_forms/create_recipe/create_recipe_page.dart';
 import 'package:grocery_flutter/pages/simple_forms/create_recipe_item_page/create_recipe_item_page.dart';
+import 'package:grocery_flutter/pages/simple_forms/request_item/request_item_page.dart';
 import 'package:grocery_flutter/pages/view/grocery_list_info/grocery_list_info_page.dart';
 import 'package:grocery_flutter/pages/view/received_invites/received_invites_page.dart';
 import 'package:grocery_flutter/pages/simple_forms/create_invite/create_invite_page.dart';
@@ -52,6 +53,7 @@ class MyApp extends StatelessWidget {
         '/create-recipe': (context) => const CreateRecipePage(),
         '/create-recipe-item': (context) => const CreateRecipeItemPage(),
         '/create-category': (context) => const CreateCategoryPage(),
+        '/request-item': (context) => const RequestItemPage(),
         //
         // '/test': (context) => const TestImagePickerPage(),
       },

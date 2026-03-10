@@ -1,3 +1,5 @@
+import 'package:grocery_flutter/models/short_item.dart';
+
 class GroceryListItemDisplay {
   final String id;
   final String name;
@@ -25,5 +27,9 @@ class GroceryListItemDisplay {
 
   Map<String, dynamic> toJson() {
     return Map.from({"ItemId": id, "Quantity": quantity});
+  }
+
+  ShortItem toShortItem() {
+    return ShortItem(id: id, name: name, quantity: quantity);
   }
 }
