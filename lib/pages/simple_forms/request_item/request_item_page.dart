@@ -63,13 +63,11 @@ class _RequestItemPageState extends State<RequestItemPage> {
   @override
   Widget build(BuildContext context) {
     final jwt = ModalRoute.of(context)!.settings.arguments as String;
-    final itemController = ItemController(jwt: jwt);
-    final requestController = RequestController(jwt: jwt);
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('Request item ${selectedItem?.name ?? 'None'}'),
+        title: Text('Request item'),
       ),
       body: Padding(
         padding: EdgeInsets.all(10),
@@ -116,9 +114,12 @@ class _RequestItemPageState extends State<RequestItemPage> {
             ),
             selectedItem == null
                 ? SizedBox.shrink()
-                : Align(
-                  alignment: Alignment.centerLeft,
-                  child: Text(selectedItem!.name),
+                : Card(
+                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                  child: Padding(
+                    padding: EdgeInsetsGeometry.all(7),
+                    child: Row(children: [Text(selectedItem!.name)]),
+                  ),
                 ),
 
             Row(
@@ -162,7 +163,7 @@ class _RequestItemPageState extends State<RequestItemPage> {
                   selectedItem == null
                       ? null
                       : () => submitRequestItem(
-                        requestController,
+                        RequestController(jwt: jwt),
                         searchIngredientsResults![0].toShortItem(),
                       ),
               child: Text('Request'),
