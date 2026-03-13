@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:grocery_flutter/http/auth/auth_controller.dart';
 import 'package:grocery_flutter/http/recipe-controller/create_recipe_model.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/models/recipe_info.dart';
+import 'package:grocery_flutter/models/short_item.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:uuid/v4.dart';
@@ -87,6 +89,35 @@ class RecipeController {
         _ => RequestError(
           error:
               "Status ${response.statusCode} ${response.reasonPhrase}: '${await response.stream.bytesToString()}'",
+        ),
+      };
+    } catch (error) {
+      return RequestError(error: error.toString());
+    }
+  }
+
+  Future<RequestResult<List<ShortItem>>> getIngredients(String recipeId) async {
+    try {
+      final uri = Uri.parse("$baseUrl/api/recipe/ingredients/$recipeId");
+      final response = await http.get(
+        uri,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $jwt",
+        },
+      );
+      return switch (response.statusCode) {
+        200 => RequestSuccess(
+          result:
+              (jsonDecode(response.body) as List)
+                  .map((e) => ShortItem.fromJson(e))
+                  .toList(),
+        ),
+        _ => RequestError(
+          error:
+              response.body.isEmpty
+                  ? "${response.reasonPhrase}"
+                  : response.body,
         ),
       };
     } catch (error) {

@@ -1,8 +1,10 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_flutter/http/recipe-controller/recipe_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
+import 'package:grocery_flutter/models/short_item.dart';
 import 'package:grocery_flutter/pages/complex_forms/create_recipe/create_recipe_args.dart';
 import 'package:grocery_flutter/models/recipe_display.dart';
 import 'package:grocery_flutter/models/recipe_info.dart';
@@ -17,9 +19,10 @@ class RecipesPage extends StatefulWidget {
 
 class _RecipesPageState extends State<RecipesPage> {
   late RecipeController? controller = null;
-  late List<RecipeDisplay>? recipeDisplays = null;
+  List<RecipeDisplay>? recipeDisplays = null;
+  List<List<ShortItem>?> recipeIngredients = List.empty();
 
-  getRecipes(RecipeController controller) async {
+  Future<void> getRecipes(RecipeController controller) async {
     if (mounted) {
       setState(() => recipeDisplays = null);
     }
@@ -34,16 +37,15 @@ class _RecipesPageState extends State<RecipesPage> {
           });
         }
       } else {
-        setState(
-          () =>
-              recipeDisplays =
-                  recipes
-                      .map(
-                        (recipe) =>
-                            RecipeDisplay(info: recipe, imageBytes: null),
-                      )
-                      .toList(),
-        );
+        setState(() {
+          recipeDisplays =
+              recipes
+                  .map(
+                    (recipe) => RecipeDisplay(info: recipe, imageBytes: null),
+                  )
+                  .toList();
+          recipeIngredients = List.filled(recipeDisplays!.length, null);
+        });
         for (int i = 0; i < recipes.length; i++) {
           final element = recipes[i];
           if (element.pictureName != null && element.pictureName!.isNotEmpty) {
@@ -73,6 +75,25 @@ class _RecipesPageState extends State<RecipesPage> {
         });
       }
       Fluttertoast.showToast(msg: "Error '${errorResult.error}' >:[");
+    }
+  }
+
+  Future<List<ShortItem>?> getIngredients(int index) async {
+    if (recipeDisplays == null || recipeDisplays!.length <= index) return null;
+    // if (recipeIngredients[index] != null) return; // already fetched
+
+    var response = await controller!.getIngredients(
+      recipeDisplays![index].info.id,
+    );
+    if (response is RequestSuccess<List<ShortItem>>) {
+      Fluttertoast.showToast(msg: recipeDisplays!.length.toString());
+      return response.result;
+    } else {
+      var responseError = response as RequestError;
+      Fluttertoast.showToast(
+        msg: "Could not get ingredients due to error '${responseError.error}'",
+      );
+      return null;
     }
   }
 
@@ -121,62 +142,104 @@ class _RecipesPageState extends State<RecipesPage> {
                           itemBuilder: (context, index) {
                             return RecipeListCard(
                               info: recipeDisplays![index],
-                              onTap: () {
+                              onTap: () async {
                                 // TODO: Navigate to a recipe view that lets you edit
-                                showBottomSheet(
+                                final ingredients = await getIngredients(index);
+                                if (ingredients == null) getIngredients(index);
+                                final item = recipeDisplays![index];
+                                if (!context.mounted) return;
+                                showModalBottomSheet(
+                                  showDragHandle: true,
+                                  isDismissible: false,
+                                  isScrollControlled: true,
                                   context: context,
-                                  builder: (context) {
-                                    final item = recipeDisplays![index];
-                                    return Padding(
-                                      padding: EdgeInsets.all(20),
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Row(
-                                            // fill full width of modal bottom sheet
-                                            mainAxisSize: MainAxisSize.max,
-                                            children: [SizedBox.shrink()],
-                                          ),
-                                          item.imageBytes != null
-                                              ? ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                                clipBehavior: Clip.hardEdge,
-                                                child: Image.memory(
-                                                  item.imageBytes!,
-                                                ),
-                                              )
-                                              : const Text(
-                                                "No image was detected???",
+                                  builder:
+                                      (context) => DraggableScrollableSheet(
+                                        maxChildSize: 0.6,
+                                        initialChildSize: 0.6,
+                                        expand: false,
+                                        builder:
+                                            (
+                                              context,
+                                              scrollController,
+                                            ) => Padding(
+                                              padding: EdgeInsets.all(10),
+                                              child: ListView(
+                                                children: [
+                                                  Row(
+                                                    // fill full width of modal bottom sheet
+                                                    mainAxisSize:
+                                                        MainAxisSize.max,
+                                                    children: [
+                                                      SizedBox.shrink(),
+                                                    ],
+                                                  ),
+                                                  item.imageBytes != null
+                                                      ? ClipRRect(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              10,
+                                                            ),
+                                                        clipBehavior:
+                                                            Clip.hardEdge,
+                                                        child: Image.memory(
+                                                          item.imageBytes!,
+                                                        ),
+                                                      )
+                                                      : const Text(
+                                                        "No image was detected???",
+                                                      ),
+                                                  Text(
+                                                    item.info.name,
+                                                    style:
+                                                        Theme.of(context)
+                                                            .textTheme
+                                                            .headlineSmall,
+                                                  ),
+                                                  Text(
+                                                    item.info.description,
+                                                    style:
+                                                        Theme.of(
+                                                          context,
+                                                        ).textTheme.bodyLarge,
+                                                  ),
+                                                  ingredients == null
+                                                      ? Center(
+                                                        child: Text(
+                                                          "Could not fetch ingredients",
+                                                        ),
+                                                      )
+                                                      : Column(
+                                                        spacing: 12,
+                                                        children:
+                                                            ingredients
+                                                                .map(
+                                                                  (
+                                                                    ingredient,
+                                                                  ) => Row(
+                                                                    children:
+                                                                        [
+                                                                          SizedBox(
+                                                                            width:
+                                                                                60,
+                                                                            child: Text(
+                                                                              ingredient.quantity.toString(),
+                                                                            ),
+                                                                          ),
+                                                                          Text(
+                                                                            ingredient.name,
+                                                                          ),
+                                                                        ].toList(),
+                                                                  ),
+                                                                )
+                                                                .toList(),
+                                                      ),
+                                                ],
                                               ),
-                                          Text(
-                                            item.info.name,
-                                            style:
-                                                Theme.of(
-                                                  context,
-                                                ).textTheme.headlineSmall,
-                                          ),
-                                          Text(
-                                            item.info.description,
-                                            style:
-                                                Theme.of(
-                                                  context,
-                                                ).textTheme.bodyLarge,
-                                          ),
-
-                                          Align(
-                                            alignment: Alignment.centerLeft,
-                                            child: Text(
-                                              textAlign: TextAlign.start,
-                                              item.info.steps,
                                             ),
-                                          ),
-                                          // TODO: get ingredient list
-                                        ],
                                       ),
-                                    );
-                                  },
                                 );
+                                Fluttertoast.showToast(msg: "Finished!");
                               },
                             );
                           },

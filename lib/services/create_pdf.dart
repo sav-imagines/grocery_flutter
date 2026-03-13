@@ -8,7 +8,15 @@ pw.Document createPdf() {
     pw.Page(
       pageFormat: PdfPageFormat.a4,
       build: (pw.Context context) {
-        return pw.Center(child: pw.Text("Hello, world!"));
+        return pw.Table(
+          border: pw.TableBorder.all(color: PdfColor.fromInt(0x00ff00)),
+          children: List.generate(
+            12,
+            (i) => pw.TableRow(
+              children: List.generate(5, (j) => pw.Text("$i, $j")),
+            ),
+          ),
+        );
       },
     ),
   );
