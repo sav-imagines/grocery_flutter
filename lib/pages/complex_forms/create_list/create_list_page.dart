@@ -84,14 +84,14 @@ class _CreateListPageState extends State<CreateListPage> {
                   var item = items![columnIndex].items.firstWhere(
                     (item) => item.id == id,
                   );
-                  int newQuantity = clamp(item.quantity + 1, 0, 100);
+                  int newQuantity = clamp(item.quantity + 1, 0, 99);
                   updateItemQuantity(item, newQuantity);
                 },
                 onDecrement: (id) {
                   var item = items![columnIndex].items.firstWhere(
                     (item) => item.id == id,
                   );
-                  int newQuantity = clamp(item.quantity - 1, 0, 100);
+                  int newQuantity = clamp(item.quantity - 1, 0, 99);
                   updateItemQuantity(item, newQuantity);
                 },
                 onCreateItem: () {
