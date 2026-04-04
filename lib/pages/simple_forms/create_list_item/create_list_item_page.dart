@@ -97,12 +97,6 @@ class _CreateItemPageState extends State<CreateItemPage> {
 
               child: Text('Create'),
             ),
-            Text(
-              CreateItemModel(
-                categoryId: args.categoryId,
-                name: itemNameController.text,
-              ).toJson(),
-            ),
           ],
         ),
       ),

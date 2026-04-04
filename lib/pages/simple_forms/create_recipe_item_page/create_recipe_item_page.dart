@@ -55,8 +55,6 @@ class _CreateRecipeItemPageState extends State<CreateRecipeItemPage> {
 
   @override
   Widget build(BuildContext context) {
-    // final jwt = ModalRoute.of(context)!.settings.arguments as String;
-    // final controller = ItemController(jwt: jwt);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
@@ -67,10 +65,6 @@ class _CreateRecipeItemPageState extends State<CreateRecipeItemPage> {
         padding: EdgeInsets.symmetric(vertical: 150, horizontal: 20),
         child: Column(
           children: [
-            Text(
-              'TODO: select category',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
             TextFormField(
               enableSuggestions: false,
               controller: itemNameController,
@@ -80,20 +74,7 @@ class _CreateRecipeItemPageState extends State<CreateRecipeItemPage> {
               ),
               validator: (value) => isEmptyValidator(value),
             ),
-            FilledButton(
-              onPressed: null,
-
-              //     () => submitItem(
-              //       controller,
-              //       // TODO: fetch categories for a dropdown
-              //       // CreateItemModel(
-              //       //   categoryId: args.categoryId,
-              //       //   name: itemNameController.text,
-              //       // ),
-              //       // args,
-              //     ),
-              child: Text('Create'),
-            ),
+            FilledButton(onPressed: null, child: Text('Create')),
           ],
         ),
       ),

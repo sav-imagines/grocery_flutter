@@ -7,7 +7,7 @@ class ShortItem {
 
   factory ShortItem.fromJson(Map<String, dynamic> json) {
     return ShortItem(
-      id: (json['itemId'] ?? "") as String,
+      id: (json['itemId'] ?? json['id'] ?? "") as String,
       name: (json['name'] ?? "") as String,
       quantity: (json['quantity'] ?? 0) as int,
     );

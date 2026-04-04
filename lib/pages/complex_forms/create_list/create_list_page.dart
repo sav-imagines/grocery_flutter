@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_flutter/components/category_select_card.dart';
+import 'package:grocery_flutter/helpers/clamp.dart' show clamp;
 import 'package:grocery_flutter/http/item/item_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/models/category_model.dart';
+import 'package:grocery_flutter/models/short_item.dart';
 import 'package:grocery_flutter/pages/complex_forms/create_list/create_list_args.dart';
+import 'package:grocery_flutter/pages/simple_forms/create_list_item/create_list_item_args.dart';
 
 class CreateListPage extends StatefulWidget {
   const CreateListPage({super.key});
@@ -30,6 +33,15 @@ class _CreateListPageState extends State<CreateListPage> {
         Fluttertoast.showToast(msg: "Invalid type");
       }
     });
+  }
+
+  void updateItemQuantity(ShortItem item, int newQuantity) {
+    if (item.quantity == newQuantity) return;
+    if (mounted) {
+      setState(() {
+        item.quantity = newQuantity;
+      });
+    }
   }
 
   @override
@@ -68,8 +80,32 @@ class _CreateListPageState extends State<CreateListPage> {
             children: [
               CategorySelectCard(
                 category: category,
-                onDecrement: () {},
-                onIncrement: () {},
+                onIncrement: (id) {
+                  var item = items![columnIndex].items.firstWhere(
+                    (item) => item.id == id,
+                  );
+                  int newQuantity = clamp(item.quantity + 1, 0, 100);
+                  updateItemQuantity(item, newQuantity);
+                },
+                onDecrement: (id) {
+                  var item = items![columnIndex].items.firstWhere(
+                    (item) => item.id == id,
+                  );
+                  int newQuantity = clamp(item.quantity - 1, 0, 100);
+                  updateItemQuantity(item, newQuantity);
+                },
+                onCreateItem: () {
+                  if (mounted) {
+                    Navigator.of(context).pushNamed(
+                      '/create-list-item',
+                      arguments: CreateItemArgs(
+                        jwt: args.jwt,
+                        categoryId: category.id,
+                        items: items,
+                      ),
+                    );
+                  }
+                },
               ),
             ],
           );
