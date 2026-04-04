@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_flutter/components/category_select_card.dart';
 import 'package:grocery_flutter/helpers/clamp.dart' show clamp;
+import 'package:grocery_flutter/http/grocery-list/grocery_list_controller.dart';
 import 'package:grocery_flutter/http/item/item_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/models/category_model.dart';
@@ -44,10 +45,14 @@ class _CreateListPageState extends State<CreateListPage> {
     }
   }
 
-  void saveList() {
-    // TODO: save shit
-    if (mounted) {
-      Navigator.of(context).pop();
+  void saveList(GroceryListController controller) async {
+    var result = await controller.createList(items!);
+    if (result is RequestSuccess) {
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    } else if (result is RequestError) {
+      Fluttertoast.showToast(msg: result.error);
     }
   }
 
@@ -66,7 +71,10 @@ class _CreateListPageState extends State<CreateListPage> {
         crossAxisAlignment: CrossAxisAlignment.end,
         spacing: 12,
         children: [
-          FloatingActionButton(onPressed: saveList, child: Icon(Icons.send)),
+          FloatingActionButton(
+            onPressed: () => saveList(GroceryListController(jwt: args.jwt)),
+            child: Icon(Icons.send),
+          ),
           FloatingActionButton.extended(
             label: const Text("New category"),
             onPressed: () {
@@ -75,6 +83,7 @@ class _CreateListPageState extends State<CreateListPage> {
               ).pushNamed('/create-category', arguments: args.jwt);
             },
             icon: const Icon(Icons.add),
+            heroTag: null,
           ),
         ],
       ),

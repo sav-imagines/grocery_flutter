@@ -38,7 +38,6 @@ class CategorySelectCard extends StatelessWidget {
                     _ => null,
                   },
                   child: Container(
-                    // constraints: BoxConstraints.tight(Size.fromHeight(40)),
                     decoration: BoxDecoration(
                       color:
                           item.quantity <= 0
@@ -46,14 +45,6 @@ class CategorySelectCard extends StatelessWidget {
                               : theme.colorScheme.primaryContainer,
                       borderRadius: BorderRadiusGeometry.circular(12),
                     ),
-
-                    // style: ButtonStyle(
-                    //   padding: WidgetStatePropertyAll(EdgeInsets.zero),
-                    //   foregroundColor: WidgetStatePropertyAll(
-                    //     theme.colorScheme.onSurface,
-                    //   ),
-                    // ba: WidgetStatePropertyAll(),
-                    // ),
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       children: [
