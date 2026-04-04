@@ -44,6 +44,13 @@ class _CreateListPageState extends State<CreateListPage> {
     }
   }
 
+  void saveList() {
+    // TODO: save shit
+    if (mounted) {
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as CreateListArgs;
@@ -54,14 +61,22 @@ class _CreateListPageState extends State<CreateListPage> {
       refresh(controller);
     }
     return Scaffold(
-      floatingActionButton: FloatingActionButton.extended(
-        label: const Text("New category"),
-        onPressed: () {
-          Navigator.of(
-            context,
-          ).pushNamed('/create-category', arguments: args.jwt);
-        },
-        icon: const Icon(Icons.add),
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        spacing: 12,
+        children: [
+          FloatingActionButton(onPressed: saveList, child: Icon(Icons.send)),
+          FloatingActionButton.extended(
+            label: const Text("New category"),
+            onPressed: () {
+              Navigator.of(
+                context,
+              ).pushNamed('/create-category', arguments: args.jwt);
+            },
+            icon: const Icon(Icons.add),
+          ),
+        ],
       ),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,

@@ -19,60 +19,72 @@ class CategorySelectCard extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     return Padding(
-      padding: EdgeInsets.zero,
+      padding: EdgeInsets.symmetric(horizontal: 10),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Divider(indent: 15, endIndent: 15),
-          Text(category.name, style: TextTheme.of(context).titleSmall),
+          const Divider(),
+          Text(category.name, style: TextTheme.of(context).titleMedium),
+          SizedBox.square(dimension: 10),
           Column(
             spacing: 5,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               for (var item in category.items)
-                IconButton(
-                  iconSize: 20,
-                  style: ButtonStyle(
-                    padding: WidgetStatePropertyAll(EdgeInsets.zero),
-                    foregroundColor: WidgetStatePropertyAll(
-                      theme.colorScheme.onSurface,
+                GestureDetector(
+                  onTap: switch (item.quantity) {
+                    0 => () => onIncrement(item.id),
+                    1 => () => onDecrement(item.id),
+                    _ => null,
+                  },
+                  child: Container(
+                    // constraints: BoxConstraints.tight(Size.fromHeight(40)),
+                    decoration: BoxDecoration(
+                      color:
+                          item.quantity <= 0
+                              ? theme.colorScheme.surface
+                              : theme.colorScheme.primaryContainer,
+                      borderRadius: BorderRadiusGeometry.circular(12),
                     ),
-                    backgroundColor: WidgetStatePropertyAll(
-                      item.quantity <= 0
-                          ? theme.colorScheme.surface
-                          : theme.colorScheme.primaryContainer,
-                    ),
-                  ),
-                  onPressed: () => onIncrement(item.id),
-                  icon: Row(
-                    children: [
-                      IconButton(
-                        iconSize: 20,
-                        padding: EdgeInsets.zero,
-                        onPressed:
-                            item.quantity > 0
-                                ? () => onDecrement(item.id)
-                                : null,
-                        icon:
-                            item.quantity <= 1
-                                ? const Icon(Icons.delete)
-                                : const Icon(Icons.remove),
-                      ),
-                      SizedBox(
-                        width: 20,
-                        child: Text(
-                          item.quantity.toString(),
-                          textAlign: TextAlign.center,
+
+                    // style: ButtonStyle(
+                    //   padding: WidgetStatePropertyAll(EdgeInsets.zero),
+                    //   foregroundColor: WidgetStatePropertyAll(
+                    //     theme.colorScheme.onSurface,
+                    //   ),
+                    // ba: WidgetStatePropertyAll(),
+                    // ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        IconButton(
+                          iconSize: 20,
+                          padding: EdgeInsets.zero,
+                          onPressed:
+                              item.quantity > 0
+                                  ? () => onDecrement(item.id)
+                                  : null,
+                          icon:
+                              item.quantity <= 1
+                                  ? const Icon(Icons.delete_outline)
+                                  : const Icon(Icons.remove),
                         ),
-                      ),
-                      IconButton(
-                        iconSize: 20,
-                        padding: EdgeInsets.zero,
-                        onPressed: () => onIncrement(item.id),
-                        icon: Icon(Icons.add),
-                      ),
-                      Text(item.name),
-                    ],
+                        SizedBox(
+                          width: 20,
+                          child: Text(
+                            item.quantity.toString(),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        IconButton(
+                          iconSize: 20,
+                          padding: EdgeInsets.zero,
+                          onPressed: () => onIncrement(item.id),
+                          icon: Icon(Icons.add),
+                        ),
+                        Text(item.name),
+                      ],
+                    ),
                   ),
                 ),
               IconButton(
