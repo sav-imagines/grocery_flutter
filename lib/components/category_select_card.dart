@@ -17,51 +17,46 @@ class CategorySelectCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 10),
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: ShapeDecoration(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(11)),
-          ),
-          color: Theme.of(context).buttonTheme.colorScheme!.onSecondary,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              category.name,
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              spacing: 3,
-              children:
-                  category.items.map((item) {
-                    return Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        IconButton(
-                          style: ButtonStyle(),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Divider(),
+          Text(category.name, style: TextTheme.of(context).titleSmall),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 3,
+            children: [
+              for (var item in category.items)
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    IconButton(
+                      style: ButtonStyle(),
 
-                          onPressed: onDecrement,
-                          icon: Icon(Icons.remove),
-                        ),
-                        Text(item.quantity.toString()),
-                        IconButton(
-                          onPressed: () {
-                            Fluttertoast.showToast(
-                              msg: item.quantity.toString(),
-                            );
-                          },
-                          icon: Icon(Icons.add),
-                        ),
-                        Text(item.name),
-                      ],
-                    );
-                  }).toList(),
-            ),
-          ],
-        ),
+                      onPressed: onDecrement,
+                      icon: Icon(Icons.remove),
+                    ),
+                    Text(item.quantity.toString()),
+                    IconButton(
+                      onPressed: () {
+                        Fluttertoast.showToast(msg: item.quantity.toString());
+                      },
+                      icon: Icon(Icons.add),
+                    ),
+                    Text(item.name),
+                  ],
+                ),
+              IconButton(
+                onPressed: () {},
+                icon: Row(
+                  spacing: 10,
+                  children: [Icon(Icons.add), Text("New item")],
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
