@@ -42,10 +42,7 @@ class _CreateItemPageState extends State<CreateCategoryPage> {
     final controller = CategoryController(jwt: jwt);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('New category'),
-      ),
+      appBar: AppBar(title: Text('New category')),
       body: Padding(
         padding: EdgeInsets.symmetric(vertical: 150, horizontal: 20),
         child: Column(

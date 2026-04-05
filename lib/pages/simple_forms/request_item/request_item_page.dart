@@ -65,10 +65,7 @@ class _RequestItemPageState extends State<RequestItemPage> {
     final jwt = ModalRoute.of(context)!.settings.arguments as String;
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('Request item'),
-      ),
+      appBar: AppBar(title: Text('Request item')),
       body: Padding(
         padding: EdgeInsets.all(10),
         child: Column(

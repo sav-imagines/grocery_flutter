@@ -86,7 +86,6 @@ class _SocialGroupPageState extends State<SocialGroupPage> {
             icon: Icon(Icons.logout),
           ),
         ],
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text('Your group'),
       ),
       body:

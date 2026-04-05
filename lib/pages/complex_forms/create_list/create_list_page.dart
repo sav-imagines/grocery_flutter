@@ -73,7 +73,7 @@ class _CreateListPageState extends State<CreateListPage> {
         children: [
           FloatingActionButton(
             onPressed: () => saveList(GroceryListController(jwt: args.jwt)),
-            child: Icon(Icons.send),
+            child: Icon(Icons.save),
           ),
           FloatingActionButton.extended(
             label: const Text("New category"),
@@ -87,10 +87,7 @@ class _CreateListPageState extends State<CreateListPage> {
           ),
         ],
       ),
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("New grocery list"),
-      ),
+      appBar: AppBar(title: const Text("New grocery list")),
       body: ListView.builder(
         itemBuilder: (context, columnIndex) {
           if (items?.isEmpty ?? true) {

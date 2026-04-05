@@ -57,10 +57,7 @@ class _PersonInvitePageState extends State<PersonInvitePage> {
           );
     }
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("View user"),
-      ),
+      appBar: AppBar(title: const Text("View user")),
       body: Column(
         children: [
           Row(

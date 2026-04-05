@@ -59,10 +59,7 @@ class _CreateItemPageState extends State<CreateItemPage> {
     final controller = ItemController(jwt: args.jwt);
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('New item'),
-      ),
+      appBar: AppBar(title: Text('New item')),
       body: Padding(
         padding: EdgeInsets.symmetric(vertical: 150, horizontal: 20),
         child: Column(

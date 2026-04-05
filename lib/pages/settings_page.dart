@@ -27,10 +27,7 @@ class _SettingsPageState extends State<SettingsPage> {
     var jwt = ModalRoute.of(context)!.settings.arguments as String;
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('Settings'),
-      ),
+      appBar: AppBar(title: Text('Settings')),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

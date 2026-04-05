@@ -25,6 +25,7 @@ class GroceryListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -33,7 +34,7 @@ class GroceryListCard extends StatelessWidget {
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(11)),
           ),
-          color: Theme.of(context).buttonTheme.colorScheme!.onSecondary,
+          color: theme.buttonTheme.colorScheme!.secondaryContainer,
         ),
         child: Row(
           mainAxisSize: MainAxisSize.max,
@@ -41,16 +42,20 @@ class GroceryListCard extends StatelessWidget {
             badges.Badge(
               position: badges.BadgePosition.bottomEnd(bottom: -9, end: -7),
               badgeStyle: badges.BadgeStyle(
-                badgeColor: Theme.of(context).colorScheme.onPrimaryContainer,
+                badgeColor: theme.colorScheme.onPrimaryContainer,
               ),
               badgeContent: Text(
                 info.itemsCount.toString(),
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.surface,
+                  color: theme.colorScheme.surface,
                   fontSize: 20,
                 ),
               ),
-              child: const Icon(Icons.shopping_cart, size: 64),
+              child: Icon(
+                Icons.shopping_cart_outlined,
+                size: 64,
+                // color: Theme.of(context).colorScheme.onInverseSurface,
+              ),
             ),
             SizedBox.square(dimension: 12),
             Text(getDescription(DateTime.now().difference(info.createdTime))),

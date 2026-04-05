@@ -37,10 +37,7 @@ class _SentInvitesPageState extends State<SentInvitesPage> {
       refresh(controller);
     }
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('Sent invites'),
-      ),
+      appBar: AppBar(title: Text('Sent invites')),
       body: RefreshIndicator(
         child: Padding(
           padding: EdgeInsets.all(10),

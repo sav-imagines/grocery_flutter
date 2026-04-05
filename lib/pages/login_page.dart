@@ -25,10 +25,7 @@ class _LoginPageState extends State<LoginPage> {
     const storage = FlutterSecureStorage();
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Login page'),
-      ),
+      appBar: AppBar(title: const Text('Login page')),
       body: Padding(
         padding: EdgeInsets.symmetric(vertical: 150, horizontal: 20),
         child: Form(

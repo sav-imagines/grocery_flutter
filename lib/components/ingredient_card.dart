@@ -17,42 +17,58 @@ class IngredientCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
     return Container(
-      // padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(0),
       decoration: ShapeDecoration(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(11)),
         ),
         // color: Theme.of(context).buttonTheme.colorScheme!.onSecondary,
       ),
-      child: Row(
-        spacing: 5,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          onDecrement == null && onRemove == null
-              ? SizedBox.shrink()
-              : (info.quantity < 2
-                  ? IconButton(
-                    onPressed: onRemove,
-                    icon: const Icon(Icons.delete),
-                  )
-                  : IconButton(
-                    onPressed: onDecrement,
-                    icon: const Icon(Icons.remove),
-                  )),
-          Text(
-            info.quantity.toString(),
-            style: Theme.of(context).textTheme.bodyLarge,
+      child: GestureDetector(
+        onTap: switch (info.quantity) {
+          0 => () => onIncrement!(),
+          1 => () => onDecrement!(),
+          _ => null,
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            color:
+                info.quantity <= 0
+                    ? theme.colorScheme.surface
+                    : theme.colorScheme.primaryContainer,
+            borderRadius: BorderRadiusGeometry.circular(12),
           ),
-          IconButton(onPressed: onIncrement, icon: const Icon(Icons.add)),
-          // SizedBox.fromSize(size: Size(15, 1)),
-          Text(
-            overflow: TextOverflow.ellipsis,
-            softWrap: false,
-            info.name,
-            style: Theme.of(context).textTheme.bodyLarge,
+          child: Row(
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              IconButton(
+                iconSize: 20,
+                padding: EdgeInsets.zero,
+                onPressed: info.quantity > 0 ? () => onDecrement!() : null,
+                icon:
+                    info.quantity <= 1
+                        ? const Icon(Icons.delete_outline)
+                        : const Icon(Icons.remove),
+              ),
+              SizedBox(
+                width: 20,
+                child: Text(
+                  info.quantity.toString(),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+              IconButton(
+                iconSize: 20,
+                padding: EdgeInsets.zero,
+                onPressed: () => onIncrement!(),
+                icon: Icon(Icons.add),
+              ),
+              Text(info.name),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

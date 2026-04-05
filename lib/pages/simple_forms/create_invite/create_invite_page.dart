@@ -31,10 +31,7 @@ class _CreateInvitePageState extends State<CreateInvitePage> {
     var jwt = ModalRoute.of(context)!.settings.arguments as String;
     SocialController controller = SocialController(jwt: jwt);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('Invite user'),
-      ),
+      appBar: AppBar(title: Text('Invite user')),
       body: Padding(
         padding: EdgeInsets.all(10),
         child: Column(

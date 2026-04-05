@@ -57,7 +57,6 @@ class _GroceryListHistoryPageState extends State<GroceryListHistoryPage> {
     if (items == null) refresh(controller, args);
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("Grocery list"),
         actions: [
           IconButton(
@@ -66,9 +65,7 @@ class _GroceryListHistoryPageState extends State<GroceryListHistoryPage> {
               var result = await controller.deleteList(args.list.listId);
               if (result is RequestSuccess) {
                 if (context.mounted) {
-                  Navigator.of(
-                    context,
-                  ).popAndPushNamed('/home', arguments: args.jwt);
+                  Navigator.of(context).pop();
                 }
               } else if (result is RequestError) {
                 Fluttertoast.showToast(msg: result.toString());

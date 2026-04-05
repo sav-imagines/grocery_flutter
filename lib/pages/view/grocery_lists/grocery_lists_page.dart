@@ -39,10 +39,7 @@ class _ViewGroceryListsPageState extends State<ViewGroceryListsPage> {
       refresh(controller);
     }
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Grocery lists'),
-      ),
+      appBar: AppBar(title: const Text('Grocery lists')),
       body:
           lists == null
               ? Center(child: CircularProgressIndicator())

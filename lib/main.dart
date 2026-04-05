@@ -29,10 +29,23 @@ class MyApp extends StatelessWidget {
   static const storage = FlutterSecureStorage();
   @override
   Widget build(BuildContext context) {
+    const color = Colors.purple;
     return MaterialApp(
       title: 'Grocery app',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightGreen),
+        colorScheme: ColorScheme.fromSeed(seedColor: color),
+        appBarTheme: AppBarTheme(
+          foregroundColor:
+              ColorScheme.fromSeed(
+                brightness: Brightness.light,
+                seedColor: color,
+              ).onPrimary,
+          backgroundColor:
+              ColorScheme.fromSeed(
+                brightness: Brightness.light,
+                seedColor: color,
+              ).inversePrimary,
+        ),
       ),
       // initialRoute: '/test',
       routes: {
@@ -58,8 +71,15 @@ class MyApp extends StatelessWidget {
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           brightness: Brightness.dark,
-          seedColor: Colors.lightGreen,
+          seedColor: color,
         ),
+        // appBarTheme: AppBarTheme(
+        //   backgroundColor:
+        //       ColorScheme.fromSeed(
+        //         brightness: Brightness.dark,
+        //         seedColor: color,
+        //       ).inversePrimary,
+        // ),
       ),
     );
   }

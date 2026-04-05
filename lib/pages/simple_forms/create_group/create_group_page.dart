@@ -40,10 +40,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
     final jwt = ModalRoute.of(context)!.settings.arguments as String;
     final controller = SocialController(jwt: jwt);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('New group'),
-      ),
+      appBar: AppBar(title: Text('New group')),
       body: Padding(
         padding: EdgeInsets.all(20),
         child: Column(

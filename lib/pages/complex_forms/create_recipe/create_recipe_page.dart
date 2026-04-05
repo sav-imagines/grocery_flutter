@@ -231,10 +231,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
     final itemController = ItemController(jwt: args!.jwt);
     final recipeController = RecipeController(jwt: args!.jwt);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('New recipe'),
-      ),
+      appBar: AppBar(title: const Text('New recipe')),
       body: Padding(
         padding: const EdgeInsets.all(15),
         child: ListView(

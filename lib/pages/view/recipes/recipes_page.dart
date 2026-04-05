@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -48,7 +47,7 @@ class _RecipesPageState extends State<RecipesPage> {
         });
         for (int i = 0; i < recipes.length; i++) {
           final element = recipes[i];
-          if (element.pictureName != null && element.pictureName!.isNotEmpty) {
+          if (element.pictureName?.isNotEmpty ?? true) {
             Future.microtask(() async {
               RequestResult<Uint8List?> pictureResult = await controller
                   .getPicture(element.pictureName!);
@@ -107,10 +106,7 @@ class _RecipesPageState extends State<RecipesPage> {
       getRecipes(controller!);
     }
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Recipes'),
-      ),
+      appBar: AppBar(title: const Text('Recipes')),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed:

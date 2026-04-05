@@ -57,10 +57,7 @@ class _CreateRecipeItemPageState extends State<CreateRecipeItemPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('New item'),
-      ),
+      appBar: AppBar(title: Text('New item')),
       body: Padding(
         padding: EdgeInsets.symmetric(vertical: 150, horizontal: 20),
         child: Column(

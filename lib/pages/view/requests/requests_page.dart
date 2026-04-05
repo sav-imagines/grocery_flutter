@@ -17,7 +17,7 @@ class _RequestsPageState extends State<RequestsPage> {
   List<ShortItem>? requestedItems = null;
   List<ShortItem> changedItems = [];
 
-  getRequests(RequestController controller) async {
+  void getRequests(RequestController controller) async {
     final RequestResult<List<ShortItem>> result =
         await controller.getRequestedItems();
     if (result is RequestSuccess<List<ShortItem>>) {
@@ -38,7 +38,7 @@ class _RequestsPageState extends State<RequestsPage> {
     }
   }
 
-  updateRequests(RequestController controller) async {
+  void updateRequests(RequestController controller) async {
     final RequestResult<void> result = await controller.updateItems(
       changedItems,
     );
@@ -89,10 +89,7 @@ class _RequestsPageState extends State<RequestsPage> {
       getRequests(RequestController(jwt: jwt));
     }
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('Requests'),
-      ),
+      appBar: AppBar(title: const Text('Requests')),
       floatingActionButton: Column(
         spacing: 12,
         mainAxisAlignment: MainAxisAlignment.end,
@@ -122,47 +119,54 @@ class _RequestsPageState extends State<RequestsPage> {
                     changedItems = [];
                   });
                 },
-                child:
-                    requestedItems!.isEmpty
-                        ? ListView(
-                          children: [
-                            Center(child: Text("No items have been requested")),
-                          ],
-                        )
-                        : ListView.builder(
-                          itemCount: requestedItems!.length,
-                          itemBuilder: (context, index) {
-                            var item = requestedItems![index];
-                            item = changedItems.firstWhere(
-                              (x) => x.id == item.id,
-                              orElse: () => item,
-                            );
-                            return IngredientCard(
-                              info: GroceryListItemDisplay(
-                                id: item.id,
-                                name: item.name,
-                                quantity: item.quantity,
-                                categoryId: "",
-                                categoryName: "",
+                child: Padding(
+                  padding: EdgeInsets.all(5),
+                  child:
+                      requestedItems!.isEmpty
+                          ? ListView(
+                            children: [
+                              Center(
+                                child: Text("No items have been requested"),
                               ),
-                              onDecrement: () {
-                                updateItem(item, item.quantity - 1);
-                              },
-                              onIncrement: () {
-                                updateItem(
-                                  item,
-                                  item.quantity < 99 ? item.quantity + 1 : 99,
-                                );
-                              },
-                              onRemove: () {
-                                updateItem(
-                                  item,
-                                  item.quantity > 0 ? item.quantity - 1 : 0,
-                                );
-                              },
-                            );
-                          },
-                        ),
+                            ],
+                          )
+                          : ListView.separated(
+                            separatorBuilder:
+                                (context, i) => SizedBox.square(dimension: 5),
+                            itemCount: requestedItems!.length,
+                            itemBuilder: (context, index) {
+                              var item = requestedItems![index];
+                              item = changedItems.firstWhere(
+                                (x) => x.id == item.id,
+                                orElse: () => item,
+                              );
+                              return IngredientCard(
+                                info: GroceryListItemDisplay(
+                                  id: item.id,
+                                  name: item.name,
+                                  quantity: item.quantity,
+                                  categoryId: "",
+                                  categoryName: "",
+                                ),
+                                onDecrement: () {
+                                  updateItem(item, item.quantity - 1);
+                                },
+                                onIncrement: () {
+                                  updateItem(
+                                    item,
+                                    item.quantity < 99 ? item.quantity + 1 : 99,
+                                  );
+                                },
+                                onRemove: () {
+                                  updateItem(
+                                    item,
+                                    item.quantity > 0 ? item.quantity - 1 : 0,
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                ),
               ),
     );
   }

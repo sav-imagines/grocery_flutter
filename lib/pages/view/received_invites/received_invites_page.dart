@@ -43,8 +43,6 @@ class _ReceivedInvitesPageState extends State<ReceivedInvitesPage> {
             icon: Icon(Icons.logout),
           ),
         ],
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text('Your invites'),
       ),
       body: RefreshIndicator(
         onRefresh:

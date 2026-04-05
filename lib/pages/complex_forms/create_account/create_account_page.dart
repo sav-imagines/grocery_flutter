@@ -32,7 +32,6 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   }
 
   final ImagePicker _picker = ImagePicker();
-  // TODO: warn user of unfilled fields
   submitForm() async {
     try {
       if (pfp == null) return;
@@ -80,7 +79,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
         }
       }
     } catch (e) {
-      if (!context.mounted) return;
+      if (!mounted) return;
       showDialog(
         context: context,
         builder:
@@ -184,27 +183,11 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     return null;
   }
 
-  // bool canSubmit() {
-  //   if (usernameController.text.isEmpty) {
-  //     return false;
-  //   } else if (passwordController.text.isEmpty) {
-  //     return false;
-  //   } else if (passwordController.text.isEmpty) {
-  //     return false;
-  //   } else if (pfp == null) {
-  //     return false;
-  //   }
-  //   return !isSending;
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('New account'),
-      ),
+      appBar: AppBar(title: const Text('New account')),
       body: ListView(
         padding: EdgeInsets.all(20),
         children: [
