@@ -107,7 +107,6 @@ class _RecipesPageState extends State<RecipesPage> {
       recipeDisplays![index].info.id,
     );
     if (response is RequestSuccess<List<ShortItem>>) {
-      Fluttertoast.showToast(msg: recipeDisplays!.length.toString());
       return response.result;
     } else {
       var responseError = response as RequestError;
@@ -187,7 +186,7 @@ class _RecipesPageState extends State<RecipesPage> {
                                               scrollController,
                                             ) => Padding(
                                               padding: EdgeInsets.all(10),
-                                              child: ListView(
+                                              child: Column(
                                                 children: [
                                                   Row(
                                                     // fill full width of modal bottom sheet
@@ -206,6 +205,7 @@ class _RecipesPageState extends State<RecipesPage> {
                                                         clipBehavior:
                                                             Clip.hardEdge,
                                                         child: Image.memory(
+                                                          width: 200,
                                                           item.imageBytes!,
                                                         ),
                                                       )
@@ -232,37 +232,37 @@ class _RecipesPageState extends State<RecipesPage> {
                                                           "Could not fetch ingredients",
                                                         ),
                                                       )
-                                                      : Column(
-                                                        spacing: 12,
-                                                        children:
-                                                            ingredients
-                                                                .map(
-                                                                  (
-                                                                    ingredient,
-                                                                  ) => Row(
-                                                                    children:
-                                                                        [
-                                                                          SizedBox(
-                                                                            width:
-                                                                                60,
-                                                                            child: Text(
-                                                                              ingredient.quantity.toString(),
+                                                      : Expanded(
+                                                        child: ListView(
+                                                          children:
+                                                              ingredients
+                                                                  .map(
+                                                                    (
+                                                                      ingredient,
+                                                                    ) => Row(
+                                                                      children:
+                                                                          [
+                                                                            SizedBox(
+                                                                              width:
+                                                                                  60,
+                                                                              child: Text(
+                                                                                ingredient.quantity.toString(),
+                                                                              ),
                                                                             ),
-                                                                          ),
-                                                                          Text(
-                                                                            ingredient.name,
-                                                                          ),
-                                                                        ].toList(),
-                                                                  ),
-                                                                )
-                                                                .toList(),
+                                                                            Text(
+                                                                              ingredient.name,
+                                                                            ),
+                                                                          ].toList(),
+                                                                    ),
+                                                                  )
+                                                                  .toList(),
+                                                        ),
                                                       ),
                                                 ],
                                               ),
                                             ),
                                       ),
                                 );
-                                Fluttertoast.showToast(msg: "Finished!");
                               },
                             );
                           },

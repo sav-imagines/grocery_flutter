@@ -14,7 +14,7 @@ class RecipeListCard extends StatelessWidget {
       child: Container(
         decoration: ShapeDecoration(
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(11)),
+            borderRadius: BorderRadius.all(Radius.circular(10)),
           ),
           color: Theme.of(context).buttonTheme.colorScheme!.onSecondary,
         ),
