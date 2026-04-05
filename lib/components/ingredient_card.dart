@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:grocery_flutter/models/grocery_list_item_display.dart';
+import 'package:grocery_flutter/models/short_item.dart';
 
 class IngredientCard extends StatelessWidget {
-  final GroceryListItemDisplay info;
+  final ShortItem info;
   final void Function()? onIncrement;
   final void Function()? onDecrement;
   final void Function()? onRemove;

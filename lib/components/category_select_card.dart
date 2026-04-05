@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grocery_flutter/components/ingredient_card.dart';
 import 'package:grocery_flutter/models/category_model.dart';
 
 class CategorySelectCard extends StatelessWidget {
@@ -17,7 +18,6 @@ class CategorySelectCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var theme = Theme.of(context);
     return Padding(
       padding: EdgeInsets.all(10),
       child: Column(
@@ -31,52 +31,11 @@ class CategorySelectCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               for (var item in category.items)
-                GestureDetector(
-                  onTap: switch (item.quantity) {
-                    0 => () => onIncrement(item.id),
-                    1 => () => onDecrement(item.id),
-                    _ => null,
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color:
-                          item.quantity <= 0
-                              ? theme.colorScheme.surface
-                              : theme.colorScheme.primaryContainer,
-                      borderRadius: BorderRadiusGeometry.circular(12),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        IconButton(
-                          iconSize: 20,
-                          padding: EdgeInsets.zero,
-                          onPressed:
-                              item.quantity > 0
-                                  ? () => onDecrement(item.id)
-                                  : null,
-                          icon:
-                              item.quantity <= 1
-                                  ? const Icon(Icons.delete_outline)
-                                  : const Icon(Icons.remove),
-                        ),
-                        SizedBox(
-                          width: 20,
-                          child: Text(
-                            item.quantity.toString(),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        IconButton(
-                          iconSize: 20,
-                          padding: EdgeInsets.zero,
-                          onPressed: () => onIncrement(item.id),
-                          icon: Icon(Icons.add),
-                        ),
-                        Text(item.name),
-                      ],
-                    ),
-                  ),
+                IngredientCard(
+                  info: item,
+                  onDecrement: () => onDecrement(item.id),
+                  onIncrement: () => onIncrement(item.id),
+                  onRemove: null,
                 ),
               IconButton(
                 onPressed: onCreateItem,

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:grocery_flutter/components/show_error.dart' show showError;
 import 'package:grocery_flutter/http/recipe-controller/recipe_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/models/short_item.dart';
@@ -49,9 +49,8 @@ class _RecipesPageState extends State<RecipesPage> {
         );
       }
     } else {
-      Fluttertoast.showToast(
-        msg: "Image error: ${(pictureResult as RequestError).error}",
-      );
+      if (mounted)
+        showError(context, (pictureResult as RequestError<Uint8List?>));
     }
   }
 
@@ -86,8 +85,7 @@ class _RecipesPageState extends State<RecipesPage> {
             });
           } else {
             var errorResult = result as RequestError<List<RecipeInfo>?>;
-            print(errorResult);
-            Fluttertoast.showToast(msg: "Error '${errorResult.error}' >:[");
+            if (mounted) showError(context, errorResult);
           }
         }
       }
@@ -110,9 +108,7 @@ class _RecipesPageState extends State<RecipesPage> {
       return response.result;
     } else {
       var responseError = response as RequestError;
-      Fluttertoast.showToast(
-        msg: "Could not get ingredients due to error '${responseError.error}'",
-      );
+      if (mounted) showError(context, responseError);
       return null;
     }
   }

@@ -66,18 +66,18 @@ class _RedirectLoginPageState extends State<RedirectLoginPage> {
           context,
         ).popAndPushNamed('/redirect-group', arguments: savedJwt);
       } else if (result is RequestErrorConnectionError) {
-        showError(context, result.error, "Connection error");
+        showErrorMessage(context, result.error, "Connection error");
         if (mounted) {
           Navigator.of(context).popAndPushNamed('/login');
         }
       } else if (result is RequestError) {
         storage.delete(key: 'jwt');
-        showError(context, result.error, "Request error");
+        showErrorMessage(context, result.error, "Request error");
         if (mounted) {
           Navigator.of(context).popAndPushNamed('/login');
         }
       } else {
-        showError(
+        showErrorMessage(
           context,
           "Unexpected type ${result.runtimeType}",
           "Programming error",

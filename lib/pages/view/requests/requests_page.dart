@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_flutter/components/ingredient_card.dart';
+import 'package:grocery_flutter/http/recipe-controller/recipe_controller.dart';
 import 'package:grocery_flutter/http/requests/request_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
-import 'package:grocery_flutter/models/grocery_list_item_display.dart';
+import 'package:grocery_flutter/models/recipe_info.dart';
 import 'package:grocery_flutter/models/short_item.dart';
 
 class RequestsPage extends StatefulWidget {
@@ -21,10 +22,9 @@ class _RequestsPageState extends State<RequestsPage> {
     final RequestResult<List<ShortItem>> result =
         await controller.getRequestedItems();
     if (result is RequestSuccess<List<ShortItem>>) {
-      var recipes = result.result;
       if (mounted) {
         setState(() {
-          requestedItems = recipes;
+          requestedItems = result.result;
         });
       }
     } else {
@@ -85,9 +85,7 @@ class _RequestsPageState extends State<RequestsPage> {
   @override
   Widget build(BuildContext context) {
     final String jwt = ModalRoute.of(context)!.settings.arguments as String;
-    if (requestedItems == null) {
-      getRequests(RequestController(jwt: jwt));
-    }
+    if (requestedItems == null) getRequests(RequestController(jwt: jwt));
     return Scaffold(
       appBar: AppBar(title: const Text('Requests')),
       floatingActionButton: Column(
@@ -141,13 +139,7 @@ class _RequestsPageState extends State<RequestsPage> {
                                 orElse: () => item,
                               );
                               return IngredientCard(
-                                info: GroceryListItemDisplay(
-                                  id: item.id,
-                                  name: item.name,
-                                  quantity: item.quantity,
-                                  categoryId: "",
-                                  categoryName: "",
-                                ),
+                                info: item,
                                 onDecrement: () {
                                   updateItem(item, item.quantity - 1);
                                 },

@@ -451,7 +451,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
                                     ]
                                     : ingredients.map(
                                       (e) => IngredientCard(
-                                        info: e,
+                                        info: e.toShortItem(),
                                         onDecrement: () => decrementItem(e),
                                         onIncrement: () => incrementItem(e),
                                         onRemove: () => removeItem(e),
