@@ -143,7 +143,10 @@ class _RecipesPageState extends State<RecipesPage> {
           recipeDisplays == null
               ? const Center(child: CircularProgressIndicator())
               : RefreshIndicator(
-                onRefresh: () => getRecipes(controller),
+                onRefresh: () async {
+                  await getRecipes(controller);
+                  await DefaultCacheManager().emptyCache();
+                },
                 child:
                     recipeDisplays!.isEmpty
                         ? const Center(

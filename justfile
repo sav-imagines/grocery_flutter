@@ -1,5 +1,4 @@
 run:
-watch:
   flutter run
 
 build:
