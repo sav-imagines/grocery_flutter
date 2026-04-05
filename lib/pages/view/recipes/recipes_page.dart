@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_flutter/http/recipe-controller/recipe_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
@@ -17,9 +18,42 @@ class RecipesPage extends StatefulWidget {
 }
 
 class _RecipesPageState extends State<RecipesPage> {
-  late RecipeController? controller = null;
   List<RecipeDisplay>? recipeDisplays = null;
   List<List<ShortItem>?> recipeIngredients = List.empty();
+
+  Future<void> getImage(int index, RecipeController controller) async {
+    final element = recipeDisplays![index];
+    Uint8List? cachedPicture =
+        await (await DefaultCacheManager().getFileFromCache(
+          "recipePicture/${element.info.pictureName}",
+        ))?.file.readAsBytes();
+    if (cachedPicture?.isNotEmpty ?? false) {
+      if (mounted) {
+        setState(() {
+          recipeDisplays![index].imageBytes = cachedPicture;
+        });
+      }
+      return;
+    }
+    RequestResult<Uint8List?> pictureResult = await controller.getPicture(
+      element.info.pictureName!,
+    );
+    if (pictureResult is RequestSuccess<Uint8List?>) {
+      if (mounted && recipeDisplays != null) {
+        setState(() {
+          recipeDisplays![index].imageBytes = pictureResult.result;
+        });
+        DefaultCacheManager().putFile(
+          "recipePicture/${element.info.pictureName}",
+          pictureResult.result!,
+        );
+      }
+    } else {
+      Fluttertoast.showToast(
+        msg: "Image error: ${(pictureResult as RequestError).error}",
+      );
+    }
+  }
 
   Future<void> getRecipes(RecipeController controller) async {
     if (mounted) {
@@ -46,42 +80,30 @@ class _RecipesPageState extends State<RecipesPage> {
           recipeIngredients = List.filled(recipeDisplays!.length, null);
         });
         for (int i = 0; i < recipes.length; i++) {
-          final element = recipes[i];
-          if (element.pictureName?.isNotEmpty ?? true) {
+          if (recipes[i].pictureName?.isNotEmpty ?? true) {
             Future.microtask(() async {
-              RequestResult<Uint8List?> pictureResult = await controller
-                  .getPicture(element.pictureName!);
-              if (pictureResult is RequestSuccess<Uint8List?>) {
-                if (mounted && recipeDisplays != null) {
-                  setState(() {
-                    recipeDisplays![i].imageBytes = pictureResult.result;
-                  });
-                }
-              } else {
-                Fluttertoast.showToast(
-                  msg: "Image error: ${(pictureResult as RequestError).error}",
-                );
-              }
+              await getImage(i, controller);
             });
+          } else {
+            var errorResult = result as RequestError<List<RecipeInfo>?>;
+            print(errorResult);
+            Fluttertoast.showToast(msg: "Error '${errorResult.error}' >:[");
           }
         }
       }
-    } else {
-      var errorResult = result as RequestError<List<RecipeInfo>?>;
-      if (mounted) {
-        setState(() {
-          recipeDisplays = List.empty();
-        });
-      }
-      Fluttertoast.showToast(msg: "Error '${errorResult.error}' >:[");
     }
   }
 
-  Future<List<ShortItem>?> getIngredients(int index) async {
-    if (recipeDisplays == null || recipeDisplays!.length <= index) return null;
+  Future<List<ShortItem>?> getIngredients(
+    int index,
+    RecipeController controller,
+  ) async {
+    if (recipeDisplays == null || recipeDisplays!.length <= index) {
+      return null;
+    }
     // if (recipeIngredients[index] != null) return; // already fetched
 
-    var response = await controller!.getIngredients(
+    var response = await controller.getIngredients(
       recipeDisplays![index].info.id,
     );
     if (response is RequestSuccess<List<ShortItem>>) {
@@ -99,11 +121,9 @@ class _RecipesPageState extends State<RecipesPage> {
   @override
   Widget build(BuildContext context) {
     final String jwt = ModalRoute.of(context)!.settings.arguments as String;
+    var controller = RecipeController(jwt: jwt);
     if (recipeDisplays == null) {
-      if (controller == null) {
-        setState(() => controller = RecipeController(jwt: jwt));
-      }
-      getRecipes(controller!);
+      getRecipes(controller);
     }
     return Scaffold(
       appBar: AppBar(title: const Text('Recipes')),
@@ -123,7 +143,7 @@ class _RecipesPageState extends State<RecipesPage> {
           recipeDisplays == null
               ? const Center(child: CircularProgressIndicator())
               : RefreshIndicator(
-                onRefresh: () => getRecipes(controller!),
+                onRefresh: () => getRecipes(controller),
                 child:
                     recipeDisplays!.isEmpty
                         ? const Center(
@@ -140,8 +160,12 @@ class _RecipesPageState extends State<RecipesPage> {
                               info: recipeDisplays![index],
                               onTap: () async {
                                 // TODO: Navigate to a recipe view that lets you edit
-                                final ingredients = await getIngredients(index);
-                                if (ingredients == null) getIngredients(index);
+                                final ingredients = await getIngredients(
+                                  index,
+                                  controller,
+                                );
+                                if (ingredients == null)
+                                  getIngredients(index, controller);
                                 final item = recipeDisplays![index];
                                 if (!context.mounted) return;
                                 showModalBottomSheet(
