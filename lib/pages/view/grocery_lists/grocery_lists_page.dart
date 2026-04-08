@@ -17,18 +17,17 @@ class ViewGroceryListsPage extends StatefulWidget {
 class _ViewGroceryListsPageState extends State<ViewGroceryListsPage> {
   late List<GroceryListDisplay>? lists = null;
 
-  refresh(GroceryListController controller) {
-    controller.getAllLists().then((value) {
-      if (value is RequestSuccess) {
-        setState(() {
-          lists = (value as RequestSuccess).result;
-        });
-      } else if (value is RequestError) {
-        Fluttertoast.showToast(msg: (value as RequestError).error);
-      } else {
-        Fluttertoast.showToast(msg: value.runtimeType.toString());
-      }
-    });
+  refresh(GroceryListController controller) async {
+    var result = await controller.getAllLists();
+    if (result is RequestSuccess) {
+      setState(() {
+        lists = (result as RequestSuccess).result;
+      });
+    } else if (result is RequestError) {
+      Fluttertoast.showToast(msg: (result as RequestError).error);
+    } else {
+      Fluttertoast.showToast(msg: result.runtimeType.toString());
+    }
   }
 
   @override

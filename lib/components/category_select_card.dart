@@ -19,16 +19,16 @@ class CategorySelectCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.symmetric(horizontal: 10),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Divider(),
-          Text(category.name, style: TextTheme.of(context).titleMedium),
-          SizedBox.square(dimension: 10),
-          Column(
-            spacing: 5,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          ExpansionTile(
+            initiallyExpanded: true,
+            title: Text(
+              category.name,
+              style: TextTheme.of(context).titleMedium,
+            ),
             children: [
               for (var item in category.items)
                 IngredientCard(

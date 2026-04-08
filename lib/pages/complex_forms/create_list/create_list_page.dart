@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_flutter/components/category_select_card.dart';
 import 'package:grocery_flutter/components/recipe_select_card.dart';
-import 'package:grocery_flutter/helpers/clamp.dart' show clamp;
+import 'package:grocery_flutter/helpers/clamp.dart';
 import 'package:grocery_flutter/http/grocery-list/grocery_list_controller.dart';
 import 'package:grocery_flutter/http/item/item_controller.dart';
 import 'package:grocery_flutter/http/recipe-controller/recipe_controller.dart';
@@ -25,75 +25,6 @@ class CreateListPage extends StatefulWidget {
 class _CreateListPageState extends State<CreateListPage> {
   late List<CategoryModel>? items = null;
   List<FullRecipeModel>? recipes = null;
-
-  refresh(ItemController controller) {
-    var result = controller.getItemsInGroup();
-    result.then((value) {
-      if (value is RequestSuccess) {
-        value = value as RequestSuccess<List<CategoryModel>?>;
-        setState(() {
-          items = (value as RequestSuccess).result;
-        });
-      } else if (value is RequestError) {
-        Fluttertoast.showToast(msg: (value as RequestError).error);
-      } else {
-        Fluttertoast.showToast(msg: "Invalid type");
-      }
-    });
-  }
-
-  void updateItemQuantity(ShortItem item, int newQuantity) {
-    if (item.quantity == newQuantity) return;
-    if (mounted) {
-      setState(() {
-        item.quantity = newQuantity;
-      });
-    }
-  }
-
-  void changeItemQuantity(String id, int delta) {
-    ShortItem? foundItem = null;
-
-    for (CategoryModel cat in items ?? List.empty()) {
-      for (ShortItem item in cat.items) {
-        if (item.id == id) {
-          foundItem = item;
-          break;
-        }
-      }
-      if (foundItem != null) break;
-    }
-
-    if (mounted && foundItem != null)
-      setState(() {
-        foundItem!.quantity += delta;
-      });
-  }
-
-  void changeRecipeQuantity(String recipeId, int delta) {
-    final recipe = recipes?.firstWhereOrNull(
-      (recipe) => recipe.recipe.id == recipeId,
-    );
-    if (recipe == null) return;
-    if (mounted)
-      setState(() {
-        recipe.quantity += delta;
-      });
-    for (ShortItem item in recipe.items ?? List.empty()) {
-      changeItemQuantity(item.id, delta);
-    }
-  }
-
-  void saveList(GroceryListController controller) async {
-    var result = await controller.createList(items!);
-    if (result is RequestSuccess) {
-      if (mounted) {
-        Navigator.of(context).pop();
-      }
-    } else if (result is RequestError) {
-      Fluttertoast.showToast(msg: result.error);
-    }
-  }
 
   void getRecipes(RecipeController controller) async {
     final RequestResult<void> result = await controller.getAllRecipes();
@@ -124,6 +55,64 @@ class _CreateListPageState extends State<CreateListPage> {
           recipes = List.empty();
         });
       }
+    }
+  }
+
+  void refresh(ItemController controller) async {
+    var result = await controller.getItemsInGroup();
+    if (result is RequestSuccess) {
+      result = result as RequestSuccess<List<CategoryModel>?>;
+      setState(() {
+        items = (result as RequestSuccess).result;
+      });
+    } else if (result is RequestError) {
+      Fluttertoast.showToast(msg: (result as RequestError).error);
+    } else {
+      Fluttertoast.showToast(msg: "Invalid type");
+    }
+  }
+
+  void saveList(GroceryListController controller) async {
+    var result = await controller.createList(items!);
+    if (result is RequestSuccess) {
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
+    } else if (result is RequestError) {
+      Fluttertoast.showToast(msg: result.error);
+    }
+  }
+
+  void updateItemQuantity(String id, int delta) {
+    ShortItem? foundItem = null;
+
+    for (CategoryModel cat in items ?? List.empty()) {
+      for (ShortItem item in cat.items) {
+        if (item.id == id) {
+          foundItem = item;
+          break;
+        }
+      }
+      if (foundItem != null) break;
+    }
+
+    if (mounted && foundItem != null)
+      setState(() {
+        foundItem!.quantity = clamp(foundItem.quantity + delta, 0, 99);
+      });
+  }
+
+  void updateRecipeQuantity(String recipeId, int delta) {
+    final recipe = recipes?.firstWhereOrNull(
+      (recipe) => recipe.recipe.id == recipeId,
+    );
+    if (recipe == null) return;
+    if (mounted)
+      setState(() {
+        recipe.quantity = clamp(recipe.quantity + delta, 0, 99);
+      });
+    for (ShortItem item in recipe.items ?? List.empty()) {
+      updateItemQuantity(item.id, delta);
     }
   }
 
@@ -165,8 +154,8 @@ class _CreateListPageState extends State<CreateListPage> {
           if (recipes != null)
             RecipeSelectCard(
               recipes: recipes!,
-              onDecrement: (id) => changeRecipeQuantity(id, -1),
-              onIncrement: (id) => changeRecipeQuantity(id, 1),
+              onDecrement: (id) => updateRecipeQuantity(id, -1),
+              onIncrement: (id) => updateRecipeQuantity(id, 1),
             )
           else
             SizedBox.shrink(),
@@ -177,10 +166,10 @@ class _CreateListPageState extends State<CreateListPage> {
                 CategorySelectCard(
                   category: category,
                   onIncrement: (id) {
-                    changeItemQuantity(id, 1);
+                    updateItemQuantity(id, 1);
                   },
                   onDecrement: (id) {
-                    changeItemQuantity(id, -1);
+                    updateItemQuantity(id, -1);
                   },
                   onCreateItem: () {
                     if (mounted) {

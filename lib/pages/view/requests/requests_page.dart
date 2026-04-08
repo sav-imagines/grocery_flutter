@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_flutter/components/ingredient_card.dart';
-import 'package:grocery_flutter/http/recipe-controller/recipe_controller.dart';
 import 'package:grocery_flutter/http/requests/request_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
-import 'package:grocery_flutter/models/recipe_info.dart';
 import 'package:grocery_flutter/models/short_item.dart';
 
 class RequestsPage extends StatefulWidget {

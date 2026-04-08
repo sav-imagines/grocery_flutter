@@ -19,7 +19,7 @@ class IngredientCard extends StatelessWidget {
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.all(0),
+      padding: const EdgeInsets.symmetric(vertical: 2),
       decoration: ShapeDecoration(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(11)),
