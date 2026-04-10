@@ -11,6 +11,7 @@ import 'package:grocery_flutter/pages/complex_forms/create_recipe/create_recipe_
 import 'package:grocery_flutter/components/ingredient_card.dart';
 import 'package:grocery_flutter/components/search_result_card.dart';
 import 'package:grocery_flutter/models/grocery_list_item_display.dart';
+import 'package:grocery_flutter/state/global_state.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CreateRecipePage extends StatefulWidget {
@@ -228,8 +229,8 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
   @override
   Widget build(BuildContext context) {
     args = ModalRoute.of(context)!.settings.arguments as CreateRecipeArgs;
-    final itemController = ItemController(jwt: args!.jwt);
-    final recipeController = RecipeController(jwt: args!.jwt);
+    final itemController = ItemController(jwt: jwt!);
+    final recipeController = RecipeController(jwt: jwt!);
     return Scaffold(
       appBar: AppBar(title: const Text('New recipe')),
       body: Padding(
@@ -406,10 +407,9 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
                                     ),
                                     IconButton(
                                       onPressed: () {
-                                        Navigator.of(context).pushNamed(
-                                          "/create-recipe-item",
-                                          arguments: args!.jwt,
-                                        );
+                                        Navigator.of(
+                                          context,
+                                        ).pushNamed("/create-recipe-item");
                                       },
                                       icon: Icon(Icons.add),
                                     ),

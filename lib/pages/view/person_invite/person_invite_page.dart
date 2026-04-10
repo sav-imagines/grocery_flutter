@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/http/social/social_controller.dart';
 import 'package:grocery_flutter/http/social/user_info.dart';
 import 'package:grocery_flutter/pages/view/person_invite/person_invite_args.dart';
+import 'package:grocery_flutter/state/global_state.dart';
 
 class PersonInvitePage extends StatefulWidget {
   const PersonInvitePage({super.key});
@@ -32,7 +34,7 @@ class _PersonInvitePageState extends State<PersonInvitePage> {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as PersonInviteArgs;
     var person = args.person;
-    SocialController controller = SocialController(jwt: args.jwt);
+    SocialController controller = SocialController(jwt: jwt!);
     if (isInvited == null) {
       controller
           .isInvited(person.id)
@@ -46,12 +48,7 @@ class _PersonInvitePageState extends State<PersonInvitePage> {
                 }
               else if (result is RequestError<bool>)
                 {
-                  Fluttertoast.showToast(
-                    msg:
-                        result.error.isEmpty
-                            ? result.errorType()
-                            : result.error,
-                  ),
+                  if (context.mounted) {showError(context, result)},
                 },
             },
           );

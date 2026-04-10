@@ -6,6 +6,7 @@ import 'package:grocery_flutter/pages/complex_forms/create_list/create_list_args
 import 'package:grocery_flutter/pages/view/grocery_list_info/grocery_list_info_args.dart';
 import 'package:grocery_flutter/components/grocery_list_card.dart';
 import 'package:grocery_flutter/models/grocery_list_display.dart';
+import 'package:grocery_flutter/state/global_state.dart';
 
 class ViewGroceryListsPage extends StatefulWidget {
   const ViewGroceryListsPage({super.key});
@@ -32,8 +33,7 @@ class _ViewGroceryListsPageState extends State<ViewGroceryListsPage> {
 
   @override
   Widget build(BuildContext context) {
-    String jwt = ModalRoute.of(context)!.settings.arguments as String;
-    final controller = GroceryListController(jwt: jwt);
+    final controller = GroceryListController(jwt: jwt!);
     if (lists == null) {
       refresh(controller);
     }
@@ -71,7 +71,6 @@ class _ViewGroceryListsPageState extends State<ViewGroceryListsPage> {
                                             '/view-grocery-list',
                                             arguments: GroceryListInfoArgs(
                                               list: e,
-                                              jwt: jwt,
                                             ),
                                           ),
                                     ),
@@ -90,10 +89,9 @@ class _ViewGroceryListsPageState extends State<ViewGroceryListsPage> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          Navigator.of(context).pushNamed(
-            '/create-list',
-            arguments: CreateListArgs(jwt: jwt, items: null),
-          );
+          Navigator.of(
+            context,
+          ).pushNamed('/create-list', arguments: CreateListArgs(items: null));
         },
       ),
     );

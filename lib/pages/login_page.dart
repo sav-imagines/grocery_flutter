@@ -73,9 +73,7 @@ class _LoginPageState extends State<LoginPage> {
                   if (!context.mounted) return;
                   if (response is RequestSuccess<String>) {
                     storage.write(key: 'jwt', value: response.result);
-                    Navigator.of(
-                      context,
-                    ).popAndPushNamed('/redirect-group', arguments: response);
+                    Navigator.of(context).popAndPushNamed('/redirect-group');
                   } else if (response is RequestError<String>) {
                     showDialog(
                       context: context,

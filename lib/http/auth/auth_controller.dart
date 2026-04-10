@@ -1,3 +1,4 @@
+import 'package:grocery_flutter/helpers/response_success.dart';
 import 'package:grocery_flutter/http/auth/login_model.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:http/http.dart' as http;
@@ -15,14 +16,10 @@ class AuthController {
         body: model.toJson(),
       );
 
-      if (response.statusCode == 200) {
-        return RequestSuccess(result: response.body);
-      }
-      return RequestError(
-        error: 'Server returned a status ${response.statusCode}',
-      );
+      if (response.isSuccess()) return RequestSuccess(response.body);
+      return RequestResponseError(response);
     } catch (error) {
-      return RequestError(error: error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 
@@ -36,17 +33,12 @@ class AuthController {
           "Authorization": "Bearer $jwt",
         },
       );
-      return switch (response.statusCode) {
-        200 => RequestSuccess(result: null),
-        _ => RequestError(
-          error:
-              response.body.isEmpty
-                  ? "Status ${response.statusCode}: ${response.reasonPhrase}"
-                  : "Status ${response.statusCode}: ${response.body}",
-        ),
-      };
+      if (response.isSuccess()) {
+        return RequestSuccess(null);
+      }
+      return RequestResponseError(response);
     } catch (error) {
-      return RequestErrorConnectionError(error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 }

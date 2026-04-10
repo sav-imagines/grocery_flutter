@@ -1,6 +1,6 @@
 import 'package:grocery_flutter/http/auth/auth_controller.dart';
+import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/http/user/account_creation_model.dart';
-import 'package:grocery_flutter/http/user/account_creation_result.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:uuid/uuid.dart';
@@ -8,7 +8,7 @@ import 'package:uuid/uuid.dart';
 class UserController {
   static const String baseUrl = AuthController.baseUrl;
 
-  static Future<AccountCreationResult> createAccount(
+  static Future<RequestResult<void>> createAccount(
     AccountCreationModel model,
   ) async {
     try {
@@ -23,15 +23,11 @@ class UserController {
           filename: "ProfilePicture-${model.userName}-${Uuid().v4()}.jpeg",
         ),
       );
-      final response = await request.send();
+      final response = await http.Response.fromStream(await request.send());
 
-      if (response.statusCode == 200) {
-        return SuccessResult();
-      }
-      final reason = await response.stream.bytesToString();
-      return FailureResult(reason: '${response.statusCode} with error $reason');
+      return RequestResult.empty(response);
     } catch (error) {
-      return FailureResult(reason: error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 }

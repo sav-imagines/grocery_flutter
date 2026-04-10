@@ -13,6 +13,6 @@ void showError<T>(BuildContext context, RequestError<T> error) => showDialog(
   builder:
       (context) => ErrorMessageComponent(
         message: error.toString(),
-        title: error.errorType(),
+        title: error.title(),
       ),
 );

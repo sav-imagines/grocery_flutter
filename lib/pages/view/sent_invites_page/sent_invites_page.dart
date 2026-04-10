@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/social/invite.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/http/social/social_controller.dart';
 import 'package:grocery_flutter/components/invited_person_card.dart';
-import 'package:grocery_flutter/pages/view/sent_invites_page/sent_invites_args.dart';
+import 'package:grocery_flutter/state/global_state.dart';
 
 class SentInvitesPage extends StatefulWidget {
   const SentInvitesPage({super.key});
@@ -18,21 +18,20 @@ class _SentInvitesPageState extends State<SentInvitesPage> {
   late List<Invite>? invites = null;
   final searchController = TextEditingController();
 
-  refresh(SocialController controller) {
-    controller.getSentInvites().then(
-      (value) => setState(() {
-        invites = value;
-      }),
-      onError: (error) {
-        throw Exception(error);
-      },
-    );
+  void refresh(SocialController controller) async {
+    final result = await controller.getSentInvites();
+    if (!mounted) return;
+    if (result is RequestSuccess<List<Invite>>) {
+      setState(() => invites = result.result);
+    } else {
+      setState(() => invites = List.empty());
+      showError(context, result as RequestError<List<Invite>>);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    var args = ModalRoute.of(context)!.settings.arguments as SentInvitesArgs;
-    SocialController controller = SocialController(jwt: args.jwt);
+    SocialController controller = SocialController(jwt: jwt!);
     if (invites == null) {
       refresh(controller);
     }
@@ -51,6 +50,7 @@ class _SentInvitesPageState extends State<SentInvitesPage> {
                           Center(
                             child: Center(
                               child: Column(
+                                mainAxisSize: MainAxisSize.max,
                                 children: [
                                   CircularProgressIndicator(),
                                   Text("Fetching response"),
@@ -72,19 +72,15 @@ class _SentInvitesPageState extends State<SentInvitesPage> {
                                     onRetract: () async {
                                       var result = await controller
                                           .retractInvite(e);
+                                      if (!context.mounted) return;
                                       if (result is RequestSuccess) {
                                         setState(() {
                                           invites!.remove(e);
                                         });
-                                      } else if (result is RequestError) {
-                                        Fluttertoast.showToast(
-                                          msg:
-                                              "Error type: ${result.errorType()}, Error: ${result.error}",
-                                        );
                                       } else {
-                                        Fluttertoast.showToast(
-                                          msg:
-                                              "Something unknown went wrong revoking this request",
+                                        showError(
+                                          context,
+                                          (context as RequestError),
                                         );
                                       }
                                     },
@@ -101,8 +97,7 @@ class _SentInvitesPageState extends State<SentInvitesPage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed:
-            () =>
-                Navigator.of(context).pushNamed('/invite', arguments: args.jwt),
+            () => Navigator.of(context).pushNamed('/invite', arguments: jwt),
         child: Icon(Icons.add),
       ),
     );

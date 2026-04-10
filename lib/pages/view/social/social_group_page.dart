@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:grocery_flutter/http/social/group_info.dart';
 import 'package:grocery_flutter/http/social/social_controller.dart';
-import 'package:grocery_flutter/pages/view/sent_invites_page/sent_invites_args.dart';
 import 'package:grocery_flutter/components/person_card.dart';
+import 'package:grocery_flutter/state/global_state.dart';
 
 class SocialGroupPage extends StatefulWidget {
   const SocialGroupPage({super.key});
@@ -17,8 +17,7 @@ class _SocialGroupPageState extends State<SocialGroupPage> {
 
   @override
   Widget build(BuildContext context) {
-    var jwt = ModalRoute.of(context)!.settings.arguments as String;
-    SocialController controller = SocialController(jwt: jwt);
+    SocialController controller = SocialController(jwt: jwt!);
     if (groupInfo == null) {
       controller.getOwnGroup().then(
         (value) {
@@ -38,16 +37,13 @@ class _SocialGroupPageState extends State<SocialGroupPage> {
         actions: [
           IconButton(
             onPressed: () async {
-              Navigator.of(context).pushNamed(
-                '/sent-invites',
-                arguments: SentInvitesArgs(jwt: jwt, isInGroup: true),
-              );
+              Navigator.of(context).pushNamed('/sent-invites');
             },
             icon: Icon(Icons.person),
           ),
           IconButton(
             onPressed: () {
-              Navigator.of(context).pushNamed('/settings', arguments: jwt);
+              Navigator.of(context).pushNamed('/settings');
             },
             icon: Icon(Icons.settings),
           ),
@@ -115,7 +111,7 @@ class _SocialGroupPageState extends State<SocialGroupPage> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          Navigator.of(context).pushNamed('/invite', arguments: jwt);
+          Navigator.of(context).pushNamed('/invite');
         },
       ),
     );

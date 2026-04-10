@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_flutter/components/error_message_component.dart';
+import 'package:grocery_flutter/components/show_error.dart';
+import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/http/user/account_creation_model.dart';
-import 'package:grocery_flutter/http/user/account_creation_result.dart';
 import 'package:grocery_flutter/http/user/user_controller.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -47,35 +50,20 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
         ),
       ).timeout(
         Duration(seconds: 20),
-        onTimeout: () => FailureResult(reason: "Timed out after 20 seconds"),
+        onTimeout:
+            () => RequestConnectionError(
+              TimeoutException("Timed out after 20 seconds"),
+            ),
       );
       setState(() {
         isSending = false;
       });
       if (mounted) {
-        if (isSuccess(result)) {
+        if (result is RequestSuccess) {
           Fluttertoast.showToast(msg: "Created an account successfully");
           Navigator.of(context).pop();
-        } else if (result is FailureResult) {
-          showDialog(
-            context: context,
-            builder: (ctx) {
-              return AlertDialog(
-                title: const Text("Error after sending submit:"),
-                content: Text(result.reason),
-                actions: [
-                  FilledButton(
-                    onPressed: () => Navigator.of(ctx).pop(),
-                    child: Text("Ok"),
-                  ),
-                ],
-              );
-            },
-          );
-          Fluttertoast.showToast(
-            toastLength: Toast.LENGTH_LONG,
-            msg: result.reason,
-          );
+        } else if (result is RequestError) {
+          showError(context, result);
         }
       }
     } catch (e) {

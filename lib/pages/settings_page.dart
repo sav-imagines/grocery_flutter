@@ -3,6 +3,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/http/social/social_controller.dart';
 import 'package:grocery_flutter/services/create_pdf.dart';
+import 'package:grocery_flutter/state/global_state.dart';
 import 'package:share_plus/share_plus.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -24,7 +25,6 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
-    var jwt = ModalRoute.of(context)!.settings.arguments as String;
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(title: Text('Settings')),
@@ -50,7 +50,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       FilledButton(
                         onPressed: () async {
                           if (mounted) {
-                            var controller = SocialController(jwt: jwt);
+                            var controller = SocialController(jwt: jwt!);
                             var result = await controller.leaveGroup();
                             if (result is RequestSuccess) {
                               Fluttertoast.showToast(msg: "Left your group");

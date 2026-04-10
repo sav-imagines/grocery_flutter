@@ -26,20 +26,14 @@ class GroceryListController {
       );
       return switch (response.statusCode) {
         200 => RequestSuccess(
-          result:
-              (jsonDecode(response.body) as List)
-                  .map((e) => GroceryListDisplay.fromJson(e))
-                  .toList(),
+          (jsonDecode(response.body) as List)
+              .map((e) => GroceryListDisplay.fromJson(e))
+              .toList(),
         ),
-        _ => RequestError(
-          error:
-              response.body.isEmpty
-                  ? "Status ${response.statusCode}: ${response.reasonPhrase}"
-                  : "Status ${response.statusCode}: ${response.body}",
-        ),
+        _ => RequestResponseError(response),
       };
     } catch (error) {
-      return RequestError(error: error.toString());
+      return RequestError(error.toString());
     }
   }
 
@@ -57,20 +51,14 @@ class GroceryListController {
       );
       return switch (response.statusCode) {
         200 => RequestSuccess(
-          result:
-              (jsonDecode(response.body) as List)
-                  .map((e) => GroceryListItemDisplay.fromJson(e))
-                  .toList(),
+          (jsonDecode(response.body) as List)
+              .map((e) => GroceryListItemDisplay.fromJson(e))
+              .toList(),
         ),
-        _ => RequestError(
-          error:
-              response.body.isEmpty
-                  ? "Status ${response.statusCode}: ${response.reasonPhrase}"
-                  : "Status ${response.statusCode}: ${response.body}",
-        ),
+        _ => RequestResponseError(response),
       };
     } catch (error) {
-      return RequestError(error: error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 
@@ -85,16 +73,11 @@ class GroceryListController {
         },
       );
       return switch (response.statusCode) {
-        200 => RequestSuccess(result: null),
-        _ => RequestError(
-          error:
-              response.body.isEmpty
-                  ? "Status ${response.statusCode}: ${response.reasonPhrase}"
-                  : "Status ${response.statusCode}: ${response.body}",
-        ),
+        200 => RequestSuccess(null),
+        _ => RequestResponseError(response),
       };
     } catch (error) {
-      return RequestError(error: error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 
@@ -123,16 +106,11 @@ class GroceryListController {
         body: json,
       );
       return switch (response.statusCode) {
-        200 => RequestSuccess(result: null),
-        _ => RequestError(
-          error:
-              response.body.isEmpty
-                  ? "Status ${response.statusCode}: ${response.reasonPhrase}"
-                  : "Status ${response.statusCode}: ${response.body}",
-        ),
+        200 => RequestSuccess(null),
+        _ => RequestResponseError(response),
       };
     } catch (error) {
-      return RequestError(error: error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 }

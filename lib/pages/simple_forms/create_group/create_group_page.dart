@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/http/social/social_controller.dart';
+import 'package:grocery_flutter/state/global_state.dart';
 
 class CreateGroupPage extends StatefulWidget {
   const CreateGroupPage({super.key});
@@ -24,21 +26,14 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
         Fluttertoast.showToast(msg: "Created a group successfully");
         Navigator.of(context).pop();
       } else if (result is RequestError) {
-        Fluttertoast.showToast(
-          toastLength: Toast.LENGTH_LONG,
-          msg:
-              result.error.isEmpty
-                  ? 'Error: ${result.errorType()}'
-                  : result.error,
-        );
+        if (mounted) showError(context, result);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final jwt = ModalRoute.of(context)!.settings.arguments as String;
-    final controller = SocialController(jwt: jwt);
+    final controller = SocialController(jwt: jwt!);
     return Scaffold(
       appBar: AppBar(title: Text('New group')),
       body: Padding(

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/category/category_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
+import 'package:grocery_flutter/state/global_state.dart';
 
 class CreateCategoryPage extends StatefulWidget {
   const CreateCategoryPage({super.key});
@@ -20,16 +21,9 @@ class _CreateItemPageState extends State<CreateCategoryPage> {
     final result = await controller.createCategory(categoryName);
     if (mounted) {
       if (result is RequestSuccess) {
-        Fluttertoast.showToast(msg: "Success :D");
         Navigator.of(context).pop();
       } else if (result is RequestError) {
-        Fluttertoast.showToast(
-          toastLength: Toast.LENGTH_LONG,
-          msg:
-              result.error.isEmpty
-                  ? 'Error: ${result.errorType()}'
-                  : result.error,
-        );
+        showError(context, result);
       } else {
         throw Exception("Unreachable code reached");
       }
@@ -38,8 +32,7 @@ class _CreateItemPageState extends State<CreateCategoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final jwt = ModalRoute.of(context)!.settings.arguments as String;
-    final controller = CategoryController(jwt: jwt);
+    final controller = CategoryController(jwt: jwt!);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(title: Text('New category')),

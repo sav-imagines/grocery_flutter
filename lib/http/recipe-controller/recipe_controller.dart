@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:grocery_flutter/helpers/response_success.dart';
 import 'package:grocery_flutter/http/auth/auth_controller.dart';
 import 'package:grocery_flutter/http/recipe-controller/create_recipe_model.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
@@ -26,17 +27,15 @@ class RecipeController {
           "Authorization": "Bearer $jwt",
         },
       );
-      return switch (response.statusCode) {
-        200 => RequestSuccess(
-          result:
-              (jsonDecode(response.body) as List)
-                  .map((e) => RecipeInfo.fromJson(e))
-                  .toList(),
-        ),
-        _ => RequestError(error: response.body),
-      };
+      if (response.isSuccess())
+        return RequestSuccess(
+          (jsonDecode(response.body) as List)
+              .map((e) => RecipeInfo.fromJson(e))
+              .toList(),
+        );
+      return RequestResponseError(response);
     } catch (error) {
-      return RequestError(error: error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 
@@ -50,17 +49,10 @@ class RecipeController {
           "Authorization": "Bearer $jwt",
         },
       );
-      return switch (response.statusCode) {
-        200 => RequestSuccess(result: response.bodyBytes),
-        _ => RequestError(
-          error:
-              response.body.isEmpty
-                  ? "${response.reasonPhrase}"
-                  : response.body,
-        ),
-      };
+      if (response.isSuccess()) return RequestSuccess(response.bodyBytes);
+      return RequestResponseError(response);
     } catch (error) {
-      return RequestError(error: error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 
@@ -82,16 +74,10 @@ class RecipeController {
           ),
         ),
       );
-      final response = await request.send();
-      return switch (response.statusCode) {
-        200 => RequestSuccess(result: null),
-        _ => RequestError(
-          error:
-              "Status ${response.statusCode} ${response.reasonPhrase}: '${await response.stream.bytesToString()}'",
-        ),
-      };
+      final response = await http.Response.fromStream(await request.send());
+      return RequestResult.empty(response);
     } catch (error) {
-      return RequestError(error: error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 
@@ -105,22 +91,9 @@ class RecipeController {
           "Authorization": "Bearer $jwt",
         },
       );
-      return switch (response.statusCode) {
-        200 => RequestSuccess(
-          result:
-              (jsonDecode(response.body) as List)
-                  .map((e) => ShortItem.fromJson(e))
-                  .toList(),
-        ),
-        _ => RequestError(
-          error:
-              response.body.isEmpty
-                  ? "${response.reasonPhrase}"
-                  : response.body,
-        ),
-      };
+      return RequestResult.empty(response);
     } catch (error) {
-      return RequestError(error: error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 }

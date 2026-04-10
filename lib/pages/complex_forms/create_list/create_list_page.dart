@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_flutter/components/category_select_card.dart';
 import 'package:grocery_flutter/components/recipe_select_card.dart';
+import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/helpers/clamp.dart';
 import 'package:grocery_flutter/http/grocery-list/grocery_list_controller.dart';
 import 'package:grocery_flutter/http/item/item_controller.dart';
 import 'package:grocery_flutter/http/recipe-controller/recipe_controller.dart';
+import 'package:grocery_flutter/http/requests/request_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/models/category_model.dart';
 import 'package:grocery_flutter/models/full_recipe_model.dart';
@@ -14,6 +16,7 @@ import 'package:grocery_flutter/models/recipe_info.dart';
 import 'package:grocery_flutter/models/short_item.dart';
 import 'package:grocery_flutter/pages/complex_forms/create_list/create_list_args.dart';
 import 'package:grocery_flutter/pages/simple_forms/create_list_item/create_list_item_args.dart';
+import 'package:grocery_flutter/state/global_state.dart';
 
 class CreateListPage extends StatefulWidget {
   const CreateListPage({super.key});
@@ -26,7 +29,8 @@ class _CreateListPageState extends State<CreateListPage> {
   late List<CategoryModel>? items = null;
   List<FullRecipeModel>? recipes = null;
 
-  void getRecipes(RecipeController controller) async {
+  void getRecipes() async {
+    final controller = RecipeController(jwt: jwt!);
     final RequestResult<void> result = await controller.getAllRecipes();
     if (result is RequestSuccess<List<RecipeInfo>>) {
       if (mounted) {
@@ -58,7 +62,8 @@ class _CreateListPageState extends State<CreateListPage> {
     }
   }
 
-  void refresh(ItemController controller) async {
+  void getItems() async {
+    final controller = ItemController(jwt: jwt!);
     var result = await controller.getItemsInGroup();
     if (result is RequestSuccess) {
       result = result as RequestSuccess<List<CategoryModel>?>;
@@ -102,6 +107,26 @@ class _CreateListPageState extends State<CreateListPage> {
       });
   }
 
+  // FIXME: DOES NOTHING????
+  void getRequests() async {
+    print("Test2");
+    final controller = RequestController(jwt: jwt!);
+    var result = await controller.getRequestedItems();
+    if (result is RequestSuccess<List<ShortItem>>) {
+      for (ShortItem item in result.result) {
+        updateItemQuantity(item.id, item.quantity);
+      }
+    } else if (mounted && result is RequestError<List<ShortItem>>) {
+      showError(context, result as RequestError);
+    }
+  }
+
+  void load() async {
+    getRecipes();
+    getItems();
+    getRequests();
+  }
+
   void updateRecipeQuantity(String recipeId, int delta) {
     final recipe = recipes?.firstWhereOrNull(
       (recipe) => recipe.recipe.id == recipeId,
@@ -119,13 +144,11 @@ class _CreateListPageState extends State<CreateListPage> {
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as CreateListArgs;
-    ItemController controller = ItemController(jwt: args.jwt);
     if (args.items != null && items == null) {
       items = args.items;
     } else if (items == null) {
-      refresh(controller);
+      load();
     }
-    if (recipes == null) getRecipes(RecipeController(jwt: args.jwt));
     return Scaffold(
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -133,7 +156,7 @@ class _CreateListPageState extends State<CreateListPage> {
         spacing: 12,
         children: [
           FloatingActionButton(
-            onPressed: () => saveList(GroceryListController(jwt: args.jwt)),
+            onPressed: () => saveList(GroceryListController(jwt: jwt!)),
             child: Icon(Icons.save),
           ),
           FloatingActionButton.extended(
@@ -141,7 +164,7 @@ class _CreateListPageState extends State<CreateListPage> {
             onPressed: () {
               Navigator.of(
                 context,
-              ).pushNamed('/create-category', arguments: args.jwt);
+              ).pushNamed('/create-category', arguments: jwt!);
             },
             icon: const Icon(Icons.add),
             heroTag: null,
@@ -176,7 +199,6 @@ class _CreateListPageState extends State<CreateListPage> {
                       Navigator.of(context).pushNamed(
                         '/create-list-item',
                         arguments: CreateItemArgs(
-                          jwt: args.jwt,
                           categoryId: category.id,
                           items: items,
                         ),

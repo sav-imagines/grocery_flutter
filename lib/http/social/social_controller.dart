@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:core';
 
+import 'package:grocery_flutter/helpers/response_success.dart';
 import 'package:grocery_flutter/http/auth/auth_controller.dart';
 import 'package:grocery_flutter/http/social/group_info.dart';
 import 'package:grocery_flutter/http/social/invite.dart';
@@ -26,7 +27,7 @@ class SocialController {
           "Authorization": 'Bearer $jwt',
         },
       );
-      if (response.statusCode == 200) {
+      if (response.isSuccess()) {
         return GroupInfo.fromJson(jsonDecode(response.body));
       }
       return null;
@@ -45,21 +46,17 @@ class SocialController {
           "Authorization": 'Bearer $jwt',
         },
       );
-      if (response.statusCode == 200) {
+      if (response.isSuccess()) {
         UserInfo info = UserInfo.fromJson(jsonDecode(response.body));
-        return RequestSuccess(result: info);
+        return RequestSuccess(info);
       }
-
-      return RequestError(
-        error:
-            "Status ${response.statusCode} ${response.reasonPhrase}${response.body.isNotEmpty ? ': "${response.body}"' : ''}",
-      );
+      return RequestResponseError(response);
     } catch (error) {
-      return RequestErrorConnectionError(error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 
-  Future<List<UserInfo>?> getUsersByName(String name) async {
+  Future<RequestResult<List<UserInfo>>> getUsersByName(String name) async {
     try {
       final uri = Uri.parse("$baseUrl/api/user/$name");
       final response = await http.get(
@@ -69,20 +66,20 @@ class SocialController {
           "Authorization": 'Bearer $jwt',
         },
       );
-      if (response.statusCode == 200) {
+      if (response.isSuccess()) {
         List<UserInfo> list =
             (jsonDecode(response.body) as List)
                 .map((e) => UserInfo.fromJson(e))
                 .toList();
-        return list;
+        return RequestSuccess(list);
       }
-      return null;
+      return RequestResponseError(response);
     } catch (error) {
-      return null;
+      return RequestConnectionError(error as Exception);
     }
   }
 
-  Future<List<Invite>?> getMyInvites() async {
+  Future<RequestResult<List<Invite>>> getMyInvites() async {
     try {
       final uri = Uri.parse("$baseUrl/api/group/my-invites");
       final response = await http.get(
@@ -92,20 +89,20 @@ class SocialController {
           "Authorization": 'Bearer $jwt',
         },
       );
-      if (response.statusCode == 200) {
+      if (response.isSuccess()) {
         List<Invite> list =
             (jsonDecode(response.body) as List)
                 .map((e) => Invite.fromJson(e))
                 .toList();
-        return list;
+        return RequestSuccess(list);
       }
-      return null;
+      return RequestResponseError(response);
     } catch (error) {
-      return null;
+      return RequestConnectionError(error as Exception);
     }
   }
 
-  Future<List<Invite>?> getSentInvites() async {
+  Future<RequestResult<List<Invite>>> getSentInvites() async {
     try {
       final uri = Uri.parse("$baseUrl/api/group/sent-invites");
       final response = await http.get(
@@ -115,16 +112,16 @@ class SocialController {
           "Authorization": 'Bearer $jwt',
         },
       );
-      if (response.statusCode == 200) {
+      if (response.isSuccess()) {
         List<Invite> list =
             (jsonDecode(response.body) as List)
                 .map((e) => Invite.fromJson(e))
                 .toList();
-        return list;
+        return RequestSuccess(list);
       }
-      return null;
+      return RequestResponseError(response);
     } catch (error) {
-      return null;
+      return RequestConnectionError(error as Exception);
     }
   }
 
@@ -140,16 +137,9 @@ class SocialController {
         },
         body: '"$id"',
       );
-      return switch (response.statusCode) {
-        200 => RequestSuccess(result: null),
-        400 => RequestErrorBadRequest(response.body),
-        401 => RequestErrorUnauthorized(response.body),
-        404 => RequestErrorNotFound(response.body),
-        409 => RequestErrorConflict(response.body),
-        _ => RequestError(error: response.body),
-      };
+      return RequestResult.empty(response);
     } catch (error) {
-      return RequestErrorConnectionError(error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 
@@ -165,14 +155,9 @@ class SocialController {
         },
         body: '{"Name":"$name"}',
       );
-      return switch (response.statusCode) {
-        200 => RequestSuccess(result: null),
-        401 => RequestErrorUnauthorized(response.body),
-        409 => RequestErrorConflict(response.body),
-        _ => RequestError(error: response.body),
-      };
+      return RequestResult.empty(response);
     } catch (error) {
-      return RequestErrorConnectionError(error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 
@@ -187,14 +172,9 @@ class SocialController {
           "Authorization": 'Bearer $jwt',
         },
       );
-      return switch (response.statusCode) {
-        200 => RequestSuccess(result: null),
-        401 => RequestErrorUnauthorized(response.body),
-        404 => RequestErrorNotFound(response.body),
-        _ => RequestError(error: response.body),
-      };
+      return RequestResult.empty(response);
     } catch (error) {
-      return RequestErrorConnectionError(error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 
@@ -210,21 +190,9 @@ class SocialController {
         },
         body: '"${invite.userId}"',
       );
-      return switch (response.statusCode) {
-        200 => RequestSuccess(result: null),
-        400 => RequestErrorBadRequest(response.body),
-        401 => RequestErrorUnauthorized(response.body),
-        404 => RequestErrorNotFound(response.body),
-        409 => RequestErrorConflict(response.body),
-        _ => RequestError(
-          error:
-              response.body == ''
-                  ? "No body, status code ${response.statusCode}"
-                  : response.body,
-        ),
-      };
+      return RequestResult.empty(response);
     } catch (error) {
-      return RequestErrorConnectionError(error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 
@@ -240,21 +208,9 @@ class SocialController {
         },
         body: invite.toJson(),
       );
-      return switch (response.statusCode) {
-        200 => RequestSuccess(result: null),
-        400 => RequestErrorBadRequest(response.body),
-        401 => RequestErrorUnauthorized(response.body),
-        404 => RequestErrorNotFound(response.body),
-        409 => RequestErrorConflict(response.body),
-        _ => RequestError(
-          error:
-              response.body == ''
-                  ? "No body, status code ${response.statusCode}"
-                  : response.body,
-        ),
-      };
+      return RequestResult.empty(response);
     } catch (error) {
-      return RequestErrorConnectionError(error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 
@@ -270,21 +226,9 @@ class SocialController {
         },
         body: invite.toJson(),
       );
-      return switch (response.statusCode) {
-        200 => RequestSuccess(result: null),
-        400 => RequestErrorBadRequest(response.body),
-        401 => RequestErrorUnauthorized(response.body),
-        404 => RequestErrorNotFound(response.body),
-        409 => RequestErrorConflict(response.body),
-        _ => RequestError(
-          error:
-              response.body == ''
-                  ? "No body, status code ${response.statusCode}"
-                  : response.body,
-        ),
-      };
+      return RequestResult.empty(response);
     } catch (error) {
-      return RequestErrorConnectionError(error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 
@@ -299,22 +243,10 @@ class SocialController {
           "Authorization": 'Bearer $jwt',
         },
       );
-      return switch (response.statusCode) {
-            200 => RequestSuccess(result: response.body == "true"),
-            400 => RequestErrorBadRequest(response.body),
-            401 => RequestErrorUnauthorized(response.body),
-            404 => RequestErrorNotFound(response.body),
-            409 => RequestErrorConflict(response.body),
-            _ => RequestError(
-              error:
-                  response.body == ''
-                      ? "No body, status code ${response.statusCode}"
-                      : response.body,
-            ),
-          }
-          as RequestResult<bool>;
+      if (response.isSuccess()) return RequestSuccess(response.body == "true");
+      return RequestResponseError(response);
     } catch (error) {
-      return RequestError<bool>(error: error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 }

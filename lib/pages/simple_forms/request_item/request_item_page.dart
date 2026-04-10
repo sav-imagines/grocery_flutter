@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/item/item_controller.dart';
 import 'package:grocery_flutter/http/requests/request_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/models/grocery_list_item_display.dart';
 import 'package:grocery_flutter/models/short_item.dart';
+import 'package:grocery_flutter/state/global_state.dart';
 
 class RequestItemPage extends StatefulWidget {
   const RequestItemPage({super.key});
@@ -29,13 +31,7 @@ class _RequestItemPageState extends State<RequestItemPage> {
       if (result is RequestSuccess) {
         Navigator.of(context).pop();
       } else if (result is RequestError) {
-        Fluttertoast.showToast(
-          toastLength: Toast.LENGTH_LONG,
-          msg:
-              result.error.isEmpty
-                  ? 'Error: ${result.errorType()}'
-                  : result.error,
-        );
+        if (mounted) showError(context, result);
       }
     }
   }
@@ -62,8 +58,6 @@ class _RequestItemPageState extends State<RequestItemPage> {
 
   @override
   Widget build(BuildContext context) {
-    final jwt = ModalRoute.of(context)!.settings.arguments as String;
-
     return Scaffold(
       appBar: AppBar(title: Text('Request item')),
       body: Padding(
@@ -131,7 +125,7 @@ class _RequestItemPageState extends State<RequestItemPage> {
                       if (newText.isEmpty) {
                         unSearch();
                       } else {
-                        search(ItemController(jwt: jwt), newText);
+                        search(ItemController(jwt: jwt!), newText);
                       }
                     },
                   ),
@@ -160,7 +154,7 @@ class _RequestItemPageState extends State<RequestItemPage> {
                   selectedItem == null
                       ? null
                       : () => submitRequestItem(
-                        RequestController(jwt: jwt),
+                        RequestController(jwt: jwt!),
                         searchIngredientsResults![0].toShortItem(),
                       ),
               child: Text('Request'),

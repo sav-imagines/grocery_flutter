@@ -9,6 +9,7 @@ import 'package:grocery_flutter/pages/complex_forms/create_recipe/create_recipe_
 import 'package:grocery_flutter/models/recipe_display.dart';
 import 'package:grocery_flutter/models/recipe_info.dart';
 import 'package:grocery_flutter/components/recipe_list_card.dart';
+import 'package:grocery_flutter/state/global_state.dart';
 
 class RecipesPage extends StatefulWidget {
   const RecipesPage({super.key});
@@ -115,8 +116,7 @@ class _RecipesPageState extends State<RecipesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final String jwt = ModalRoute.of(context)!.settings.arguments as String;
-    var controller = RecipeController(jwt: jwt);
+    var controller = RecipeController(jwt: jwt!);
     if (recipeDisplays == null) {
       getRecipes(controller);
     }
@@ -128,7 +128,6 @@ class _RecipesPageState extends State<RecipesPage> {
             () => Navigator.of(context).pushNamed(
               "/create-recipe",
               arguments: CreateRecipeArgs(
-                jwt: jwt,
                 imageBytes: List.empty(growable: true),
                 ingredients: List.empty(growable: true),
               ),

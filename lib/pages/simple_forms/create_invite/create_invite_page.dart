@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:grocery_flutter/components/show_error.dart';
+import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/http/social/social_controller.dart';
 import 'package:grocery_flutter/http/social/user_info.dart';
 import 'package:grocery_flutter/pages/view/person_invite/person_invite_args.dart';
 import 'package:grocery_flutter/components/person_card.dart';
+import 'package:grocery_flutter/state/global_state.dart';
 
 class CreateInvitePage extends StatefulWidget {
   const CreateInvitePage({super.key});
@@ -18,18 +21,19 @@ class _CreateInvitePageState extends State<CreateInvitePage> {
 
   searchUsers(String item, SocialController controller) async {
     var users = await controller.getUsersByName(item);
-    if (users == null) return;
-    if (mounted) {
+    if (!mounted) return;
+    if (users is RequestError) {
+      showError(context, users as RequestError);
+    } else if (mounted) {
       setState(() {
-        foundUsers = users;
+        foundUsers = (users as RequestSuccess<List<UserInfo>>).result;
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    var jwt = ModalRoute.of(context)!.settings.arguments as String;
-    SocialController controller = SocialController(jwt: jwt);
+    SocialController controller = SocialController(jwt: jwt!);
     return Scaffold(
       appBar: AppBar(title: Text('Invite user')),
       body: Padding(
@@ -50,10 +54,7 @@ class _CreateInvitePageState extends State<CreateInvitePage> {
                                 onTap: () {
                                   Navigator.of(context).pushNamed(
                                     '/invite-person',
-                                    arguments: PersonInviteArgs(
-                                      jwt: jwt,
-                                      person: e,
-                                    ),
+                                    arguments: PersonInviteArgs(person: e),
                                   );
                                 },
                               );

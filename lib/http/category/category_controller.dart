@@ -20,11 +20,11 @@ class CategoryController {
         body: '"$categoryName"',
       );
       return switch (response.statusCode) {
-        200 => RequestSuccess(result: null),
-        _ => RequestError(error: response.body),
+        200 => RequestSuccess(null),
+        _ => RequestResponseError(response),
       };
     } catch (error) {
-      return RequestError(error: error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 }

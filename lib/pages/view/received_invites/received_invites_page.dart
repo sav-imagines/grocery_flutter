@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/social/invite.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/http/social/social_controller.dart';
 import 'package:grocery_flutter/components/invite_card.dart';
+import 'package:grocery_flutter/state/global_state.dart';
 
 class ReceivedInvitesPage extends StatefulWidget {
   const ReceivedInvitesPage({super.key});
@@ -20,15 +21,18 @@ class _ReceivedInvitesPageState extends State<ReceivedInvitesPage> {
 
   Future<void> refresh(SocialController controller) async {
     final value = await controller.getMyInvites();
-    setState(() {
-      invites = value;
-    });
+    if (value is RequestSuccess<List<Invite>>)
+      setState(() {
+        invites = value.result;
+      });
+    else {
+      if (mounted) showError(context, (value as RequestError));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final jwt = ModalRoute.of(context)!.settings.arguments as String;
-    final SocialController controller = SocialController(jwt: jwt);
+    final SocialController controller = SocialController(jwt: jwt!);
     if (invites == null) {
       refresh(controller);
     }
@@ -72,46 +76,27 @@ class _ReceivedInvitesPageState extends State<ReceivedInvitesPage> {
                               invite: e,
                               onAccept: () async {
                                 var result = await controller.acceptInvite(e);
+                                if (!context.mounted) return;
                                 if (result is RequestSuccess) {
-                                  Fluttertoast.showToast(msg: 'Succes :D');
                                   if (context.mounted) {
                                     Navigator.of(
                                       context,
                                     ).popAndPushNamed('/redirect-group');
                                   }
-                                } else if (result is RequestError) {
-                                  Fluttertoast.showToast(
-                                    msg:
-                                        'Error type: ${result.errorType()}, Error: ${result.error}',
-                                  );
                                 } else {
-                                  Fluttertoast.showToast(
-                                    msg: 'Something went horribly wrong here',
-                                  );
-                                  throw Exception("Impossible state occurred");
+                                  showError(context, result as RequestError);
                                 }
-                                return;
                               },
                               onReject: () async {
                                 var result = await controller.rejectInvite(e);
+                                if (!context.mounted) return;
                                 if (result is RequestSuccess) {
-                                  Fluttertoast.showToast(msg: 'Succes :D');
                                   setState(() {
                                     invites!.remove(e);
                                   });
-                                } else if (result is RequestError) {
-                                  Fluttertoast.showToast(
-                                    msg:
-                                        'Error type: ${result.errorType()}, Error: ${result.error}',
-                                  );
                                 } else {
-                                  Fluttertoast.showToast(
-                                    msg: 'Something went horribly wrong here',
-                                  );
-                                  throw Exception("Impossible state occurred");
+                                  showError(context, result as RequestError);
                                 }
-
-                                return;
                               },
                             ),
                           )
@@ -124,9 +109,7 @@ class _ReceivedInvitesPageState extends State<ReceivedInvitesPage> {
               alignment: Alignment.bottomCenter,
               child: FilledButton(
                 onPressed: () {
-                  Navigator.of(
-                    context,
-                  ).pushNamed('/create-group', arguments: jwt);
+                  Navigator.of(context).pushNamed('/create-group');
                 },
                 child: const Text("Create a group"),
               ),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/http/social/social_controller.dart';
 import 'package:grocery_flutter/http/social/user_info.dart';
@@ -44,7 +44,12 @@ class _RedirectGroupPageState extends State<RedirectGroupPage> {
   Future<void> checkGroupStatus() async {
     var jwt = await FlutterSecureStorage().read(key: 'jwt');
     if (jwt == null) {
-      Fluttertoast.showToast(msg: "JWT from storage was null");
+      if (mounted)
+        showErrorMessage(
+          context,
+          "JWT from storage was null",
+          "Programming error",
+        );
     } else {
       var controller = SocialController(jwt: jwt);
       RequestResult<UserInfo?> info = await controller.getMyInfo();
@@ -52,13 +57,11 @@ class _RedirectGroupPageState extends State<RedirectGroupPage> {
         info = info as RequestSuccess<UserInfo>;
         if (info.result.isInGroup) {
           if (mounted) {
-            Navigator.of(context).popAndPushNamed('/home', arguments: jwt);
+            Navigator.of(context).popAndPushNamed('/home');
           }
         } else {
           if (mounted) {
-            Navigator.of(
-              context,
-            ).popAndPushNamed('/received-invites', arguments: jwt);
+            Navigator.of(context).popAndPushNamed('/received-invites');
           }
         }
       }

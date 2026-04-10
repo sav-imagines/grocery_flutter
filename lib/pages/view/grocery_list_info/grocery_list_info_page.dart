@@ -7,6 +7,7 @@ import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/components/category_view.dart';
 import 'package:grocery_flutter/pages/view/grocery_list_info/grocery_list_info_args.dart';
 import 'package:grocery_flutter/models/grocery_list_item_display.dart';
+import 'package:grocery_flutter/state/global_state.dart';
 
 class GroceryListHistoryPage extends StatefulWidget {
   const GroceryListHistoryPage({super.key});
@@ -53,7 +54,7 @@ class _GroceryListHistoryPageState extends State<GroceryListHistoryPage> {
   Widget build(BuildContext context) {
     final args =
         ModalRoute.of(context)!.settings.arguments as GroceryListInfoArgs;
-    GroceryListController controller = GroceryListController(jwt: args.jwt);
+    GroceryListController controller = GroceryListController(jwt: jwt!);
     if (items == null) refresh(controller, args);
     return Scaffold(
       appBar: AppBar(

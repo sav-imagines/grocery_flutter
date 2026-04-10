@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:grocery_flutter/helpers/response_success.dart';
 import 'package:grocery_flutter/http/auth/auth_controller.dart';
 import 'package:grocery_flutter/http/item/create_item_model.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
@@ -20,26 +21,22 @@ class ItemController {
         url,
         headers: {"Authorization": "Bearer $jwt"},
       );
-      if (response.statusCode == 200) {
+      if (response.isSuccess()) {
         return RequestSuccess(
-          result:
-              response.body.isEmpty
-                  ? null
-                  : (jsonDecode(response.body) as List)
-                      .map(
-                        (category) => CategoryModel.fromJson(
-                          category as Map<String, dynamic>,
-                        ),
-                      )
-                      .toList(),
+          response.body.isEmpty
+              ? null
+              : (jsonDecode(response.body) as List)
+                  .map(
+                    (category) => CategoryModel.fromJson(
+                      category as Map<String, dynamic>,
+                    ),
+                  )
+                  .toList(),
         );
       }
-      return RequestError(
-        error:
-            "Returned status ${response.statusCode} with message ${response.body}",
-      );
+      return RequestResponseError(response);
     } catch (error) {
-      return RequestError(error: error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 
@@ -54,15 +51,12 @@ class ItemController {
         },
         body: newItem.toJson(),
       );
-      if (response.statusCode == 200) {
-        return RequestSuccess(result: response.body);
+      if (response.isSuccess()) {
+        return RequestSuccess(response.body);
       }
-      return RequestError(
-        error:
-            "Returned status ${response.statusCode} with message ${response.body}",
-      );
+      return RequestResponseError(response);
     } catch (error) {
-      return RequestErrorConnectionError(error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 
@@ -75,30 +69,26 @@ class ItemController {
         url,
         headers: {"Authorization": "Bearer $jwt"},
       );
-      if (response.statusCode == 200) {
+      if (response.isSuccess()) {
         return RequestSuccess(
-          result:
-              response.body.isEmpty
-                  ? List.empty(growable: true)
-                  : (jsonDecode(response.body) as List)
-                      .map(
-                        (item) => GroceryListItemDisplay(
-                          id: item['id'],
-                          name: item['name'],
-                          quantity: 1,
-                          categoryId: item['categoryId'],
-                          categoryName: item['categoryName'],
-                        ),
-                      )
-                      .toList(),
+          response.body.isEmpty
+              ? List.empty(growable: true)
+              : (jsonDecode(response.body) as List)
+                  .map(
+                    (item) => GroceryListItemDisplay(
+                      id: item['id'],
+                      name: item['name'],
+                      quantity: 1,
+                      categoryId: item['categoryId'],
+                      categoryName: item['categoryName'],
+                    ),
+                  )
+                  .toList(),
         );
       }
-      return RequestError(
-        error:
-            "Returned status ${response.statusCode} with message ${response.body}",
-      );
+      return RequestResponseError(response);
     } catch (error) {
-      return RequestError(error: error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 }

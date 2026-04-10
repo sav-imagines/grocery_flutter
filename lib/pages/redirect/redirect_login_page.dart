@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/auth/auth_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
+import 'package:grocery_flutter/state/global_state.dart';
 
 class RedirectLoginPage extends StatefulWidget {
   const RedirectLoginPage({super.key});
@@ -40,8 +43,8 @@ class _RedirectLoginPageState extends State<RedirectLoginPage> {
   }
 
   Future<void> _checkLoginStatus() async {
-    final savedJwt = await storage.read(key: 'jwt');
-    if (savedJwt == null) {
+    jwt = await storage.read(key: 'jwt');
+    if (jwt == null) {
       if (mounted) {
         Navigator.of(context).popAndPushNamed('/login');
       }
@@ -50,13 +53,13 @@ class _RedirectLoginPageState extends State<RedirectLoginPage> {
         statusMsg = "Validating JWT...";
       });
       final RequestResult<void> result = await AuthController.isValidToken(
-        savedJwt,
+        jwt!,
       ).timeout(
         Duration(seconds: 7),
         onTimeout:
             () => Future.value(
-              RequestErrorConnectionError<void>(
-                "timed out while trying to validate token",
+              RequestConnectionError(
+                TimeoutException("timed out while trying to validate token"),
               ),
             ),
       );
@@ -64,8 +67,8 @@ class _RedirectLoginPageState extends State<RedirectLoginPage> {
       if (result is RequestSuccess) {
         Navigator.of(
           context,
-        ).popAndPushNamed('/redirect-group', arguments: savedJwt);
-      } else if (result is RequestErrorConnectionError) {
+        ).popAndPushNamed('/redirect-group', arguments: jwt);
+      } else if (result is RequestConnectionError) {
         showErrorMessage(context, result.error, "Connection error");
         if (mounted) {
           Navigator.of(context).popAndPushNamed('/login');

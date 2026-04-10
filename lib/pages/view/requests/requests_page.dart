@@ -4,6 +4,7 @@ import 'package:grocery_flutter/components/ingredient_card.dart';
 import 'package:grocery_flutter/http/requests/request_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/models/short_item.dart';
+import 'package:grocery_flutter/state/global_state.dart';
 
 class RequestsPage extends StatefulWidget {
   const RequestsPage({super.key});
@@ -82,8 +83,7 @@ class _RequestsPageState extends State<RequestsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final String jwt = ModalRoute.of(context)!.settings.arguments as String;
-    if (requestedItems == null) getRequests(RequestController(jwt: jwt));
+    if (requestedItems == null) getRequests(RequestController(jwt: jwt!));
     return Scaffold(
       appBar: AppBar(title: const Text('Requests')),
       floatingActionButton: Column(
@@ -99,7 +99,7 @@ class _RequestsPageState extends State<RequestsPage> {
           ),
           changedItems.isNotEmpty
               ? FloatingActionButton(
-                onPressed: () => updateRequests(RequestController(jwt: jwt)),
+                onPressed: () => updateRequests(RequestController(jwt: jwt!)),
                 child: Icon(Icons.save),
               )
               : SizedBox.shrink(),
@@ -110,7 +110,7 @@ class _RequestsPageState extends State<RequestsPage> {
               ? const Center(child: CircularProgressIndicator())
               : RefreshIndicator(
                 onRefresh: () async {
-                  getRequests(RequestController(jwt: jwt));
+                  getRequests(RequestController(jwt: jwt!));
                   setState(() {
                     changedItems = [];
                   });

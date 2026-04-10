@@ -1,8 +1,19 @@
-sealed class RequestResult<T> {}
+import 'package:grocery_flutter/helpers/response_success.dart';
+import 'package:http/http.dart';
+
+class RequestResult<T> {
+  RequestResult.empty(Response response) {
+    if (response.isSuccess())
+      RequestSuccess(null);
+    else
+      RequestResponseError(response);
+  }
+}
 
 class RequestSuccess<T> implements RequestResult<T> {
   final T result;
-  RequestSuccess({required this.result});
+  RequestSuccess(this.result);
+
   @override
   String toString() {
     return result.toString();
@@ -11,46 +22,33 @@ class RequestSuccess<T> implements RequestResult<T> {
 
 class RequestError<T> implements RequestResult<T> {
   final String error;
-  RequestError({required this.error});
+  RequestError(this.error);
 
-  String errorType() => 'Generic Error';
+  String title() => 'Generic Error';
   @override
   String toString() {
-    return error == '' ? errorType() : error;
+    return error == '' ? title() : error;
   }
 }
 
-class RequestErrorUnauthorized<T> extends RequestError<T> {
-  RequestErrorUnauthorized(String error) : super(error: error);
+// the request completed but the server was unhappy
+class RequestResponseError<T> extends RequestError<T> {
+  final Response response;
+
+  RequestResponseError(this.response)
+    : super(response.reasonPhrase ?? response.statusCode.toString());
 
   @override
-  String errorType() => 'Unauthorized Error';
+  String title() => 'status ${response.statusCode}';
+
+  @override
+  String toString() => 'Status ${response.reasonPhrase} occurred';
 }
 
-class RequestErrorConflict<T> extends RequestError<T> {
-  RequestErrorConflict(String error) : super(error: error);
+// the server was not reached
+class RequestConnectionError<T> extends RequestError<T> {
+  RequestConnectionError(Exception? err) : super(err.toString());
 
   @override
-  String errorType() => 'Conflict Error';
-}
-
-class RequestErrorNotFound<T> extends RequestError<T> {
-  RequestErrorNotFound(String error) : super(error: error);
-
-  @override
-  String errorType() => 'NotFound Error';
-}
-
-class RequestErrorBadRequest<T> extends RequestError<T> {
-  RequestErrorBadRequest(String error) : super(error: error);
-
-  @override
-  String errorType() => 'BadRequest Error';
-}
-
-class RequestErrorConnectionError<T> extends RequestError<T> {
-  RequestErrorConnectionError(String error) : super(error: error);
-
-  @override
-  String errorType() => 'Connection Error';
+  String title() => 'Connection Error';
 }

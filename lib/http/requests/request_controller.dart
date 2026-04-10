@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:grocery_flutter/helpers/response_success.dart';
 import 'package:grocery_flutter/http/auth/auth_controller.dart';
 import 'package:grocery_flutter/http/requests/request_item_model.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
@@ -22,17 +23,15 @@ class RequestController {
           "Authorization": "Bearer $jwt",
         },
       );
-      return switch (response.statusCode) {
-        200 => RequestSuccess(
-          result:
-              (jsonDecode(response.body) as List)
-                  .map((e) => ShortItem.fromJson(e))
-                  .toList(),
-        ),
-        _ => RequestError(error: response.body),
-      };
+      if (response.isSuccess())
+        return RequestSuccess(
+          (jsonDecode(response.body) as List)
+              .map((e) => ShortItem.fromJson(e))
+              .toList(),
+        );
+      return RequestResponseError(response);
     } catch (error) {
-      return RequestErrorConnectionError(error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 
@@ -48,15 +47,9 @@ class RequestController {
         },
         body: body,
       );
-      if (response.statusCode == 200) {
-        return RequestSuccess(result: null);
-      }
-      return RequestError(
-        error:
-            "Returned status ${response.statusCode} with message ${response.body}",
-      );
+      return RequestResult.empty(response);
     } catch (error) {
-      return RequestErrorConnectionError(error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 
@@ -75,16 +68,13 @@ class RequestController {
           },
           body: body,
         );
-        if (response.statusCode != 200) {
-          return RequestError(
-            error:
-                "Returned status ${response.statusCode} with message ${response.body}",
-          );
+        if (!response.isSuccess()) {
+          return RequestResponseError(response);
         }
       }
-      return RequestSuccess(result: null);
+      return RequestSuccess(null);
     } catch (error) {
-      return RequestErrorConnectionError(error.toString());
+      return RequestConnectionError(error as Exception);
     }
   }
 }
