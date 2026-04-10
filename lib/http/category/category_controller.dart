@@ -8,7 +8,7 @@ class CategoryController {
 
   const CategoryController(this.jwt);
 
-  Future<RequestResult<void>> createCategory(String categoryName) async {
+  Future<RequestResult<String>> createCategory(String categoryName) async {
     try {
       final uri = Uri.parse("$baseUrl/api/category");
       final response = await http.post(
@@ -20,7 +20,7 @@ class CategoryController {
         body: '"$categoryName"',
       );
       return switch (response.statusCode) {
-        200 => RequestSuccess(null),
+        200 => RequestSuccess(response.body),
         _ => RequestResponseError(response),
       };
     } catch (error) {

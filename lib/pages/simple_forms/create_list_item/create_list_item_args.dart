@@ -1,13 +1,8 @@
-import 'package:grocery_flutter/models/category_model.dart';
+import 'package:grocery_flutter/pages/complex_forms/create_list/create_list_args.dart';
 
 class CreateItemArgs {
-  final String categoryId;
-  final List<CategoryModel>? items;
-  final int index;
+  String? categoryId;
+  CreateListArgs state;
 
-  CreateItemArgs({
-    required this.categoryId,
-    required this.items,
-    this.index = 0,
-  });
+  CreateItemArgs(this.categoryId, this.state);
 }

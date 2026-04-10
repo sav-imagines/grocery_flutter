@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_flutter/http/grocery-list/grocery_list_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
-import 'package:grocery_flutter/pages/complex_forms/create_list/create_list_args.dart';
 import 'package:grocery_flutter/pages/view/grocery_list_info/grocery_list_info_args.dart';
 import 'package:grocery_flutter/components/grocery_list_card.dart';
 import 'package:grocery_flutter/models/grocery_list_display.dart';
@@ -89,9 +88,7 @@ class _ViewGroceryListsPageState extends State<ViewGroceryListsPage> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          Navigator.of(
-            context,
-          ).pushNamed('/create-list', arguments: CreateListArgs(items: null));
+          Navigator.of(context).pushNamed('/create-list');
         },
       ),
     );

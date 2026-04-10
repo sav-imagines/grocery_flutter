@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/item/create_item_model.dart';
 import 'package:grocery_flutter/http/item/item_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/pages/simple_forms/create_list_item/create_list_item_args.dart';
-import 'package:grocery_flutter/pages/complex_forms/create_list/create_list_args.dart';
 import 'package:grocery_flutter/models/short_item.dart';
 
 class CreateRecipeItemPage extends StatefulWidget {
@@ -29,15 +27,14 @@ class _CreateRecipeItemPageState extends State<CreateRecipeItemPage> {
     var result = await controller.createItem(item);
     if (mounted) {
       if (result is RequestSuccess<String>) {
-        args.items!
+        args.state.items
             .firstWhere((category) => category.id == item.categoryId)
             .items
             .add(ShortItem(id: result.result, name: item.name, quantity: 1));
         Navigator.of(context).pop();
-        Navigator.of(context).popAndPushNamed(
-          '/create-list',
-          arguments: CreateListArgs(items: args.items, index: args.index),
-        );
+        Navigator.of(
+          context,
+        ).popAndPushNamed('/create-list', arguments: args.state);
       } else if (result is RequestError<String>) {
         if (!mounted) return;
         showError(context, result);

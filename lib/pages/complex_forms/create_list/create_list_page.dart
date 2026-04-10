@@ -34,37 +34,41 @@ class _CreateListPageState extends State<CreateListPage> {
   Future<void> getRecipes() async {
     final controller = RecipeController(jwt!);
     final RequestResult<void> result = await controller.getAllRecipes();
+    if (!mounted) return;
     if (result is RequestSuccess<List<RecipeInfo>>) {
-      if (mounted) {
-        setState(() {
-          recipes =
-              result.result
-                  .map((x) => FullRecipeModel(recipe: x, items: null))
-                  .toList();
-        });
-      }
+      setState(() {
+        recipes =
+            result.result
+                .map((x) => FullRecipeModel(recipe: x, items: null))
+                .toList();
+      });
       for (int i = 0; i < recipes!.length; i++) {
         Future.microtask(() async {
+          print("Getting ingredients for ${recipes![i].recipe.name}");
           final ingredientsResult = await controller.getIngredients(
             recipes![i].recipe.id,
           );
+          if (!mounted) return;
           if (ingredientsResult is RequestSuccess<List<ShortItem>>) {
+            print("It has ${ingredientsResult.result.length} ingredients");
             setState(() {
               recipes![i].items = ingredientsResult.result;
             });
+          } else {
+            print("Failed");
+            showError(context, ingredientsResult as RequestError);
           }
         });
       }
     } else {
-      if (mounted) {
-        setState(() {
-          recipes = List.empty();
-        });
-      }
+      setState(() {
+        recipes = List.empty();
+      });
     }
   }
 
   Future<void> getItems() async {
+    if (items != null) return;
     final controller = ItemController(jwt!);
     var result = await controller.getItemsInGroup();
     if (result is RequestSuccess) {
@@ -117,6 +121,7 @@ class _CreateListPageState extends State<CreateListPage> {
   }
 
   Future<void> getRequests() async {
+    if (recipes != null) return;
     final controller = RequestController(jwt!);
     final result = await controller.getRequestedItems();
     if (!mounted) return;
@@ -154,7 +159,15 @@ class _CreateListPageState extends State<CreateListPage> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as CreateListArgs;
+    final args = ModalRoute.of(context)!.settings.arguments as CreateListArgs?;
+    if (args != null) {
+      setState(() {
+        recipes = args.recipes;
+        items = args.items;
+        requests = List.empty();
+        startedFetching = true;
+      });
+    }
     if (!startedFetching) {
       setState(() => startedFetching = true);
       load();
@@ -172,9 +185,10 @@ class _CreateListPageState extends State<CreateListPage> {
           FloatingActionButton.extended(
             label: const Text("New category"),
             onPressed: () {
-              Navigator.of(
-                context,
-              ).pushNamed('/create-category', arguments: jwt!);
+              Navigator.of(context).pushNamed(
+                '/create-category',
+                arguments: CreateListArgs(items ?? [], recipes ?? []),
+              );
             },
             icon: const Icon(Icons.add),
             heroTag: null,
@@ -209,8 +223,8 @@ class _CreateListPageState extends State<CreateListPage> {
                       Navigator.of(context).pushNamed(
                         '/create-list-item',
                         arguments: CreateItemArgs(
-                          categoryId: category.id,
-                          items: items,
+                          category.id,
+                          CreateListArgs(items ?? [], recipes ?? []),
                         ),
                       );
                     }

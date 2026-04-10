@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/category/category_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
+import 'package:grocery_flutter/models/category_model.dart';
+import 'package:grocery_flutter/pages/complex_forms/create_list/create_list_args.dart';
 import 'package:grocery_flutter/state/global_state.dart';
 
 class CreateCategoryPage extends StatefulWidget {
@@ -17,13 +19,24 @@ class _CreateItemPageState extends State<CreateCategoryPage> {
     return value == null || value.isEmpty ? "Please enter a value" : null;
   }
 
-  submitItem(CategoryController controller, String categoryName) async {
-    final result = await controller.createCategory(categoryName);
+  void submitItem(
+    CategoryController controller,
+    String categoryName,
+    CreateListArgs? oldState,
+  ) async {
+    var result = await controller.createCategory(categoryName);
     if (mounted) {
-      if (result is RequestSuccess) {
+      if (result is RequestSuccess<String>) {
+        List<CategoryModel> models = oldState?.items ?? [];
+        models.add(
+          CategoryModel(id: result.result, name: categoryName, items: []),
+        );
         Navigator.of(context).pop();
+        Navigator.of(
+          context,
+        ).popAndPushNamed('/create-list', arguments: oldState);
       } else if (result is RequestError) {
-        showError(context, result);
+        showError(context, result as RequestError);
       } else {
         throw Exception("Unreachable code reached");
       }
@@ -32,6 +45,8 @@ class _CreateItemPageState extends State<CreateCategoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    CreateListArgs? oldState =
+        ModalRoute.of(context)?.settings.arguments as CreateListArgs?;
     final controller = CategoryController(jwt!);
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -59,7 +74,11 @@ class _CreateItemPageState extends State<CreateCategoryPage> {
             ),
             FilledButton(
               onPressed:
-                  () => submitItem(controller, categoryNameController.text),
+                  () => submitItem(
+                    controller,
+                    categoryNameController.text,
+                    oldState,
+                  ),
               child: Text('Create'),
             ),
           ],

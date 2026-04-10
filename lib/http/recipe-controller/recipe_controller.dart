@@ -91,7 +91,14 @@ class RecipeController {
           "Authorization": "Bearer $jwt",
         },
       );
-      return RequestResult.empty(response);
+      if (response.isSuccess()) {
+        return RequestSuccess(
+          (jsonDecode(response.body) as List)
+              .map((e) => ShortItem.fromJson(e))
+              .toList(),
+        );
+      }
+      return RequestResponseError(response);
     } catch (error) {
       return RequestConnectionError(error as Exception);
     }
