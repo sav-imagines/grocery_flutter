@@ -34,7 +34,7 @@ class _PersonInvitePageState extends State<PersonInvitePage> {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as PersonInviteArgs;
     var person = args.person;
-    SocialController controller = SocialController(jwt: jwt!);
+    SocialController controller = SocialController(jwt!);
     if (isInvited == null) {
       controller
           .isInvited(person.id)

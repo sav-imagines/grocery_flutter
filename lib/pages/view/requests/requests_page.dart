@@ -83,7 +83,7 @@ class _RequestsPageState extends State<RequestsPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (requestedItems == null) getRequests(RequestController(jwt: jwt!));
+    if (requestedItems == null) getRequests(RequestController(jwt!));
     return Scaffold(
       appBar: AppBar(title: const Text('Requests')),
       floatingActionButton: Column(
@@ -99,7 +99,7 @@ class _RequestsPageState extends State<RequestsPage> {
           ),
           changedItems.isNotEmpty
               ? FloatingActionButton(
-                onPressed: () => updateRequests(RequestController(jwt: jwt!)),
+                onPressed: () => updateRequests(RequestController(jwt!)),
                 child: Icon(Icons.save),
               )
               : SizedBox.shrink(),
@@ -110,7 +110,7 @@ class _RequestsPageState extends State<RequestsPage> {
               ? const Center(child: CircularProgressIndicator())
               : RefreshIndicator(
                 onRefresh: () async {
-                  getRequests(RequestController(jwt: jwt!));
+                  getRequests(RequestController(jwt!));
                   setState(() {
                     changedItems = [];
                   });

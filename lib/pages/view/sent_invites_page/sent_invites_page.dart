@@ -31,7 +31,7 @@ class _SentInvitesPageState extends State<SentInvitesPage> {
 
   @override
   Widget build(BuildContext context) {
-    SocialController controller = SocialController(jwt: jwt!);
+    SocialController controller = SocialController(jwt!);
     if (invites == null) {
       refresh(controller);
     }

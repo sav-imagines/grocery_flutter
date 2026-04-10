@@ -33,7 +33,7 @@ class _CreateInvitePageState extends State<CreateInvitePage> {
 
   @override
   Widget build(BuildContext context) {
-    SocialController controller = SocialController(jwt: jwt!);
+    SocialController controller = SocialController(jwt!);
     return Scaffold(
       appBar: AppBar(title: Text('Invite user')),
       body: Padding(

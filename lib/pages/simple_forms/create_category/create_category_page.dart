@@ -32,7 +32,7 @@ class _CreateItemPageState extends State<CreateCategoryPage> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = CategoryController(jwt: jwt!);
+    final controller = CategoryController(jwt!);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(title: Text('New category')),

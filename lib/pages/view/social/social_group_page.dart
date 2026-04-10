@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/social/group_info.dart';
+import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/http/social/social_controller.dart';
 import 'package:grocery_flutter/components/person_card.dart';
 import 'package:grocery_flutter/state/global_state.dart';
@@ -13,24 +15,27 @@ class SocialGroupPage extends StatefulWidget {
 }
 
 class _SocialGroupPageState extends State<SocialGroupPage> {
+  bool startedFetching = false;
   late GroupInfo? groupInfo = null;
+
+  void getGroupInfo() async {
+    final controller = SocialController(jwt!);
+    final result = await controller.getOwnGroup();
+    if (!mounted) return;
+    if (result is RequestSuccess) {
+      setState(() => groupInfo = (result as RequestSuccess).result);
+    } else {
+      showError(context, result as RequestError);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    SocialController controller = SocialController(jwt: jwt!);
-    if (groupInfo == null) {
-      controller.getOwnGroup().then(
-        (value) {
-          if (mounted) {
-            setState(() {
-              groupInfo = value;
-            });
-          }
-        },
-        onError: (error) {
-          throw Exception(error);
-        },
-      );
+    if (!startedFetching) {
+      setState(() {
+        startedFetching = true;
+      });
+      getGroupInfo();
     }
     return Scaffold(
       appBar: AppBar(

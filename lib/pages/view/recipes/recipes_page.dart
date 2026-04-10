@@ -116,7 +116,7 @@ class _RecipesPageState extends State<RecipesPage> {
 
   @override
   Widget build(BuildContext context) {
-    var controller = RecipeController(jwt: jwt!);
+    var controller = RecipeController(jwt!);
     if (recipeDisplays == null) {
       getRecipes(controller);
     }

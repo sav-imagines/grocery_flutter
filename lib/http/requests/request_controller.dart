@@ -11,7 +11,7 @@ class RequestController {
   static const String baseUrl = AuthController.baseUrl;
   final String jwt;
 
-  RequestController({required this.jwt});
+  RequestController(this.jwt);
 
   Future<RequestResult<List<ShortItem>>> getRequestedItems() async {
     try {

@@ -48,7 +48,7 @@ class _CreateItemPageState extends State<CreateItemPage> {
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as CreateItemArgs;
-    final controller = ItemController(jwt: jwt!);
+    final controller = ItemController(jwt!);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(title: Text('New item')),

@@ -32,7 +32,7 @@ class _ReceivedInvitesPageState extends State<ReceivedInvitesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final SocialController controller = SocialController(jwt: jwt!);
+    final SocialController controller = SocialController(jwt!);
     if (invites == null) {
       refresh(controller);
     }

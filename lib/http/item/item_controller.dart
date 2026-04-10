@@ -12,7 +12,7 @@ class ItemController {
   final String jwt;
   static const String baseUrl = AuthController.baseUrl;
 
-  ItemController({required this.jwt});
+  ItemController(this.jwt);
 
   Future<RequestResult<List<CategoryModel>?>> getItemsInGroup() async {
     try {

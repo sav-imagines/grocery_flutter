@@ -125,7 +125,7 @@ class _RequestItemPageState extends State<RequestItemPage> {
                       if (newText.isEmpty) {
                         unSearch();
                       } else {
-                        search(ItemController(jwt: jwt!), newText);
+                        search(ItemController(jwt!), newText);
                       }
                     },
                   ),
@@ -142,7 +142,7 @@ class _RequestItemPageState extends State<RequestItemPage> {
             //         if (newText.isEmpty) {
             //           unSearch();
             //         } else {
-            //           search(ItemController(jwt: jwt), newText);
+            //           search(ItemController(jwt), newText);
             //         }
             //       },
             //     ),
@@ -154,7 +154,7 @@ class _RequestItemPageState extends State<RequestItemPage> {
                   selectedItem == null
                       ? null
                       : () => submitRequestItem(
-                        RequestController(jwt: jwt!),
+                        RequestController(jwt!),
                         searchIngredientsResults![0].toShortItem(),
                       ),
               child: Text('Request'),

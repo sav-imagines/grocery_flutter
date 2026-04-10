@@ -54,7 +54,7 @@ class _GroceryListHistoryPageState extends State<GroceryListHistoryPage> {
   Widget build(BuildContext context) {
     final args =
         ModalRoute.of(context)!.settings.arguments as GroceryListInfoArgs;
-    GroceryListController controller = GroceryListController(jwt: jwt!);
+    GroceryListController controller = GroceryListController(jwt!);
     if (items == null) refresh(controller, args);
     return Scaffold(
       appBar: AppBar(

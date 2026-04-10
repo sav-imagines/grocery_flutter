@@ -51,7 +51,7 @@ class _RedirectGroupPageState extends State<RedirectGroupPage> {
           "Programming error",
         );
     } else {
-      var controller = SocialController(jwt: jwt);
+      var controller = SocialController(jwt);
       RequestResult<UserInfo?> info = await controller.getMyInfo();
       if (info is RequestSuccess) {
         info = info as RequestSuccess<UserInfo>;

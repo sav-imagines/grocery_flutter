@@ -33,7 +33,7 @@ class _ViewGroceryListsPageState extends State<ViewGroceryListsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = GroceryListController(jwt: jwt!);
+    final controller = GroceryListController(jwt!);
     if (lists == null) {
       refresh(controller);
     }

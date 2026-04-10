@@ -12,7 +12,7 @@ class GroceryListController {
   static const String baseUrl = AuthController.baseUrl;
   final String jwt;
 
-  GroceryListController({required this.jwt});
+  GroceryListController(this.jwt);
 
   Future<RequestResult<List<GroceryListDisplay>?>> getAllLists() async {
     try {

@@ -6,7 +6,7 @@ class CategoryController {
   static const String baseUrl = AuthController.baseUrl;
   final String jwt;
 
-  const CategoryController({required this.jwt});
+  const CategoryController(this.jwt);
 
   Future<RequestResult<void>> createCategory(String categoryName) async {
     try {

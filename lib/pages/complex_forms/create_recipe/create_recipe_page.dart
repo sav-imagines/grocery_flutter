@@ -229,8 +229,8 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
   @override
   Widget build(BuildContext context) {
     args = ModalRoute.of(context)!.settings.arguments as CreateRecipeArgs;
-    final itemController = ItemController(jwt: jwt!);
-    final recipeController = RecipeController(jwt: jwt!);
+    final itemController = ItemController(jwt!);
+    final recipeController = RecipeController(jwt!);
     return Scaffold(
       appBar: AppBar(title: const Text('New recipe')),
       body: Padding(

@@ -15,7 +15,7 @@ class RecipeController {
   static const String baseUrl = AuthController.baseUrl;
   final String jwt;
 
-  RecipeController({required this.jwt});
+  RecipeController(this.jwt);
 
   Future<RequestResult<List<RecipeInfo>>> getAllRecipes() async {
     try {

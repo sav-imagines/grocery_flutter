@@ -9,14 +9,12 @@ import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/http/social/user_info.dart';
 import 'package:http/http.dart' as http;
 
-// TODO: Rework to use the RequestResult model
-
 class SocialController {
   static const String baseUrl = AuthController.baseUrl;
-  SocialController({required this.jwt});
+  SocialController(this.jwt);
 
   final String jwt;
-  Future<GroupInfo?> getOwnGroup() async {
+  Future<RequestResult<GroupInfo>> getOwnGroup() async {
     try {
       final uri = Uri.parse("$baseUrl/api/group");
       final response = await http.get(
@@ -28,11 +26,11 @@ class SocialController {
         },
       );
       if (response.isSuccess()) {
-        return GroupInfo.fromJson(jsonDecode(response.body));
+        return RequestSuccess(GroupInfo.fromJson(jsonDecode(response.body)));
       }
-      return null;
+      return RequestResponseError(response);
     } catch (error) {
-      return null;
+      return RequestConnectionError(error as Exception);
     }
   }
 

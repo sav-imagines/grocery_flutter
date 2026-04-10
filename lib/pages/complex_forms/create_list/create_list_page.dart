@@ -30,7 +30,7 @@ class _CreateListPageState extends State<CreateListPage> {
   List<FullRecipeModel>? recipes = null;
 
   void getRecipes() async {
-    final controller = RecipeController(jwt: jwt!);
+    final controller = RecipeController(jwt!);
     final RequestResult<void> result = await controller.getAllRecipes();
     if (result is RequestSuccess<List<RecipeInfo>>) {
       if (mounted) {
@@ -63,7 +63,7 @@ class _CreateListPageState extends State<CreateListPage> {
   }
 
   void getItems() async {
-    final controller = ItemController(jwt: jwt!);
+    final controller = ItemController(jwt!);
     var result = await controller.getItemsInGroup();
     if (result is RequestSuccess) {
       result = result as RequestSuccess<List<CategoryModel>?>;
@@ -110,7 +110,7 @@ class _CreateListPageState extends State<CreateListPage> {
   // FIXME: DOES NOTHING????
   void getRequests() async {
     print("Test2");
-    final controller = RequestController(jwt: jwt!);
+    final controller = RequestController(jwt!);
     var result = await controller.getRequestedItems();
     if (result is RequestSuccess<List<ShortItem>>) {
       for (ShortItem item in result.result) {
@@ -156,7 +156,7 @@ class _CreateListPageState extends State<CreateListPage> {
         spacing: 12,
         children: [
           FloatingActionButton(
-            onPressed: () => saveList(GroceryListController(jwt: jwt!)),
+            onPressed: () => saveList(GroceryListController(jwt!)),
             child: Icon(Icons.save),
           ),
           FloatingActionButton.extended(

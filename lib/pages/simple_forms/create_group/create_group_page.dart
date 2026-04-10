@@ -33,7 +33,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = SocialController(jwt: jwt!);
+    final controller = SocialController(jwt!);
     return Scaffold(
       appBar: AppBar(title: Text('New group')),
       body: Padding(

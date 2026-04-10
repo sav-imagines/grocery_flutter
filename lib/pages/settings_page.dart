@@ -50,7 +50,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       FilledButton(
                         onPressed: () async {
                           if (mounted) {
-                            var controller = SocialController(jwt: jwt!);
+                            var controller = SocialController(jwt!);
                             var result = await controller.leaveGroup();
                             if (result is RequestSuccess) {
                               Fluttertoast.showToast(msg: "Left your group");
