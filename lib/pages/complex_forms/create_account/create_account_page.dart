@@ -35,7 +35,8 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   }
 
   final ImagePicker _picker = ImagePicker();
-  submitForm() async {
+
+  void submitForm() async {
     try {
       if (pfp == null) return;
       setState(() {
@@ -58,13 +59,15 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       setState(() {
         isSending = false;
       });
-      if (mounted) {
-        if (result is RequestSuccess) {
-          Fluttertoast.showToast(msg: "Created an account successfully");
-          Navigator.of(context).pop();
-        } else if (result is RequestError) {
-          showError(context, result);
-        }
+      if (!mounted) return;
+
+      if (result is RequestSuccess) {
+        Fluttertoast.showToast(msg: "Created an account successfully");
+        Navigator.of(context).pop();
+      } else if (result is RequestError) {
+        showError(context, result);
+      } else {
+        showError(context, result as RequestError);
       }
     } catch (e) {
       if (!mounted) return;
@@ -257,7 +260,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                 ),
 
                 FilledButton(
-                  onPressed: submitForm,
+                  onPressed: isSending ? null : submitForm,
                   child: const Text('Submit'),
                 ),
 

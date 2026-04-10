@@ -1,12 +1,12 @@
 import 'package:grocery_flutter/helpers/response_success.dart';
 import 'package:http/http.dart';
 
-class RequestResult<T> {
-  RequestResult.empty(Response response) {
+sealed class RequestResult<T> {
+  static RequestResult<void> empty<T>(Response response) {
     if (response.isSuccess())
-      RequestSuccess(null);
+      return RequestSuccess(null);
     else
-      RequestResponseError(response);
+      return RequestResponseError(response);
   }
 }
 
@@ -39,10 +39,11 @@ class RequestResponseError<T> extends RequestError<T> {
     : super(response.reasonPhrase ?? response.statusCode.toString());
 
   @override
-  String title() => 'status ${response.statusCode}';
+  String title() => '${response.reasonPhrase}';
 
   @override
-  String toString() => 'Status ${response.reasonPhrase} occurred';
+  String toString() =>
+      'HTTP Error ${response.statusCode} ${response.reasonPhrase} occurred.\nReason: ${response.body}';
 }
 
 // the server was not reached
