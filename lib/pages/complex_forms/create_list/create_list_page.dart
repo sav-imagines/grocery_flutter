@@ -26,10 +26,12 @@ class CreateListPage extends StatefulWidget {
 }
 
 class _CreateListPageState extends State<CreateListPage> {
-  late List<CategoryModel>? items = null;
+  bool startedFetching = false;
+  List<CategoryModel>? items = null;
   List<FullRecipeModel>? recipes = null;
+  List<ShortItem> requests = List.empty();
 
-  void getRecipes() async {
+  Future<void> getRecipes() async {
     final controller = RecipeController(jwt!);
     final RequestResult<void> result = await controller.getAllRecipes();
     if (result is RequestSuccess<List<RecipeInfo>>) {
@@ -62,7 +64,7 @@ class _CreateListPageState extends State<CreateListPage> {
     }
   }
 
-  void getItems() async {
+  Future<void> getItems() async {
     final controller = ItemController(jwt!);
     var result = await controller.getItemsInGroup();
     if (result is RequestSuccess) {
@@ -101,30 +103,39 @@ class _CreateListPageState extends State<CreateListPage> {
       if (foundItem != null) break;
     }
 
-    if (mounted && foundItem != null)
-      setState(() {
-        foundItem!.quantity = clamp(foundItem.quantity + delta, 0, 99);
-      });
+    if (!mounted) return;
+    if (foundItem != null) {
+      setState(
+        () => foundItem!.quantity = clamp(foundItem.quantity + delta, 0, 99),
+      );
+    } else
+      showErrorMessage(
+        context,
+        "Did not find an item of id $id",
+        "Missing item",
+      );
   }
 
-  // FIXME: DOES NOTHING????
-  void getRequests() async {
-    print("Test2");
+  Future<void> getRequests() async {
     final controller = RequestController(jwt!);
-    var result = await controller.getRequestedItems();
+    final result = await controller.getRequestedItems();
+    if (!mounted) return;
     if (result is RequestSuccess<List<ShortItem>>) {
-      for (ShortItem item in result.result) {
-        updateItemQuantity(item.id, item.quantity);
-      }
-    } else if (mounted && result is RequestError<List<ShortItem>>) {
+      setState(() => requests = result.result);
+    } else if (result is RequestError<List<ShortItem>>) {
       showError(context, result as RequestError);
     }
   }
 
   void load() async {
-    getRecipes();
-    getItems();
-    getRequests();
+    // these should run concurrently to avoid several round trips of lag
+    final recipesQuery = getRecipes();
+    final itemsQuery = getItems();
+    final requestsQuery = getRequests();
+    await recipesQuery;
+    await itemsQuery;
+    await requestsQuery;
+    for (ShortItem item in requests) updateItemQuantity(item.id, item.quantity);
   }
 
   void updateRecipeQuantity(String recipeId, int delta) {
@@ -144,9 +155,8 @@ class _CreateListPageState extends State<CreateListPage> {
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as CreateListArgs;
-    if (args.items != null && items == null) {
-      items = args.items;
-    } else if (items == null) {
+    if (!startedFetching) {
+      setState(() => startedFetching = true);
       load();
     }
     return Scaffold(
