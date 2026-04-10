@@ -9,6 +9,7 @@ import 'package:grocery_flutter/pages/complex_forms/create_recipe/create_recipe_
 import 'package:grocery_flutter/models/recipe_display.dart';
 import 'package:grocery_flutter/models/recipe_info.dart';
 import 'package:grocery_flutter/components/recipe_list_card.dart';
+import 'package:grocery_flutter/pages/view/recipes/recipe_preview.dart';
 import 'package:grocery_flutter/state/global_state.dart';
 
 class RecipesPage extends StatefulWidget {
@@ -167,96 +168,10 @@ class _RecipesPageState extends State<RecipesPage> {
                                 if (!context.mounted) return;
                                 showModalBottomSheet(
                                   showDragHandle: true,
-                                  isDismissible: false,
+                                  isDismissible: true,
                                   isScrollControlled: true,
                                   context: context,
-                                  builder:
-                                      (context) => DraggableScrollableSheet(
-                                        maxChildSize: 0.6,
-                                        initialChildSize: 0.6,
-                                        expand: false,
-                                        builder:
-                                            (
-                                              context,
-                                              scrollController,
-                                            ) => Padding(
-                                              padding: EdgeInsets.all(10),
-                                              child: Column(
-                                                children: [
-                                                  Row(
-                                                    // fill full width of modal bottom sheet
-                                                    mainAxisSize:
-                                                        MainAxisSize.max,
-                                                    children: [
-                                                      SizedBox.shrink(),
-                                                    ],
-                                                  ),
-                                                  item.imageBytes != null
-                                                      ? ClipRRect(
-                                                        borderRadius:
-                                                            BorderRadius.circular(
-                                                              10,
-                                                            ),
-                                                        clipBehavior:
-                                                            Clip.hardEdge,
-                                                        child: Image.memory(
-                                                          width: 200,
-                                                          item.imageBytes!,
-                                                        ),
-                                                      )
-                                                      : const Text(
-                                                        "No image was detected???",
-                                                      ),
-                                                  Text(
-                                                    item.info.name,
-                                                    style:
-                                                        Theme.of(context)
-                                                            .textTheme
-                                                            .headlineSmall,
-                                                  ),
-                                                  Text(
-                                                    item.info.description,
-                                                    style:
-                                                        Theme.of(
-                                                          context,
-                                                        ).textTheme.bodyLarge,
-                                                  ),
-                                                  ingredients == null
-                                                      ? Center(
-                                                        child: Text(
-                                                          "Could not fetch ingredients",
-                                                        ),
-                                                      )
-                                                      : Expanded(
-                                                        child: ListView(
-                                                          children:
-                                                              ingredients
-                                                                  .map(
-                                                                    (
-                                                                      ingredient,
-                                                                    ) => Row(
-                                                                      children:
-                                                                          [
-                                                                            SizedBox(
-                                                                              width:
-                                                                                  60,
-                                                                              child: Text(
-                                                                                ingredient.quantity.toString(),
-                                                                              ),
-                                                                            ),
-                                                                            Text(
-                                                                              ingredient.name,
-                                                                            ),
-                                                                          ].toList(),
-                                                                    ),
-                                                                  )
-                                                                  .toList(),
-                                                        ),
-                                                      ),
-                                                ],
-                                              ),
-                                            ),
-                                      ),
+                                  builder: recipePreview(item, ingredients),
                                 );
                               },
                             );
