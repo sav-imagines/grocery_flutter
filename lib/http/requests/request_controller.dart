@@ -11,18 +11,17 @@ class RequestController {
   static const String baseUrl = AuthController.baseUrl;
   final String jwt;
 
+  get usualHeaders => {
+    "Content-Type": "application/json",
+    "Authorization": "Bearer $jwt",
+  };
+
   RequestController(this.jwt);
 
   Future<RequestResult<List<ShortItem>>> getRequestedItems() async {
     try {
       final uri = Uri.parse("$baseUrl/api/requests");
-      final response = await http.get(
-        uri,
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer $jwt",
-        },
-      );
+      final response = await http.get(headers: usualHeaders, uri);
       if (response.isSuccess())
         return RequestSuccess(
           (jsonDecode(response.body) as List)
@@ -39,14 +38,7 @@ class RequestController {
     try {
       final url = Uri.parse("$baseUrl/api/requests");
       final body = RequestItemModel.fromShortItem(requestItem).toJson();
-      final response = await http.post(
-        url,
-        headers: {
-          "Authorization": "Bearer $jwt",
-          "Content-Type": "application/json",
-        },
-        body: body,
-      );
+      final response = await http.post(url, headers: usualHeaders, body: body);
       return RequestResult.empty(response);
     } catch (error) {
       return RequestConnectionError(error as Exception);
@@ -62,10 +54,7 @@ class RequestController {
         final body = RequestItemModel.fromShortItem(item).toJson();
         final response = await http.post(
           url,
-          headers: {
-            "Authorization": "Bearer $jwt",
-            "Content-Type": "application/json",
-          },
+          headers: usualHeaders,
           body: body,
         );
         if (!response.isSuccess()) {
@@ -73,6 +62,16 @@ class RequestController {
         }
       }
       return RequestSuccess(null);
+    } catch (error) {
+      return RequestConnectionError(error as Exception);
+    }
+  }
+
+  Future<RequestResult<void>> deleteAllRequests() async {
+    try {
+      final url = Uri.parse("$baseUrl/api/requests/reset");
+      final response = await http.delete(url, headers: usualHeaders);
+      return RequestResult.empty(response);
     } catch (error) {
       return RequestConnectionError(error as Exception);
     }

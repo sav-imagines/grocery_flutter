@@ -83,14 +83,20 @@ class _CreateListPageState extends State<CreateListPage> {
     }
   }
 
-  void saveList(GroceryListController controller) async {
-    var result = await controller.createList(items!);
+  void saveList() async {
+    var result = await GroceryListController(jwt!).createList(items!);
+    if (!mounted) return;
     if (result is RequestSuccess) {
-      if (mounted) {
+      // delete all requests, since we've made a list
+      final requestsResult = await RequestController(jwt!).deleteAllRequests();
+      if (!mounted) return;
+      if (requestsResult is RequestSuccess) {
         Navigator.of(context).pop();
+      } else if (requestsResult is RequestError) {
+        showError(context, requestsResult);
       }
     } else if (result is RequestError) {
-      Fluttertoast.showToast(msg: result.error);
+      showError(context, result);
     }
   }
 
@@ -179,7 +185,7 @@ class _CreateListPageState extends State<CreateListPage> {
         spacing: 12,
         children: [
           FloatingActionButton(
-            onPressed: () => saveList(GroceryListController(jwt!)),
+            onPressed: () => saveList(),
             child: Icon(Icons.save),
           ),
           FloatingActionButton.extended(
