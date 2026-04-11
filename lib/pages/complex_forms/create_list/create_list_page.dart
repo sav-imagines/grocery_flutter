@@ -7,7 +7,7 @@ import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/helpers/clamp.dart';
 import 'package:grocery_flutter/http/grocery-list/grocery_list_controller.dart';
 import 'package:grocery_flutter/http/item/item_controller.dart';
-import 'package:grocery_flutter/http/recipe-controller/recipe_controller.dart';
+import 'package:grocery_flutter/http/recipe/recipe_controller.dart';
 import 'package:grocery_flutter/http/requests/request_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/models/category_model.dart';

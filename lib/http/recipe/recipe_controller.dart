@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 import 'package:grocery_flutter/helpers/response_success.dart';
 import 'package:grocery_flutter/http/auth/auth_controller.dart';
-import 'package:grocery_flutter/http/recipe-controller/create_recipe_model.dart';
+import 'package:grocery_flutter/http/recipe/create_recipe_model.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/models/recipe_info.dart';
 import 'package:grocery_flutter/models/short_item.dart';

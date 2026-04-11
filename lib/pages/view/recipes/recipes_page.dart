@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:grocery_flutter/components/show_error.dart' show showError;
-import 'package:grocery_flutter/http/recipe-controller/recipe_controller.dart';
+import 'package:grocery_flutter/http/recipe/recipe_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/models/short_item.dart';
 import 'package:grocery_flutter/pages/complex_forms/create_recipe/create_recipe_args.dart';
