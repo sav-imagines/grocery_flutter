@@ -25,6 +25,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
       if (result is RequestSuccess) {
         Fluttertoast.showToast(msg: "Created a group successfully");
         Navigator.of(context).pop();
+        Navigator.of(context).popAndPushNamed('/redirect-group');
       } else if (result is RequestError) {
         if (mounted) showError(context, result);
       }
