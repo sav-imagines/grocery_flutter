@@ -44,7 +44,7 @@ class _SocialGroupPageState extends State<SocialGroupPage> {
             onPressed: () async {
               Navigator.of(context).pushNamed('/sent-invites');
             },
-            icon: Icon(Icons.person),
+            icon: Icon(Icons.person_add),
           ),
           IconButton(
             onPressed: () {
@@ -112,13 +112,6 @@ class _SocialGroupPageState extends State<SocialGroupPage> {
                   ],
                 ),
               ),
-
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.of(context).pushNamed('/invite');
-        },
-      ),
     );
   }
 }

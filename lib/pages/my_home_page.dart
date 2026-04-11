@@ -20,10 +20,7 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentIndex,
         destinations: const <Widget>[
-          NavigationDestination(
-            icon: Icon(Icons.question_answer),
-            label: 'Requests',
-          ),
+          NavigationDestination(icon: Icon(Icons.post_add), label: 'Requests'),
           NavigationDestination(
             icon: Icon(Icons.list_alt),
             label: 'Grocery list',

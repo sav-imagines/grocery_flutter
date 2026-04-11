@@ -36,6 +36,12 @@ class _SentInvitesPageState extends State<SentInvitesPage> {
       refresh(controller);
     }
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.of(context).pushNamed('/invite');
+        },
+      ),
       appBar: AppBar(title: Text('Sent invites')),
       body: RefreshIndicator(
         child: Padding(
@@ -94,11 +100,6 @@ class _SentInvitesPageState extends State<SentInvitesPage> {
         onRefresh: () {
           return Future(() => refresh(controller));
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed:
-            () => Navigator.of(context).pushNamed('/invite', arguments: jwt),
-        child: Icon(Icons.add),
       ),
     );
   }
