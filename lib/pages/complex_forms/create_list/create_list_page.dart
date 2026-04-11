@@ -15,6 +15,7 @@ import 'package:grocery_flutter/models/full_recipe_model.dart';
 import 'package:grocery_flutter/models/recipe_info.dart';
 import 'package:grocery_flutter/models/short_item.dart';
 import 'package:grocery_flutter/pages/complex_forms/create_list/create_list_args.dart';
+import 'package:grocery_flutter/pages/complex_forms/edit_category/edit_category_args.dart';
 import 'package:grocery_flutter/pages/simple_forms/create_list_item/create_list_item_args.dart';
 import 'package:grocery_flutter/state/global_state.dart';
 
@@ -30,6 +31,8 @@ class _CreateListPageState extends State<CreateListPage> {
   List<CategoryModel>? items = null;
   List<FullRecipeModel>? recipes = null;
   List<ShortItem> requests = List.empty();
+
+  get currentState => CreateListArgs(items ?? [], recipes ?? []);
 
   Future<void> getRecipes() async {
     final controller = RecipeController(jwt!);
@@ -228,13 +231,15 @@ class _CreateListPageState extends State<CreateListPage> {
                     if (mounted) {
                       Navigator.of(context).pushNamed(
                         '/create-list-item',
-                        arguments: CreateItemArgs(
-                          category.id,
-                          CreateListArgs(items ?? [], recipes ?? []),
-                        ),
+                        arguments: CreateItemArgs(category.id, currentState),
                       );
                     }
                   },
+                  onEditCategory:
+                      () => Navigator.of(context).pushNamed(
+                        '/edit-category',
+                        arguments: EditCategoryArgs(currentState, category),
+                      ),
                 ),
               ],
             ),

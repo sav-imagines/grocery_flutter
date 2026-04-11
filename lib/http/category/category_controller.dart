@@ -27,4 +27,17 @@ class CategoryController {
       return RequestConnectionError(error as Exception);
     }
   }
+
+  Future<RequestResult<void>> deleteCategory(String categoryId) async {
+    try {
+      final uri = Uri.parse("$baseUrl/api/category?id=$categoryId");
+      final response = await http.delete(
+        uri,
+        headers: {"Authorization": "Bearer $jwt"},
+      );
+      return RequestResult.empty(response);
+    } catch (error) {
+      return RequestConnectionError(error as Exception);
+    }
+  }
 }

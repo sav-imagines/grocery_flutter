@@ -7,6 +7,7 @@ class CategorySelectCard extends StatelessWidget {
   final void Function(String id) onDecrement;
   final void Function(String id) onIncrement;
   final void Function() onCreateItem;
+  final void Function() onEditCategory;
 
   const CategorySelectCard({
     super.key,
@@ -14,6 +15,7 @@ class CategorySelectCard extends StatelessWidget {
     required this.onDecrement,
     required this.onIncrement,
     required this.onCreateItem,
+    required this.onEditCategory,
   });
 
   @override
@@ -25,9 +27,12 @@ class CategorySelectCard extends StatelessWidget {
         children: [
           ExpansionTile(
             initiallyExpanded: true,
-            title: Text(
-              category.name,
-              style: TextTheme.of(context).titleMedium,
+            title: GestureDetector(
+              onTap: onEditCategory,
+              child: Text(
+                category.name,
+                style: TextTheme.of(context).titleMedium,
+              ),
             ),
             children: [
               for (var item in category.items)
@@ -39,7 +44,7 @@ class CategorySelectCard extends StatelessWidget {
                 ),
               IconButton(
                 onPressed: onCreateItem,
-                icon: Row(
+                icon: const Row(
                   spacing: 10,
                   children: [Icon(Icons.add), Text("New item")],
                 ),

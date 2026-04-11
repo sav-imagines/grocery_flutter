@@ -15,25 +15,17 @@ class ErrorMessageComponent extends StatelessWidget {
     return AlertDialog(
       title: Text(title ?? "Error"),
       content: Text(message),
-      // Padding(
-      // padding: EdgeInsets.all(10),
-      //   child: Text(message),
-      // ),
+      actionsAlignment: MainAxisAlignment.spaceEvenly,
       actions: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            IconButton(
-              onPressed: copyError,
-              icon: const Row(children: [Icon(Icons.copy), Text("Copy")]),
-            ),
-            FilledButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("Ok"),
-            ),
-          ],
+        IconButton(
+          onPressed: copyError,
+          icon: const Row(children: [Icon(Icons.copy), Text("Copy")]),
+        ),
+        FilledButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text("Ok"),
         ),
       ],
     );
