@@ -19,14 +19,13 @@ class _ViewGroceryListsPageState extends State<ViewGroceryListsPage> {
 
   refresh(GroceryListController controller) async {
     var result = await controller.getAllLists();
-    if (result is RequestSuccess) {
-      setState(() {
-        lists = (result as RequestSuccess).result;
-      });
-    } else if (result is RequestError) {
-      Fluttertoast.showToast(msg: (result as RequestError).error);
-    } else {
-      Fluttertoast.showToast(msg: result.runtimeType.toString());
+    switch (result) {
+      case RequestSuccess(result: final displays):
+        setState(() {
+          lists = displays;
+        });
+      case RequestError(error: final error):
+        Fluttertoast.showToast(msg: error);
     }
   }
 

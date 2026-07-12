@@ -226,11 +226,74 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
     );
   }
 
+  showImage(var img) => showDialog(
+    context: context,
+    builder: (ctx) {
+      return GestureDetector(
+        onTap: () => Navigator.of(ctx).pop(),
+        child: Padding(padding: const EdgeInsets.all(20), child: img),
+      );
+    },
+  );
+
+  // ELEMENTS
+
   @override
   Widget build(BuildContext context) {
     args = ModalRoute.of(context)!.settings.arguments as CreateRecipeArgs;
     final itemController = ItemController(jwt!);
     final recipeController = RecipeController(jwt!);
+
+    var addImageButton = GestureDetector(
+      onTap: () => showSelectImageSource(),
+      child: Container(
+        constraints: BoxConstraints.tight(const Size.fromHeight(200)),
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
+          color: Theme.of(context).colorScheme.secondaryContainer,
+        ),
+        child: const Icon(Icons.add_photo_alternate, size: 100),
+      ),
+    );
+
+    List<Widget> ingredientBox =
+        searchIngredientsResults.isNotEmpty
+            ? searchIngredientsResults
+                .map<Widget>(
+                  (e) => SearchResultCard(
+                    info: e,
+                    onAdd: () {
+                      if (ingredients.any((element) => element.id == e.id)) {
+                        final i = ingredients.indexWhere(
+                          (element) => element.id == e.id,
+                        );
+                        incrementItem(ingredients[i]);
+                      } else {
+                        addItem(e);
+                      }
+                      unSearch();
+                    },
+                  ),
+                )
+                .toList()
+            : ingredients.isEmpty
+            ? [
+              const Padding(
+                padding: EdgeInsets.all(15),
+                child: Text("You haven't selected any ingredients yet"),
+              ),
+            ]
+            : ingredients
+                .map(
+                  (e) => IngredientCard(
+                    info: e.toShortItem(),
+                    onDecrement: () => decrementItem(e),
+                    onIncrement: () => incrementItem(e),
+                    onRemove: () => removeItem(e),
+                  ),
+                )
+                .toList();
+
     return Scaffold(
       appBar: AppBar(title: const Text('New recipe')),
       body: Padding(
@@ -253,46 +316,12 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
                   items:
                       imageViews
                           .map<Widget>(
-                            (e) => GestureDetector(
-                              onTap:
-                                  () => showDialog(
-                                    context: context,
-                                    builder: (ctx) {
-                                      return GestureDetector(
-                                        onTap: () => Navigator.of(ctx).pop(),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(20),
-                                          child: e,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                              child: e,
+                            (img) => GestureDetector(
+                              onTap: showImage(img),
+                              child: img,
                             ),
                           )
-                          .followedBy([
-                            GestureDetector(
-                              onTap: () => showSelectImageSource(),
-                              child: Container(
-                                constraints: BoxConstraints.tight(
-                                  const Size.fromHeight(200),
-                                ),
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.all(
-                                    Radius.circular(10),
-                                  ),
-                                  color:
-                                      Theme.of(
-                                        context,
-                                      ).colorScheme.secondaryContainer,
-                                ),
-                                child: const Icon(
-                                  Icons.add_photo_alternate,
-                                  size: 100,
-                                ),
-                              ),
-                            ),
-                          ])
+                          .followedBy([addImageButton])
                           .toList(),
                 ),
 
@@ -303,8 +332,6 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(Radius.circular(11)),
                     ),
-                    // color:
-                    // Theme.of(context).buttonTheme.colorScheme!.onSecondary,
                   ),
                   child: DotsIndicator(
                     dotsCount: imageBytes.length + 1,
@@ -382,94 +409,46 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
                     child: Column(
                       children:
                           <Widget>[
-                                Text(
-                                  "Ingredients:",
-                                  style:
-                                      Theme.of(context).textTheme.headlineSmall,
+                            Text(
+                              "Ingredients:",
+                              style: Theme.of(context).textTheme.headlineSmall,
+                            ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      hintText: "Search",
+                                      icon: Icon(Icons.search),
+                                    ),
+                                    onChanged: (value) {
+                                      if (value.isNotEmpty) {
+                                        search(itemController, value);
+                                      } else {
+                                        unSearch();
+                                      }
+                                    },
+                                  ),
                                 ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Expanded(
-                                      child: TextField(
-                                        decoration: InputDecoration(
-                                          hintText: "Search",
-                                          icon: Icon(Icons.search),
-                                        ),
-                                        onChanged: (value) {
-                                          if (value.isNotEmpty) {
-                                            search(itemController, value);
-                                          } else {
-                                            unSearch();
-                                          }
-                                        },
-                                      ),
-                                    ),
-                                    IconButton(
-                                      onPressed: () {
-                                        Navigator.of(
-                                          context,
-                                        ).pushNamed("/create-recipe-item");
-                                      },
-                                      icon: Icon(Icons.add),
-                                    ),
-                                  ],
+                                IconButton(
+                                  onPressed: () {
+                                    Navigator.of(
+                                      context,
+                                    ).pushNamed("/create-recipe-item");
+                                  },
+                                  icon: Icon(Icons.add),
                                 ),
-                              ]
-                              .followedBy(
-                                searchIngredientsResults.isNotEmpty
-                                    ? searchIngredientsResults
-                                        .map<Widget>(
-                                          (e) => SearchResultCard(
-                                            info: e,
-                                            onAdd: () {
-                                              if (ingredients.any(
-                                                (element) => element.id == e.id,
-                                              )) {
-                                                final i = ingredients
-                                                    .indexWhere(
-                                                      (element) =>
-                                                          element.id == e.id,
-                                                    );
-                                                incrementItem(ingredients[i]);
-                                              } else {
-                                                addItem(e);
-                                              }
-                                              unSearch();
-                                            },
-                                          ),
-                                        )
-                                        .toList()
-                                    : ingredients.isEmpty
-                                    ? [
-                                      const Padding(
-                                        padding: EdgeInsets.all(15),
-                                        child: Text(
-                                          "You haven't selected any ingredients yet",
-                                        ),
-                                      ),
-                                    ]
-                                    : ingredients.map(
-                                      (e) => IngredientCard(
-                                        info: e.toShortItem(),
-                                        onDecrement: () => decrementItem(e),
-                                        onIncrement: () => incrementItem(e),
-                                        onRemove: () => removeItem(e),
-                                      ),
-                                    ),
-                              )
-                              .toList(),
+                              ],
+                            ),
+                          ].followedBy(ingredientBox).toList(),
                     ),
                   ),
-                  canSubmit()
-                      ? FilledButton(
-                        onPressed: () => submit(recipeController),
-                        child: const Text("Submit"),
-                      )
-                      : FilledButton(
-                        onPressed: null,
-                        child: const Text("Submit"),
-                      ),
+                  FilledButton(
+                    onPressed:
+                        canSubmit() ? () => submit(recipeController) : null,
+                    child: const Text("Submit"),
+                  ),
                 ],
               ),
             ),
