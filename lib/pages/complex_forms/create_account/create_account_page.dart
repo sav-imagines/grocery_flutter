@@ -29,13 +29,12 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   int scale = 1;
   bool isSending = false;
 
-  final controller = UserController();
+  final UserController controller = UserController();
+  final ImagePicker _picker = ImagePicker();
 
   isEmptyValidator(value) {
     return value == null || value.isEmpty ? "Please enter a value" : null;
   }
-
-  final ImagePicker _picker = ImagePicker();
 
   void submitForm() async {
     try {
@@ -90,65 +89,67 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
 
   void showSelectImageSource() {
     showModalBottomSheet(
-      context: context, builder: (context) => Padding(
-        padding: const EdgeInsets.all(10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            ImageSourceButton(
-              icon: Icons.photo,
-              label: "Gallery",
-              onPressed: () => selectImage(context, ImageSource.gallery),
+      context: context,
+      builder:
+          (context) => Padding(
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ImageSourceButton(
+                  icon: Icons.photo,
+                  label: "Gallery",
+                  onPressed: () => selectImage(context, ImageSource.gallery),
+                ),
+                ImageSourceButton(
+                  icon: Icons.camera_alt,
+                  label: "Camera",
+                  onPressed: () => selectImage(context, ImageSource.camera),
+                ),
+              ],
             ),
-            ImageSourceButton(
-              icon: Icons.camera_alt,
-              label: "Camera",
-              onPressed: () => selectImage(context, ImageSource.camera),
-            )
-          ]
-        )
-      ));
+          ),
+    );
   }
 
   void selectImage(BuildContext context, ImageSource source) async {
     final pickedFile = await _picker.pickImage(source: source);
-    if (pickedFile != null && context.mounted) {
-      final croppedFile = await ImageCropper().cropImage(
-        sourcePath: pickedFile.path,
-        uiSettings: [
-          AndroidUiSettings(
-            // the square around the cropped area
-            cropGridColor: Theme.of(context).colorScheme.onSecondaryContainer,
-            cropFrameColor: Theme.of(context).colorScheme.onSecondaryContainer,
-            cropFrameStrokeWidth: 5,
-            // layered over everything outside selected circle
-            dimmedLayerColor: const Color.fromRGBO(0, 0, 0, .4),
+    if (pickedFile == null || !context.mounted) return;
 
-            // just bg
-            // backgroundColor: Color.fromRGBO(205, 127, 153, 1),
-            toolbarWidgetColor:
-                Theme.of(context).colorScheme.onSecondaryContainer,
-            toolbarColor: Theme.of(context).colorScheme.secondaryContainer,
-            cropStyle: CropStyle.circle,
-            initAspectRatio: CropAspectRatioPreset.square,
-            lockAspectRatio: true,
-            aspectRatioPresets: const [CropAspectRatioPreset.square],
-            hideBottomControls: true,
-          ),
-        ],
-      );
-      if (croppedFile != null) {
-        final croppedImageBytes = await croppedFile.readAsBytes();
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          setState(() {
-            pfpBytes = croppedImageBytes.toList();
-            pfp = Image.memory(croppedImageBytes);
-          });
-          Navigator.of(context).pop();
-        });
-      }
+    final colorScheme = Theme.of(context).colorScheme;
+    final croppedFile = await ImageCropper().cropImage(
+      sourcePath: pickedFile.path,
+      uiSettings: [
+        AndroidUiSettings(
+          // the square around the cropped area
+          cropGridColor: colorScheme.onSecondaryContainer,
+          cropFrameColor: colorScheme.onSecondaryContainer,
+          cropFrameStrokeWidth: 5,
+          // layered over everything outside selected circle
+          dimmedLayerColor: const Color.fromRGBO(0, 0, 0, .4),
+          toolbarWidgetColor: colorScheme.onSecondaryContainer,
+          toolbarColor: colorScheme.secondaryContainer,
+          cropStyle: CropStyle.circle,
+          initAspectRatio: CropAspectRatioPreset.square,
+          lockAspectRatio: true,
+          aspectRatioPresets: const [CropAspectRatioPreset.square],
+          hideBottomControls: true,
+        ),
+      ],
+    );
+
+    if (croppedFile == null) return;
+    final bytes = await croppedFile.readAsBytes();
+    if (!context.mounted) return;
+
+    setState(() {
+      pfpBytes = bytes.toList();
+      pfp = Image.memory(bytes);
+    });
+
+    if (context.mounted) {
+      Navigator.of(context).pop();
     }
-    return null;
   }
 
   @override
