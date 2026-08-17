@@ -3,6 +3,7 @@ import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:grocery_flutter/components/image_source_button.dart';
 import 'package:grocery_flutter/http/item/item_controller.dart';
 import 'package:grocery_flutter/http/recipe/create_recipe_model.dart';
 import 'package:grocery_flutter/http/recipe/recipe_controller.dart';
@@ -110,40 +111,19 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
       context: context,
       builder:
           (context) => Padding(
-            padding: const EdgeInsets.only(bottom: 30, top: 10),
+            padding: const EdgeInsets.all(10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              spacing: 30,
               children: [
-                IconButton(
+                ImageSourceButton(
+                  icon: Icons.photo,
+                  label: "Gallery",
                   onPressed: () => selectImage(context, ImageSource.gallery),
-                  icon: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.photo,
-                        size: 60,
-                        color:
-                            Theme.of(context).colorScheme.onSecondaryContainer,
-                      ),
-                      const Text("Gallery"),
-                    ],
-                  ),
                 ),
-                IconButton(
+                ImageSourceButton(
+                  icon: Icons.camera_alt,
+                  label: "Camera",
                   onPressed: () => selectImage(context, ImageSource.camera),
-                  icon: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.camera_alt,
-                        size: 60,
-                        color:
-                            Theme.of(context).colorScheme.onSecondaryContainer,
-                      ),
-                      const Text("Camera"),
-                    ],
-                  ),
                 ),
               ],
             ),
