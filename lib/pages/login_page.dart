@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:grocery_flutter/components/error_message_component.dart';
+import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/auth/auth_controller.dart';
 import 'package:grocery_flutter/http/auth/login_model.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
@@ -71,20 +72,15 @@ class _LoginPageState extends State<LoginPage> {
                       password: passwordController.text,
                     ),
                   );
+
+                  // if this got cancelled somehow, it is safe to cancel processing request
                   if (!context.mounted) return;
                   if (response is RequestSuccess<String>) {
                     storage.write(key: 'jwt', value: response.result);
                     jwt = response.result;
                     Navigator.of(context).popAndPushNamed('/redirect-group');
                   } else if (response is RequestError<String>) {
-                    showDialog(
-                      context: context,
-                      builder:
-                          (ctx) => ErrorMessageComponent(
-                            title: response.runtimeType.toString(),
-                            message: response.error,
-                          ),
-                    );
+                    showError(context, response);
                   } else {
                     throw Exception("Code should be unreachable: $response");
                   }

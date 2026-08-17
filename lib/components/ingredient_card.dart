@@ -46,7 +46,7 @@ class IngredientCard extends StatelessWidget {
               IconButton(
                 iconSize: 20,
                 padding: EdgeInsets.zero,
-                onPressed: info.quantity > 0 ? () => onDecrement!() : null,
+                onPressed: info.quantity > 1 ? onDecrement : onRemove,
                 icon:
                     info.quantity <= 1
                         ? const Icon(Icons.delete_outline)
@@ -65,7 +65,13 @@ class IngredientCard extends StatelessWidget {
                 onPressed: () => onIncrement!(),
                 icon: Icon(Icons.add),
               ),
-              Text(info.name),
+              Expanded(
+                child: Text(
+                  info.name,
+                  maxLines: 1,
+                  style: TextStyle(overflow: TextOverflow.ellipsis),
+                ),
+              ),
             ],
           ),
         ),

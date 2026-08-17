@@ -20,6 +20,7 @@ class _ViewGroceryListsPageState extends State<ViewGroceryListsPage> {
 
   Future<void> refresh() async {
     var result = await controller.getAllLists();
+    if (!mounted) return;
     switch (result) {
       case RequestSuccess(result: final displays):
         setState(() {

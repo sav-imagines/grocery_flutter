@@ -8,4 +8,4 @@ publish:
   cp ./build/app/outputs/apk/release/app-release.apk ./build/app/outputs/apk/release/app-release.apknt
 
 start-emulator:
-  emulator -avd S24 &> /dev/null &
+  emulator -avd psp &> /dev/null &

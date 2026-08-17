@@ -25,6 +25,22 @@ class GroceryListItemDisplay {
     );
   }
 
+  GroceryListItemDisplay copyWith({
+    String? id,
+    String? name,
+    int? quantity,
+    String? categoryId,
+    String? categoryName,
+  }) {
+    return GroceryListItemDisplay(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      quantity: quantity ?? this.quantity,
+      categoryId: categoryId ?? this.categoryId,
+      categoryName: categoryName ?? this.categoryName,
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return Map.from({"ItemId": id, "Quantity": quantity});
   }

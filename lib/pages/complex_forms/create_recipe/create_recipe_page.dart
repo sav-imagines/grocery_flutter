@@ -1,9 +1,11 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:collection/collection.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_flutter/components/image_source_button.dart';
+import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/item/item_controller.dart';
 import 'package:grocery_flutter/http/recipe/create_recipe_model.dart';
 import 'package:grocery_flutter/http/recipe/recipe_controller.dart';
@@ -12,6 +14,7 @@ import 'package:grocery_flutter/pages/complex_forms/create_recipe/create_recipe_
 import 'package:grocery_flutter/components/ingredient_card.dart';
 import 'package:grocery_flutter/components/search_result_card.dart';
 import 'package:grocery_flutter/models/grocery_list_item_display.dart';
+import 'package:grocery_flutter/pages/complex_forms/create_recipe/widgets/ingredient_selection.dart';
 import 'package:grocery_flutter/state/global_state.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -26,13 +29,15 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController instructionsController = TextEditingController();
+  final TextEditingController searchQueryController = TextEditingController();
+
   final ImagePicker _picker = ImagePicker();
   final _formKey = GlobalKey<FormState>();
 
   List<Uint8List> imageBytes = List.empty(growable: true);
   List<Image> imageViews = List.empty(growable: true);
 
-  List<GroceryListItemDisplay> ingredients = List.empty(growable: true);
+  List<GroceryListItemDisplay> selectedIngredients = List.empty(growable: true);
   List<GroceryListItemDisplay> searchIngredientsResults = List.empty(
     growable: true,
   );
@@ -48,7 +53,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
 
   bool canSubmit() {
     return (_formKey.currentState?.validate() ?? false) &&
-        ingredients.isNotEmpty;
+        selectedIngredients.isNotEmpty;
   }
 
   Future<void> submit() async {
@@ -58,38 +63,18 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
         description: descriptionController.text,
         instructions: instructionsController.text,
         pictures: imageBytes,
-        items: ingredients,
+        items: selectedIngredients,
       ),
     );
+    if (!mounted) return;
     if (response is RequestSuccess) {
-      if (mounted) {
-        Navigator.of(context).pop();
-      }
+      Navigator.of(context).pop();
     } else {
-      if (mounted) {
-        showDialog(
-          context: context,
-          builder: (ctx) {
-            return AlertDialog(
-              content: Text((response as RequestError).error),
-              actions: [
-                FilledButton(
-                  onPressed: () {
-                    if (ctx.mounted) {
-                      Navigator.of(ctx).pop();
-                    }
-                  },
-                  child: const Text("Ok"),
-                ),
-              ],
-            );
-          },
-        );
-      }
+      showError(context, response as RequestError);
     }
   }
 
-  Future<void> search(String query) async {
+  Future<void> runSearchQuery(String query) async {
     final RequestResult<List<GroceryListItemDisplay>> result =
         await itemController.searchItems(query);
     if (result is RequestSuccess<List<GroceryListItemDisplay>>) {
@@ -103,13 +88,15 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
     }
   }
 
-  void unSearch() {
+  void clearSearchQuery() {
     setState(() {
       searchIngredientsResults = List.empty();
     });
+    searchQueryController.text = "";
   }
 
   void showSelectImageSource() {
+    if (!context.mounted) return;
     showModalBottomSheet(
       context: context,
       builder:
@@ -134,7 +121,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
     );
   }
 
-  void selectImage(BuildContext context, ImageSource source) async {
+  Future<void> selectImage(BuildContext context, ImageSource source) async {
     if (source == ImageSource.camera) {
       final pickedFile = await _picker.pickImage(source: ImageSource.camera);
       if (pickedFile != null) {
@@ -167,49 +154,38 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
   }
 
   void removeItem(GroceryListItemDisplay item) {
-    setState(() => ingredients.remove(item));
+    setState(() => selectedIngredients.remove(item));
   }
 
-  void addItem(GroceryListItemDisplay item) {
-    setState(() => ingredients.add(item));
-  }
+  void addItem(GroceryListItemDisplay newItem) {
+    // if an ingredient is already selected, increment that one instead
 
-  void incrementItem(GroceryListItemDisplay item) {
-    setState(() {
-      final index = ingredients.indexWhere((i) => i.id == item.id);
-      ingredients[index] = GroceryListItemDisplay(
-        id: item.id,
-        name: item.name,
-        quantity: item.quantity + 1,
-        categoryId: item.categoryId,
-        categoryName: item.categoryName,
-      );
-    });
-  }
-
-  void decrementItem(GroceryListItemDisplay item) {
-    setState(() {
-      final index = ingredients.indexWhere((i) => i.id == item.id);
-      ingredients[index] = GroceryListItemDisplay(
-        id: item.id,
-        name: item.name,
-        quantity: item.quantity - 1,
-        categoryId: item.categoryId,
-        categoryName: item.categoryName,
-      );
-    });
-  }
-
-  showCreateItem(ItemController controller) {
-    showModalBottomSheet(
-      context: context,
-      builder: (ctx) {
-        return Column(children: [TextFormField(), const Text("Test")]);
-      },
+    final existingIngredientIndex = selectedIngredients.indexWhere(
+      (item) => item.id == newItem.id,
     );
+    if (existingIngredientIndex >= 0) {
+      incrementItem(existingIngredientIndex);
+      return;
+    }
+
+    setState(() => selectedIngredients.add(newItem));
   }
 
-  showImage(var img) => showDialog(
+  void incrementItem(int i) {
+    setState(() {
+      final item = selectedIngredients[i];
+      selectedIngredients[i] = item.copyWith(quantity: item.quantity + 1);
+    });
+  }
+
+  void decrementItem(int i) {
+    setState(() {
+      final item = selectedIngredients[i];
+      selectedIngredients[i] = item.copyWith(quantity: item.quantity - 1);
+    });
+  }
+
+  Future<void> showImage(var img) => showDialog(
     context: context,
     builder: (ctx) {
       return GestureDetector(
@@ -237,44 +213,6 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
       ),
     );
 
-    List<Widget> ingredientBox =
-        searchIngredientsResults.isNotEmpty
-            ? searchIngredientsResults
-                .map<Widget>(
-                  (e) => SearchResultCard(
-                    info: e,
-                    onAdd: () {
-                      if (ingredients.any((element) => element.id == e.id)) {
-                        final i = ingredients.indexWhere(
-                          (element) => element.id == e.id,
-                        );
-                        incrementItem(ingredients[i]);
-                      } else {
-                        addItem(e);
-                      }
-                      unSearch();
-                    },
-                  ),
-                )
-                .toList()
-            : ingredients.isEmpty
-            ? [
-              const Padding(
-                padding: EdgeInsets.all(15),
-                child: Text("You haven't selected any ingredients yet"),
-              ),
-            ]
-            : ingredients
-                .map(
-                  (e) => IngredientCard(
-                    info: e.toShortItem(),
-                    onDecrement: () => decrementItem(e),
-                    onIncrement: () => incrementItem(e),
-                    onRemove: () => removeItem(e),
-                  ),
-                )
-                .toList();
-
     return Scaffold(
       appBar: AppBar(title: const Text('New recipe')),
       body: Padding(
@@ -298,7 +236,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
                       imageViews
                           .map<Widget>(
                             (img) => GestureDetector(
-                              onTap: showImage(img),
+                              onTap: () => showImage(img),
                               child: img,
                             ),
                           )
@@ -388,41 +326,52 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
                     ),
                     padding: EdgeInsets.all(10),
                     child: Column(
-                      children:
-                          <Widget>[
-                            Text(
-                              "Ingredients:",
-                              style: Theme.of(context).textTheme.headlineSmall,
-                            ),
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Expanded(
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                      hintText: "Search",
-                                      icon: Icon(Icons.search),
-                                    ),
-                                    onChanged: (value) {
-                                      if (value.isNotEmpty) {
-                                        search(value);
-                                      } else {
-                                        unSearch();
-                                      }
-                                    },
-                                  ),
+                      children: <Widget>[
+                        Text(
+                          "Ingredients:",
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: searchQueryController,
+                                decoration: InputDecoration(
+                                  hintText: "Search",
+                                  icon: Icon(Icons.search),
                                 ),
-                                IconButton(
-                                  onPressed: () {
-                                    Navigator.of(
-                                      context,
-                                    ).pushNamed("/create-recipe-item");
-                                  },
-                                  icon: Icon(Icons.add),
-                                ),
-                              ],
+                                onChanged: (value) {
+                                  if (value.isNotEmpty) {
+                                    runSearchQuery(value);
+                                  } else {
+                                    clearSearchQuery();
+                                  }
+                                },
+                              ),
                             ),
-                          ].followedBy(ingredientBox).toList(),
+                            IconButton(
+                              onPressed: () {
+                                Navigator.of(
+                                  context,
+                                ).pushNamed("/create-recipe-item");
+                              },
+                              icon: Icon(Icons.add),
+                            ),
+                          ],
+                        ),
+                        IngredientSelection(
+                          searchIngredientsResults: searchIngredientsResults,
+                          selectedIngredients: selectedIngredients,
+                          onAddItem: (e) {
+                            addItem(e);
+                            clearSearchQuery();
+                          },
+                          onRemoveItem: removeItem,
+                          onDecrementItem: decrementItem,
+                          onIncrementItem: incrementItem,
+                        ),
+                      ],
                     ),
                   ),
                   FilledButton(
