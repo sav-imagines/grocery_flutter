@@ -64,12 +64,11 @@ class _RecipesPageState extends State<RecipesPage> {
         await controller.getAllRecipes();
     if (result is RequestSuccess<List<RecipeInfo>>) {
       var recipes = result.result;
+      if (!mounted) return;
       if (recipes.isEmpty) {
-        if (mounted) {
-          setState(() {
-            recipeDisplays = List.empty();
-          });
-        }
+        setState(() {
+          recipeDisplays = List.empty();
+        });
       } else {
         setState(() {
           recipeDisplays =

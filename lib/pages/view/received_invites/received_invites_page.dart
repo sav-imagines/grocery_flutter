@@ -18,10 +18,10 @@ class _ReceivedInvitesPageState extends State<ReceivedInvitesPage> {
   // will NOT work if not initialized to null
   List<Invite>? invites = null;
   final searchController = TextEditingController();
-  final SocialController controller = SocialController(jwt!);
+  final SocialController socialController = SocialController(jwt!);
 
-  Future<void> refresh(SocialController controller) async {
-    final value = await controller.getMyInvites();
+  Future<void> refresh() async {
+    final value = await socialController.getMyInvites();
     if (value is RequestSuccess<List<Invite>>)
       setState(() {
         invites = value.result;
@@ -34,7 +34,7 @@ class _ReceivedInvitesPageState extends State<ReceivedInvitesPage> {
   @override
   Widget build(BuildContext context) {
     if (invites == null) {
-      refresh(controller);
+      refresh();
     }
     return Scaffold(
       appBar: AppBar(
@@ -49,11 +49,7 @@ class _ReceivedInvitesPageState extends State<ReceivedInvitesPage> {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh:
-            () => Future.delayed(
-              Duration(milliseconds: 200),
-              () => refresh(controller),
-            ),
+        onRefresh: () => refresh(),
         child: ListView(
           padding: EdgeInsets.all(10),
           children: [
@@ -75,7 +71,8 @@ class _ReceivedInvitesPageState extends State<ReceivedInvitesPage> {
                             (e) => InviteCard(
                               invite: e,
                               onAccept: () async {
-                                var result = await controller.acceptInvite(e);
+                                var result = await socialController
+                                    .acceptInvite(e);
                                 if (!context.mounted) return;
                                 if (result is RequestSuccess) {
                                   if (context.mounted) {
@@ -88,7 +85,8 @@ class _ReceivedInvitesPageState extends State<ReceivedInvitesPage> {
                                 }
                               },
                               onReject: () async {
-                                var result = await controller.rejectInvite(e);
+                                var result = await socialController
+                                    .rejectInvite(e);
                                 if (!context.mounted) return;
                                 if (result is RequestSuccess) {
                                   setState(() {

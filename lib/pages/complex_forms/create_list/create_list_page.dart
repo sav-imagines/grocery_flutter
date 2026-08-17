@@ -32,11 +32,11 @@ class _CreateListPageState extends State<CreateListPage> {
   List<FullRecipeModel>? recipes = null;
   List<ShortItem> requests = List.empty();
 
-  final recipeController = RecipeController(jwt!);
-  final requestController = RequestController(jwt!);
-  final itemController = ItemController(jwt!);
-
   get currentState => CreateListArgs(items ?? [], recipes ?? []);
+
+  final requestController = RequestController(jwt!);
+  final recipeController = RecipeController(jwt!);
+  final itemController = ItemController(jwt!);
 
   Future<void> getRecipes() async {
     final RequestResult<void> result = await recipeController.getAllRecipes();
@@ -139,14 +139,9 @@ class _CreateListPageState extends State<CreateListPage> {
     }
   }
 
-  void load() async {
+  Future<void> load() async {
     // these should run concurrently to avoid several round trips of lag
-    final recipesQuery = getRecipes();
-    final itemsQuery = getItems();
-    final requestsQuery = getRequests();
-    await recipesQuery;
-    await itemsQuery;
-    await requestsQuery;
+    await Future.wait([getRecipes(), getItems(), getRequests()]);
     for (ShortItem item in requests) updateItemQuantity(item.id, item.quantity);
   }
 
