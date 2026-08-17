@@ -1,6 +1,6 @@
-# grocery_flutter
+# Grocery App
 
-A new Flutter project.
+A grocery app for making lists, recipes, and more!
 
 ## Getting Started
 
