@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_flutter/components/error_message_component.dart';
+import 'package:grocery_flutter/components/image_source_button.dart';
 import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/http/user/account_creation_model.dart';
@@ -89,48 +90,24 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
 
   void showSelectImageSource() {
     showModalBottomSheet(
-      context: context,
-      builder:
-          (context) => Padding(
-            padding: EdgeInsets.all(10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              spacing: 30,
-              children: [
-                IconButton(
-                  onPressed: () => selectImage(context, ImageSource.gallery),
-                  icon: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.photo,
-                        size: 60,
-                        color:
-                            Theme.of(context).colorScheme.onSecondaryContainer,
-                      ),
-                      Text("Gallery"),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  onPressed: () => selectImage(context, ImageSource.camera),
-                  icon: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.camera_alt,
-                        size: 60,
-                        color:
-                            Theme.of(context).colorScheme.onSecondaryContainer,
-                      ),
-                      Text("Camera"),
-                    ],
-                  ),
-                ),
-              ],
+      context: context, builder: (context) => Padding(
+        padding: const EdgeInsets.all(10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            ImageSourceButton(
+              icon: Icons.photo,
+              label: "Gallery",
+              onPressed: () => selectImage(context, ImageSource.gallery),
             ),
-          ),
-    );
+            ImageSourceButton(
+              icon: Icons.camera_alt,
+              label: "Camera",
+              onPressed: () => selectImage(context, ImageSource.camera),
+            )
+          ]
+        )
+      ));
   }
 
   void selectImage(BuildContext context, ImageSource source) async {
