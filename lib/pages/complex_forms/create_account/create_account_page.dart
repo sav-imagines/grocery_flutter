@@ -152,6 +152,37 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
     }
   }
 
+  Widget _buildProfilePicture(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return GestureDetector(
+      onTap: showSelectImageSource,
+      child: Container(
+        constraints: const BoxConstraints(
+          minHeight: 60,
+          minWidth: 60,
+          maxHeight: 200,
+          maxWidth: 200,
+        ),
+        decoration: BoxDecoration(
+          color: colorScheme.secondaryContainer,
+          shape: BoxShape.circle,
+        ),
+        child:
+            pfp == null
+                ? const Center(child: Icon(Icons.add_photo_alternate, size: 90))
+                : CircleAvatar(minRadius: 10_000, foregroundImage: pfp!.image),
+      ),
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return FilledButton(
+      onPressed: isSending ? null : submitForm,
+      child: const Text('Submit'),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -165,46 +196,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               // mainAxisAlignment: MainAxisAlignment.center,
               spacing: 20,
               children: [
-                pfp == null
-                    ? GestureDetector(
-                      child: Container(
-                        constraints: BoxConstraints(
-                          minHeight: 60,
-                          minWidth: 60,
-                          maxHeight: 200,
-                          maxWidth: 200,
-                        ),
-                        decoration: BoxDecoration(
-                          color:
-                              Theme.of(context).colorScheme.secondaryContainer,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Icon(Icons.add_photo_alternate, size: 90),
-                        ),
-                      ),
-                      onTap: () => showSelectImageSource(),
-                    )
-                    : GestureDetector(
-                      onTap: () => showSelectImageSource(),
-                      child: Container(
-                        constraints: BoxConstraints(
-                          minHeight: 60,
-                          minWidth: 60,
-                          maxHeight: 200,
-                          maxWidth: 200,
-                        ),
-                        decoration: BoxDecoration(
-                          color:
-                              Theme.of(context).colorScheme.secondaryContainer,
-                          shape: BoxShape.circle,
-                        ),
-                        child: CircleAvatar(
-                          minRadius: 10_000,
-                          foregroundImage: pfp!.image,
-                        ),
-                      ),
-                    ),
+                _buildProfilePicture(context),
 
                 TextFormField(
                   keyboardType: TextInputType.text,
@@ -237,10 +229,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                   validator: (value) => isEmptyValidator(value),
                 ),
 
-                FilledButton(
-                  onPressed: isSending ? null : submitForm,
-                  child: const Text('Submit'),
-                ),
+                _buildSubmitButton(),
 
                 SizedBox.square(dimension: 300),
               ],
