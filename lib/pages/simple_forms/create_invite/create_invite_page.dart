@@ -16,7 +16,7 @@ class CreateInvitePage extends StatefulWidget {
 
 class _CreateInvitePageState extends State<CreateInvitePage> {
   // will NOT work if not initialized to null
-  late List<UserInfo>? foundUsers = null;
+  List<UserInfo>? foundUsers = null;
   final searchController = TextEditingController();
 
   searchUsers(String item, SocialController controller) async {

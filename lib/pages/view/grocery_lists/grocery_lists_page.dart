@@ -15,9 +15,10 @@ class ViewGroceryListsPage extends StatefulWidget {
 }
 
 class _ViewGroceryListsPageState extends State<ViewGroceryListsPage> {
-  late List<GroceryListDisplay>? lists = null;
+  List<GroceryListDisplay>? lists = null;
+  final controller = GroceryListController(jwt!);
 
-  refresh(GroceryListController controller) async {
+  refresh() async {
     var result = await controller.getAllLists();
     switch (result) {
       case RequestSuccess(result: final displays):
@@ -31,9 +32,8 @@ class _ViewGroceryListsPageState extends State<ViewGroceryListsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = GroceryListController(jwt!);
     if (lists == null) {
-      refresh(controller);
+      refresh();
     }
     return Scaffold(
       appBar: AppBar(title: const Text('Grocery lists')),
@@ -54,6 +54,7 @@ class _ViewGroceryListsPageState extends State<ViewGroceryListsPage> {
                     ),
                   )
                   : RefreshIndicator(
+                    onRefresh: refresh(),
                     child: ListView(
                       padding: EdgeInsets.all(10),
                       children: <Widget>[
@@ -77,12 +78,6 @@ class _ViewGroceryListsPageState extends State<ViewGroceryListsPage> {
                         ),
                       ],
                     ),
-                    onRefresh: () {
-                      return Future.delayed(
-                        Duration(milliseconds: 400),
-                        () => refresh(controller),
-                      );
-                    },
                   )),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),

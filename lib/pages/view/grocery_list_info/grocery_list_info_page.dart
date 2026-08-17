@@ -17,7 +17,7 @@ class GroceryListHistoryPage extends StatefulWidget {
 }
 
 class _GroceryListHistoryPageState extends State<GroceryListHistoryPage> {
-  late Map<String, List<GroceryListItemDisplay>>? items = null;
+  Map<String, List<GroceryListItemDisplay>>? items = null;
   CarouselSliderController carouselSliderController =
       CarouselSliderController();
   int _currentPage = 0;

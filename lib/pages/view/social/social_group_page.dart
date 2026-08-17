@@ -16,7 +16,7 @@ class SocialGroupPage extends StatefulWidget {
 
 class _SocialGroupPageState extends State<SocialGroupPage> {
   bool startedFetching = false;
-  late GroupInfo? groupInfo = null;
+  GroupInfo? groupInfo = null;
 
   void getGroupInfo() async {
     final controller = SocialController(jwt!);

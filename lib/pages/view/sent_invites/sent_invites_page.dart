@@ -14,11 +14,12 @@ class SentInvitesPage extends StatefulWidget {
 }
 
 class _SentInvitesPageState extends State<SentInvitesPage> {
-  // will NOT work if not initialized to null
-  late List<Invite>? invites = null;
-  final searchController = TextEditingController();
+  List<Invite>? invites = null;
 
-  void refresh(SocialController controller) async {
+  final searchController = TextEditingController();
+  final SocialController controller = SocialController(jwt!);
+
+  Future<void> refresh() async {
     final result = await controller.getSentInvites();
     if (!mounted) return;
     if (result is RequestSuccess<List<Invite>>) {
@@ -31,9 +32,8 @@ class _SentInvitesPageState extends State<SentInvitesPage> {
 
   @override
   Widget build(BuildContext context) {
-    SocialController controller = SocialController(jwt!);
     if (invites == null) {
-      refresh(controller);
+      refresh();
     }
     return Scaffold(
       floatingActionButton: FloatingActionButton(
@@ -44,6 +44,7 @@ class _SentInvitesPageState extends State<SentInvitesPage> {
       ),
       appBar: AppBar(title: Text('Sent invites')),
       body: RefreshIndicator(
+        onRefresh: refresh,
         child: Padding(
           padding: EdgeInsets.all(10),
           child: ListView(
@@ -97,9 +98,6 @@ class _SentInvitesPageState extends State<SentInvitesPage> {
             ],
           ),
         ),
-        onRefresh: () {
-          return Future(() => refresh(controller));
-        },
       ),
     );
   }

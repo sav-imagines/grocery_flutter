@@ -16,7 +16,7 @@ class ReceivedInvitesPage extends StatefulWidget {
 
 class _ReceivedInvitesPageState extends State<ReceivedInvitesPage> {
   // will NOT work if not initialized to null
-  late List<Invite>? invites = null;
+  List<Invite>? invites = null;
   final searchController = TextEditingController();
 
   Future<void> refresh(SocialController controller) async {

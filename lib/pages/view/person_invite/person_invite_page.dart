@@ -15,7 +15,7 @@ class PersonInvitePage extends StatefulWidget {
 }
 
 class _PersonInvitePageState extends State<PersonInvitePage> {
-  late bool? isInvited = null;
+  bool? isInvited = null;
   static String getDescription(Duration timeDelta) {
     if (timeDelta.inDays > 365) {
       return '${(timeDelta.inDays / 365).floor()} year${(timeDelta.inDays / 365).floor() > 1 ? "s" : ""} ago';

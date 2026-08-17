@@ -47,18 +47,15 @@ class _CreateListPageState extends State<CreateListPage> {
       });
       for (int i = 0; i < recipes!.length; i++) {
         Future.microtask(() async {
-          print("Getting ingredients for ${recipes![i].recipe.name}");
           final ingredientsResult = await controller.getIngredients(
             recipes![i].recipe.id,
           );
           if (!mounted) return;
           if (ingredientsResult is RequestSuccess<List<ShortItem>>) {
-            print("It has ${ingredientsResult.result.length} ingredients");
             setState(() {
               recipes![i].items = ingredientsResult.result;
             });
           } else {
-            print("Failed");
             showError(context, ingredientsResult as RequestError);
           }
         });
