@@ -111,7 +111,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
       context: context,
       builder:
           (context) => Padding(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.only(bottom: 30, top: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
