@@ -1,5 +1,4 @@
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:collection/collection.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,8 +10,6 @@ import 'package:grocery_flutter/http/recipe/create_recipe_model.dart';
 import 'package:grocery_flutter/http/recipe/recipe_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/pages/complex_forms/create_recipe/create_recipe_args.dart';
-import 'package:grocery_flutter/components/ingredient_card.dart';
-import 'package:grocery_flutter/components/search_result_card.dart';
 import 'package:grocery_flutter/models/grocery_list_item_display.dart';
 import 'package:grocery_flutter/pages/complex_forms/create_recipe/widgets/ingredient_selection.dart';
 import 'package:grocery_flutter/state/global_state.dart';
