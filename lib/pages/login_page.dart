@@ -14,8 +14,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
   isEmptyValidator(value) {
     return value == null || value.isEmpty ? "Please enter a value" : null;
@@ -80,8 +80,10 @@ class _LoginPageState extends State<LoginPage> {
                     showDialog(
                       context: context,
                       builder:
-                          (ctx) =>
-                              ErrorMessageComponent(message: response.error),
+                          (ctx) => ErrorMessageComponent(
+                            title: response.runtimeType.toString(),
+                            message: response.error,
+                          ),
                     );
                   } else {
                     throw Exception("Code should be unreachable: $response");

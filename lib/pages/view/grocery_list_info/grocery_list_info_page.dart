@@ -22,6 +22,8 @@ class _GroceryListHistoryPageState extends State<GroceryListHistoryPage> {
       CarouselSliderController();
   int _currentPage = 0;
 
+  final GroceryListController controller = GroceryListController(jwt!);
+
   Map<String, List<GroceryListItemDisplay>> sortInBuckets(
     List<GroceryListItemDisplay> items,
   ) {
@@ -54,7 +56,6 @@ class _GroceryListHistoryPageState extends State<GroceryListHistoryPage> {
   Widget build(BuildContext context) {
     final args =
         ModalRoute.of(context)!.settings.arguments as GroceryListInfoArgs;
-    GroceryListController controller = GroceryListController(jwt!);
     if (items == null) refresh(controller, args);
     return Scaffold(
       appBar: AppBar(

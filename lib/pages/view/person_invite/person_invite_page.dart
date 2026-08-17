@@ -16,6 +16,8 @@ class PersonInvitePage extends StatefulWidget {
 
 class _PersonInvitePageState extends State<PersonInvitePage> {
   bool? isInvited = null;
+  final SocialController controller = SocialController(jwt!);
+
   static String getDescription(Duration timeDelta) {
     if (timeDelta.inDays > 365) {
       return '${(timeDelta.inDays / 365).floor()} year${(timeDelta.inDays / 365).floor() > 1 ? "s" : ""} ago';
@@ -34,7 +36,6 @@ class _PersonInvitePageState extends State<PersonInvitePage> {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as PersonInviteArgs;
     var person = args.person;
-    SocialController controller = SocialController(jwt!);
     if (isInvited == null) {
       controller
           .isInvited(person.id)

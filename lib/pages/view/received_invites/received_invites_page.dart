@@ -18,6 +18,7 @@ class _ReceivedInvitesPageState extends State<ReceivedInvitesPage> {
   // will NOT work if not initialized to null
   List<Invite>? invites = null;
   final searchController = TextEditingController();
+  final SocialController controller = SocialController(jwt!);
 
   Future<void> refresh(SocialController controller) async {
     final value = await controller.getMyInvites();
@@ -32,7 +33,6 @@ class _ReceivedInvitesPageState extends State<ReceivedInvitesPage> {
 
   @override
   Widget build(BuildContext context) {
-    final SocialController controller = SocialController(jwt!);
     if (invites == null) {
       refresh(controller);
     }

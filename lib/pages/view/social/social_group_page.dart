@@ -18,8 +18,9 @@ class _SocialGroupPageState extends State<SocialGroupPage> {
   bool startedFetching = false;
   GroupInfo? groupInfo = null;
 
+  final controller = SocialController(jwt!);
+
   void getGroupInfo() async {
-    final controller = SocialController(jwt!);
     final result = await controller.getOwnGroup();
     if (!mounted) return;
     if (result is RequestSuccess) {

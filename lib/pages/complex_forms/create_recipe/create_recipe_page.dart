@@ -43,13 +43,16 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
 
   int currentPage = 0;
 
+  final recipeController = RecipeController(jwt!);
+  final itemController = ItemController(jwt!);
+
   bool canSubmit() {
     return (_formKey.currentState?.validate() ?? false) &&
         ingredients.isNotEmpty;
   }
 
-  Future<void> submit(RecipeController controller) async {
-    final response = await controller.createRecipe(
+  Future<void> submit() async {
+    final response = await recipeController.createRecipe(
       CreateRecipeModel(
         name: nameController.text,
         description: descriptionController.text,
@@ -86,7 +89,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
     }
   }
 
-  Future<void> search(ItemController itemController, String query) async {
+  Future<void> search(String query) async {
     final RequestResult<List<GroceryListItemDisplay>> result =
         await itemController.searchItems(query);
     if (result is RequestSuccess<List<GroceryListItemDisplay>>) {
@@ -221,8 +224,6 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
   @override
   Widget build(BuildContext context) {
     args = ModalRoute.of(context)!.settings.arguments as CreateRecipeArgs;
-    final itemController = ItemController(jwt!);
-    final recipeController = RecipeController(jwt!);
 
     var addImageButton = GestureDetector(
       onTap: () => showSelectImageSource(),
@@ -404,7 +405,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
                                     ),
                                     onChanged: (value) {
                                       if (value.isNotEmpty) {
-                                        search(itemController, value);
+                                        search(value);
                                       } else {
                                         unSearch();
                                       }
@@ -425,8 +426,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
                     ),
                   ),
                   FilledButton(
-                    onPressed:
-                        canSubmit() ? () => submit(recipeController) : null,
+                    onPressed: canSubmit() ? () => submit() : null,
                     child: const Text("Submit"),
                   ),
                 ],

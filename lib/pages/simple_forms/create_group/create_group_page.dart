@@ -14,6 +14,7 @@ class CreateGroupPage extends StatefulWidget {
 
 class _CreateGroupPageState extends State<CreateGroupPage> {
   TextEditingController groupNameController = TextEditingController();
+  final socialController = SocialController(jwt!);
 
   isEmptyValidator(value) {
     return value == null || value.isEmpty ? "Please enter a value" : null;
@@ -34,7 +35,6 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
 
   @override
   Widget build(BuildContext context) {
-    final controller = SocialController(jwt!);
     return Scaffold(
       appBar: AppBar(title: Text('New group')),
       body: Padding(
@@ -62,7 +62,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
               validator: (value) => isEmptyValidator(value),
             ),
             FilledButton(
-              onPressed: () => submitGroup(controller),
+              onPressed: () => submitGroup(socialController),
               child: Text('Create'),
             ),
             SizedBox.square(dimension: 40),

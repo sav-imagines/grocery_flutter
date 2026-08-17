@@ -32,11 +32,14 @@ class _CreateListPageState extends State<CreateListPage> {
   List<FullRecipeModel>? recipes = null;
   List<ShortItem> requests = List.empty();
 
+  final recipeController = RecipeController(jwt!);
+  final requestController = RequestController(jwt!);
+  final itemController = ItemController(jwt!);
+
   get currentState => CreateListArgs(items ?? [], recipes ?? []);
 
   Future<void> getRecipes() async {
-    final controller = RecipeController(jwt!);
-    final RequestResult<void> result = await controller.getAllRecipes();
+    final RequestResult<void> result = await recipeController.getAllRecipes();
     if (!mounted) return;
     if (result is RequestSuccess<List<RecipeInfo>>) {
       setState(() {
@@ -47,7 +50,7 @@ class _CreateListPageState extends State<CreateListPage> {
       });
       for (int i = 0; i < recipes!.length; i++) {
         Future.microtask(() async {
-          final ingredientsResult = await controller.getIngredients(
+          final ingredientsResult = await recipeController.getIngredients(
             recipes![i].recipe.id,
           );
           if (!mounted) return;
@@ -69,8 +72,7 @@ class _CreateListPageState extends State<CreateListPage> {
 
   Future<void> getItems() async {
     if (items != null) return;
-    final controller = ItemController(jwt!);
-    var result = await controller.getItemsInGroup();
+    var result = await itemController.getItemsInGroup();
     if (result is RequestSuccess) {
       result = result as RequestSuccess<List<CategoryModel>?>;
       setState(() {
@@ -128,8 +130,7 @@ class _CreateListPageState extends State<CreateListPage> {
 
   Future<void> getRequests() async {
     if (recipes != null) return;
-    final controller = RequestController(jwt!);
-    final result = await controller.getRequestedItems();
+    final result = await requestController.getRequestedItems();
     if (!mounted) return;
     if (result is RequestSuccess<List<ShortItem>>) {
       setState(() => requests = result.result);

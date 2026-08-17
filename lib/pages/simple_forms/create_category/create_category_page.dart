@@ -15,6 +15,9 @@ class CreateCategoryPage extends StatefulWidget {
 
 class _CreateItemPageState extends State<CreateCategoryPage> {
   TextEditingController categoryNameController = TextEditingController();
+
+  final categoryController = CategoryController(jwt!);
+
   isEmptyValidator(value) {
     return value == null || value.isEmpty ? "Please enter a value" : null;
   }
@@ -47,7 +50,6 @@ class _CreateItemPageState extends State<CreateCategoryPage> {
   Widget build(BuildContext context) {
     CreateListArgs? oldState =
         ModalRoute.of(context)?.settings.arguments as CreateListArgs?;
-    final controller = CategoryController(jwt!);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: AppBar(title: Text('New category')),
@@ -75,7 +77,7 @@ class _CreateItemPageState extends State<CreateCategoryPage> {
             FilledButton(
               onPressed:
                   () => submitItem(
-                    controller,
+                    categoryController,
                     categoryNameController.text,
                     oldState,
                   ),

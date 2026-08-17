@@ -18,7 +18,7 @@ class _ViewGroceryListsPageState extends State<ViewGroceryListsPage> {
   List<GroceryListDisplay>? lists = null;
   final controller = GroceryListController(jwt!);
 
-  refresh() async {
+  Future<void> refresh() async {
     var result = await controller.getAllLists();
     switch (result) {
       case RequestSuccess(result: final displays):
@@ -54,7 +54,7 @@ class _ViewGroceryListsPageState extends State<ViewGroceryListsPage> {
                     ),
                   )
                   : RefreshIndicator(
-                    onRefresh: refresh(),
+                    onRefresh: () => refresh(),
                     child: ListView(
                       padding: EdgeInsets.all(10),
                       children: <Widget>[

@@ -4,7 +4,7 @@ import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:http/http.dart' as http;
 
 class AuthController {
-  static const String baseUrl = "https://savimagines.nl/grocery";
+  static const String baseUrl = "https://api.boodschappen-app.nl";
   // static const String baseUrl = "http://192.168.1.111:7020";
 
   static Future<RequestResult<String>> login(LoginModel model) async {

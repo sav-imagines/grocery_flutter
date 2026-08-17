@@ -29,7 +29,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   int scale = 1;
   bool isSending = false;
 
-  final UserController controller = UserController();
+  final userController = UserController();
   final ImagePicker _picker = ImagePicker();
 
   isEmptyValidator(value) {
