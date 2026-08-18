@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:grocery_flutter/components/show_confirmation.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/http/social/social_controller.dart';
-import 'package:grocery_flutter/services/create_pdf.dart';
 import 'package:grocery_flutter/state/global_state.dart';
-import 'package:share_plus/share_plus.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -25,6 +24,35 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   final controller = SocialController(jwt!);
 
+  deleteAccount() {
+    // TODO: Implement account deletion
+    Fluttertoast.showToast(msg: "You got me, that doesn't do anything yet.");
+    if (context.mounted) {
+      Navigator.of(context).pop();
+    }
+  }
+
+  leaveGroup() async {
+    if (mounted) {
+      var result = await controller.leaveGroup();
+      if (result is RequestSuccess) {
+        Fluttertoast.showToast(msg: "Left your group");
+        if (!mounted) return;
+        // close popup
+        Navigator.of(context).pop();
+        // go back to home screen
+        Navigator.of(context).pop();
+        // swap home screen for invites screen automatically
+        Navigator.of(context).popAndPushNamed("/redirect-group");
+      } else if (result is RequestError) {
+        Fluttertoast.showToast(msg: "Failed because '${result.error}'");
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,108 +61,27 @@ class _SettingsPageState extends State<SettingsPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          FilledButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (ctx) {
-                  return AlertDialog(
-                    content: const Text(
-                      "Are you sure you want to leave your group?",
-                    ),
-                    actions: [
-                      OutlinedButton(
-                        onPressed: () {
-                          Navigator.of(ctx).pop();
-                        },
-                        child: const Text("Cancel"),
-                      ),
-                      FilledButton(
-                        onPressed: () async {
-                          if (mounted) {
-                            var result = await controller.leaveGroup();
-                            if (result is RequestSuccess) {
-                              Fluttertoast.showToast(msg: "Left your group");
-                              if (context.mounted) {
-                                // close popup
-                                Navigator.of(context).pop();
-                                // go back to home screen
-                                Navigator.of(context).pop();
-                                // swap home screen for invites screen automatically
-                                Navigator.of(
-                                  context,
-                                ).popAndPushNamed("/redirect-group");
-                              }
-                            } else if (result is RequestError) {
-                              Fluttertoast.showToast(
-                                msg: "Failed because '${result.error}'",
-                              );
-                              if (context.mounted) {
-                                Navigator.of(context).pop();
-                              }
-                            }
-                          }
-                        },
-                        child: const Text("Leave"),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            child: const Text("Leave group"),
-          ),
-          FilledButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (ctx) {
-                  return AlertDialog(
-                    content: const Text(
-                      "Are you sure you want to delete your account?",
-                    ),
-                    actions: [
-                      OutlinedButton(
-                        onPressed: () {
-                          Navigator.of(ctx).pop();
-                        },
-                        child: const Text("No"),
-                      ),
-                      FilledButton(
-                        onPressed: () async {
-                          // TODO: Implement account deletion
-                          Fluttertoast.showToast(
-                            msg: "You got me, that doesn't do anything yet.",
-                          );
-                          if (context.mounted) {
-                            Navigator.of(context).pop();
-                          }
-                        },
-                        child: const Text("Yes, delete it"),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            child: const Text("Delete account"),
-          ),
-          FilledButton(
-            onPressed: () async {
-              final pdf = createPdf();
-              await SharePlus.instance.share(
-                ShareParams(
-                  files: [
-                    XFile.fromData(
-                      mimeType: "application/pdf",
-                      await pdf.save(),
-                    ),
-                  ],
-                  fileNameOverrides: ["Export.pdf"],
+          ListTile(
+            onTap:
+                () => showConfirmation(
+                  context,
+                  leaveGroup,
+                  () => cancelAction(context),
+                  "Are you sure you want to leave your group?",
                 ),
-              );
-            },
-            child: const Text("Export PDF"),
+            title: const Text("Leave group"),
+            titleTextStyle: Theme.of(context).textTheme.titleLarge,
+          ),
+          ListTile(
+            onTap:
+                () => showConfirmation(
+                  context,
+                  deleteAccount,
+                  () => cancelAction(context),
+                  "Are you sure you want to delete your account? This action cannot be undone!",
+                ),
+            title: const Text("Delete account"),
+            titleTextStyle: Theme.of(context).textTheme.titleLarge,
           ),
         ],
       ),

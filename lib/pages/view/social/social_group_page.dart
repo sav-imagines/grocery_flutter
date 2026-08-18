@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:grocery_flutter/components/show_confirmation.dart';
 import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/social/group_info.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
@@ -30,6 +31,13 @@ class _SocialGroupPageState extends State<SocialGroupPage> {
     }
   }
 
+  void logout() async {
+    await FlutterSecureStorage().delete(key: 'jwt');
+    if (!mounted) return;
+    Navigator.of(context).pop();
+    Navigator.of(context).popAndPushNamed('/');
+  }
+
   @override
   Widget build(BuildContext context) {
     if (!startedFetching) {
@@ -42,50 +50,26 @@ class _SocialGroupPageState extends State<SocialGroupPage> {
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () async {
+            onPressed: () {
               Navigator.of(context).pushNamed('/sent-invites');
             },
-            icon: Icon(Icons.person_add),
+            icon: const Icon(Icons.person_add),
           ),
           IconButton(
             onPressed: () {
               Navigator.of(context).pushNamed('/settings');
             },
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
           ),
           IconButton(
-            onPressed: () async {
-              showDialog(
-                context: context,
-                builder: (ctx) {
-                  return AlertDialog(
-                    content: const Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Text("Are you sure you want to log out?"),
-                    ),
-                    actions: [
-                      OutlinedButton(
-                        onPressed: () {
-                          Navigator.of(ctx).pop();
-                        },
-                        child: const Text("Cancel"),
-                      ),
-                      FilledButton(
-                        onPressed: () async {
-                          await FlutterSecureStorage().delete(key: 'jwt');
-                          if (ctx.mounted) {
-                            Navigator.of(ctx).pop();
-                            Navigator.of(ctx).popAndPushNamed('/');
-                          }
-                        },
-                        child: const Text("Log out"),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            icon: Icon(Icons.logout),
+            onPressed:
+                () => showConfirmation(
+                  context,
+                  logout,
+                  () => cancelAction(context),
+                  "Are you sure you want to log out?",
+                ),
+            icon: const Icon(Icons.logout),
           ),
         ],
         title: const Text('Your group'),
