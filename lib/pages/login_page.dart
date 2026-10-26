@@ -48,18 +48,20 @@ class _LoginPageState extends State<LoginPage> {
                 ),
               ),
 
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 3, vertical: 10),
-                  child: TextFormField(
-                    enableSuggestions: false,
-                    obscureText: true,
-                    controller: passwordController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: "Password",
+              Expanded(
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 3, vertical: 10),
+                    child: TextFormField(
+                      enableSuggestions: false,
+                      obscureText: true,
+                      controller: passwordController,
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        labelText: "Password",
+                      ),
+                      validator: (value) => isEmptyValidator(value),
                     ),
-                    validator: (value) => isEmptyValidator(value),
                   ),
                 ),
               ),

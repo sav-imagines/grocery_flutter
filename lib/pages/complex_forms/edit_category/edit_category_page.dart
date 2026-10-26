@@ -16,7 +16,8 @@ class EditCategoryPage extends StatefulWidget {
 }
 
 class _EditCategoryPageState extends State<EditCategoryPage> {
-  EditCategoryArgs? args;
+  EditCategoryArgs? args = null;
+  TextEditingController? nameEditController;
 
   void delete() async {
     assert(args != null);
@@ -36,6 +37,7 @@ class _EditCategoryPageState extends State<EditCategoryPage> {
   @override
   Widget build(BuildContext context) {
     args ??= ModalRoute.of(context)!.settings.arguments as EditCategoryArgs;
+    nameEditController ??= TextEditingController(text: args!.category.name);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Edit category"),
@@ -46,12 +48,13 @@ class _EditCategoryPageState extends State<EditCategoryPage> {
                   context,
                   delete,
                   () => cancelAction(context),
-                  "Are you sure you want to delete category ${args!.category.name}?",
+                  "Are you sure you want to delete category '${args!.category.name}'?",
                 ),
             icon: Icon(Icons.delete),
           ),
         ],
       ),
+      body: Column(children: [TextField(controller: nameEditController!)]),
     );
   }
 }
