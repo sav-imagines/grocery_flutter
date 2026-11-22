@@ -75,13 +75,6 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.dark,
           seedColor: color,
         ),
-        // appBarTheme: AppBarTheme(
-        //   backgroundColor:
-        //       ColorScheme.fromSeed(
-        //         brightness: Brightness.dark,
-        //         seedColor: color,
-        //       ).inversePrimary,
-        // ),
       ),
     );
   }
