@@ -20,6 +20,8 @@ class RecipesPage extends StatefulWidget {
 }
 
 class _RecipesPageState extends State<RecipesPage> {
+  final controller = RecipeController(jwt!);
+
   List<RecipeDisplay>? recipeDisplays = null;
   List<List<ShortItem>?> recipeIngredients = List.empty();
 
@@ -30,12 +32,10 @@ class _RecipesPageState extends State<RecipesPage> {
           "recipePicture/${element.info.pictureName}",
         ))?.file.readAsBytes();
     if (cachedPicture?.isNotEmpty ?? false) {
-      if (mounted) {
-        setState(() {
-          recipeDisplays![index].imageBytes = cachedPicture;
-        });
-      }
-      return;
+      if (!mounted) return;
+      setState(() {
+        recipeDisplays![index].imageBytes = cachedPicture;
+      });
     }
     RequestResult<Uint8List?> pictureResult = await controller.getPicture(
       element.info.pictureName!,
@@ -64,12 +64,11 @@ class _RecipesPageState extends State<RecipesPage> {
         await controller.getAllRecipes();
     if (result is RequestSuccess<List<RecipeInfo>>) {
       var recipes = result.result;
+      if (!mounted) return;
       if (recipes.isEmpty) {
-        if (mounted) {
-          setState(() {
-            recipeDisplays = List.empty();
-          });
-        }
+        setState(() {
+          recipeDisplays = List.empty();
+        });
       } else {
         setState(() {
           recipeDisplays =
@@ -101,8 +100,6 @@ class _RecipesPageState extends State<RecipesPage> {
     if (recipeDisplays == null || recipeDisplays!.length <= index) {
       return null;
     }
-    // if (recipeIngredients[index] != null) return; // already fetched
-
     var response = await controller.getIngredients(
       recipeDisplays![index].info.id,
     );
@@ -115,9 +112,22 @@ class _RecipesPageState extends State<RecipesPage> {
     }
   }
 
+  Future<void> showRecipePreview(int index) async {
+    final ingredients = await getIngredients(index, controller);
+    if (ingredients == null) getIngredients(index, controller);
+    final item = recipeDisplays![index];
+    if (!mounted) return;
+    showModalBottomSheet(
+      showDragHandle: true,
+      isDismissible: true,
+      isScrollControlled: true,
+      context: context,
+      builder: recipePreview(item, ingredients),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    var controller = RecipeController(jwt!);
     if (recipeDisplays == null) {
       getRecipes(controller);
     }
@@ -156,24 +166,7 @@ class _RecipesPageState extends State<RecipesPage> {
                           itemBuilder: (context, index) {
                             return RecipeListCard(
                               info: recipeDisplays![index],
-                              onTap: () async {
-                                // TODO: Navigate to a recipe view that lets you edit
-                                final ingredients = await getIngredients(
-                                  index,
-                                  controller,
-                                );
-                                if (ingredients == null)
-                                  getIngredients(index, controller);
-                                final item = recipeDisplays![index];
-                                if (!context.mounted) return;
-                                showModalBottomSheet(
-                                  showDragHandle: true,
-                                  isDismissible: true,
-                                  isScrollControlled: true,
-                                  context: context,
-                                  builder: recipePreview(item, ingredients),
-                                );
-                              },
+                              onTap: () => {showRecipePreview(index)},
                             );
                           },
                         ),

@@ -16,8 +16,9 @@ class CreateInvitePage extends StatefulWidget {
 
 class _CreateInvitePageState extends State<CreateInvitePage> {
   // will NOT work if not initialized to null
-  late List<UserInfo>? foundUsers = null;
+  List<UserInfo>? foundUsers = null;
   final searchController = TextEditingController();
+  final socialController = SocialController(jwt!);
 
   searchUsers(String item, SocialController controller) async {
     var users = await controller.getUsersByName(item);
@@ -33,7 +34,6 @@ class _CreateInvitePageState extends State<CreateInvitePage> {
 
   @override
   Widget build(BuildContext context) {
-    SocialController controller = SocialController(jwt!);
     return Scaffold(
       appBar: AppBar(title: Text('Invite user')),
       body: Padding(
@@ -71,9 +71,9 @@ class _CreateInvitePageState extends State<CreateInvitePage> {
                 prefixIcon: Icon(Icons.search),
               ),
               controller: searchController,
-              onSubmitted: (value) => searchUsers(value, controller),
+              onSubmitted: (value) => searchUsers(value, socialController),
               onEditingComplete:
-                  () => searchUsers(searchController.text, controller),
+                  () => searchUsers(searchController.text, socialController),
               canRequestFocus: true,
             ),
           ],

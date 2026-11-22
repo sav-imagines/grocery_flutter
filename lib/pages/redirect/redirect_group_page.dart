@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/http/social/social_controller.dart';
 import 'package:grocery_flutter/http/social/user_info.dart';
+import 'package:grocery_flutter/state/global_state.dart';
 
 // redirects you based on whether you are in a group
 class RedirectGroupPage extends StatefulWidget {
@@ -15,6 +15,7 @@ class RedirectGroupPage extends StatefulWidget {
 
 class _RedirectGroupPageState extends State<RedirectGroupPage> {
   _RedirectGroupPageState();
+  final socialController = SocialController(jwt!);
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +43,6 @@ class _RedirectGroupPageState extends State<RedirectGroupPage> {
   }
 
   Future<void> checkGroupStatus() async {
-    var jwt = await FlutterSecureStorage().read(key: 'jwt');
     if (jwt == null) {
       if (mounted)
         showErrorMessage(
@@ -51,8 +51,7 @@ class _RedirectGroupPageState extends State<RedirectGroupPage> {
           "Programming error",
         );
     } else {
-      var controller = SocialController(jwt);
-      RequestResult<UserInfo?> info = await controller.getMyInfo();
+      RequestResult<UserInfo?> info = await socialController.getMyInfo();
       if (info is RequestSuccess) {
         info = info as RequestSuccess<UserInfo>;
         if (info.result.isInGroup) {

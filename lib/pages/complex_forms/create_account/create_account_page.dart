@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_flutter/components/error_message_component.dart';
+import 'package:grocery_flutter/components/image_source_button.dart';
 import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/http/user/account_creation_model.dart';
@@ -28,13 +29,12 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
   int scale = 1;
   bool isSending = false;
 
-  final controller = UserController();
+  final userController = UserController();
+  final ImagePicker _picker = ImagePicker();
 
   isEmptyValidator(value) {
     return value == null || value.isEmpty ? "Please enter a value" : null;
   }
-
-  final ImagePicker _picker = ImagePicker();
 
   void submitForm() async {
     try {
@@ -92,40 +92,19 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
       context: context,
       builder:
           (context) => Padding(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              spacing: 30,
               children: [
-                IconButton(
+                ImageSourceButton(
+                  icon: Icons.photo,
+                  label: "Gallery",
                   onPressed: () => selectImage(context, ImageSource.gallery),
-                  icon: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.photo,
-                        size: 60,
-                        color:
-                            Theme.of(context).colorScheme.onSecondaryContainer,
-                      ),
-                      Text("Gallery"),
-                    ],
-                  ),
                 ),
-                IconButton(
+                ImageSourceButton(
+                  icon: Icons.camera_alt,
+                  label: "Camera",
                   onPressed: () => selectImage(context, ImageSource.camera),
-                  icon: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.camera_alt,
-                        size: 60,
-                        color:
-                            Theme.of(context).colorScheme.onSecondaryContainer,
-                      ),
-                      Text("Camera"),
-                    ],
-                  ),
                 ),
               ],
             ),
@@ -135,43 +114,73 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
 
   void selectImage(BuildContext context, ImageSource source) async {
     final pickedFile = await _picker.pickImage(source: source);
-    if (pickedFile != null && context.mounted) {
-      final croppedFile = await ImageCropper().cropImage(
-        sourcePath: pickedFile.path,
-        uiSettings: [
-          AndroidUiSettings(
-            // the square around the cropped area
-            cropGridColor: Theme.of(context).colorScheme.onSecondaryContainer,
-            cropFrameColor: Theme.of(context).colorScheme.onSecondaryContainer,
-            cropFrameStrokeWidth: 5,
-            // layered over everything outside selected circle
-            dimmedLayerColor: const Color.fromRGBO(0, 0, 0, .4),
+    if (pickedFile == null || !context.mounted) return;
 
-            // just bg
-            // backgroundColor: Color.fromRGBO(205, 127, 153, 1),
-            toolbarWidgetColor:
-                Theme.of(context).colorScheme.onSecondaryContainer,
-            toolbarColor: Theme.of(context).colorScheme.secondaryContainer,
-            cropStyle: CropStyle.circle,
-            initAspectRatio: CropAspectRatioPreset.square,
-            lockAspectRatio: true,
-            aspectRatioPresets: const [CropAspectRatioPreset.square],
-            hideBottomControls: true,
-          ),
-        ],
-      );
-      if (croppedFile != null) {
-        final croppedImageBytes = await croppedFile.readAsBytes();
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          setState(() {
-            pfpBytes = croppedImageBytes.toList();
-            pfp = Image.memory(croppedImageBytes);
-          });
-          Navigator.of(context).pop();
-        });
-      }
+    final colorScheme = Theme.of(context).colorScheme;
+    final croppedFile = await ImageCropper().cropImage(
+      sourcePath: pickedFile.path,
+      uiSettings: [
+        AndroidUiSettings(
+          // the square around the cropped area
+          cropGridColor: colorScheme.onSecondaryContainer,
+          cropFrameColor: colorScheme.onSecondaryContainer,
+          cropFrameStrokeWidth: 5,
+          // layered over everything outside selected circle
+          dimmedLayerColor: const Color.fromRGBO(0, 0, 0, .4),
+          toolbarWidgetColor: colorScheme.onSecondaryContainer,
+          toolbarColor: colorScheme.secondaryContainer,
+          cropStyle: CropStyle.circle,
+          initAspectRatio: CropAspectRatioPreset.square,
+          lockAspectRatio: true,
+          aspectRatioPresets: const [CropAspectRatioPreset.square],
+          hideBottomControls: true,
+        ),
+      ],
+    );
+
+    if (croppedFile == null) return;
+    final bytes = await croppedFile.readAsBytes();
+    if (!context.mounted) return;
+
+    setState(() {
+      pfpBytes = bytes.toList();
+      pfp = Image.memory(bytes);
+    });
+
+    if (context.mounted) {
+      Navigator.of(context).pop();
     }
-    return null;
+  }
+
+  Widget _buildProfilePicture(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return GestureDetector(
+      onTap: showSelectImageSource,
+      child: Container(
+        constraints: const BoxConstraints(
+          minHeight: 60,
+          minWidth: 60,
+          maxHeight: 200,
+          maxWidth: 200,
+        ),
+        decoration: BoxDecoration(
+          color: colorScheme.secondaryContainer,
+          shape: BoxShape.circle,
+        ),
+        child:
+            pfp == null
+                ? const Center(child: Icon(Icons.add_photo_alternate, size: 90))
+                : CircleAvatar(minRadius: 10_000, foregroundImage: pfp!.image),
+      ),
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return FilledButton(
+      onPressed: isSending ? null : submitForm,
+      child: const Text('Submit'),
+    );
   }
 
   @override
@@ -187,46 +196,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
               // mainAxisAlignment: MainAxisAlignment.center,
               spacing: 20,
               children: [
-                pfp == null
-                    ? GestureDetector(
-                      child: Container(
-                        constraints: BoxConstraints(
-                          minHeight: 60,
-                          minWidth: 60,
-                          maxHeight: 200,
-                          maxWidth: 200,
-                        ),
-                        decoration: BoxDecoration(
-                          color:
-                              Theme.of(context).colorScheme.secondaryContainer,
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Icon(Icons.add_photo_alternate, size: 90),
-                        ),
-                      ),
-                      onTap: () => showSelectImageSource(),
-                    )
-                    : GestureDetector(
-                      onTap: () => showSelectImageSource(),
-                      child: Container(
-                        constraints: BoxConstraints(
-                          minHeight: 60,
-                          minWidth: 60,
-                          maxHeight: 200,
-                          maxWidth: 200,
-                        ),
-                        decoration: BoxDecoration(
-                          color:
-                              Theme.of(context).colorScheme.secondaryContainer,
-                          shape: BoxShape.circle,
-                        ),
-                        child: CircleAvatar(
-                          minRadius: 10_000,
-                          foregroundImage: pfp!.image,
-                        ),
-                      ),
-                    ),
+                _buildProfilePicture(context),
 
                 TextFormField(
                   keyboardType: TextInputType.text,
@@ -259,10 +229,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                   validator: (value) => isEmptyValidator(value),
                 ),
 
-                FilledButton(
-                  onPressed: isSending ? null : submitForm,
-                  child: const Text('Submit'),
-                ),
+                _buildSubmitButton(),
 
                 SizedBox.square(dimension: 300),
               ],

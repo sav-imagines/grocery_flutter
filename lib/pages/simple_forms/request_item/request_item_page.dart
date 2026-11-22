@@ -16,7 +16,7 @@ class RequestItemPage extends StatefulWidget {
 }
 
 class _RequestItemPageState extends State<RequestItemPage> {
-  TextEditingController groupNameController = TextEditingController();
+  final TextEditingController groupNameController = TextEditingController();
 
   List<GroceryListItemDisplay>? searchIngredientsResults;
   GroceryListItemDisplay? selectedItem = null;

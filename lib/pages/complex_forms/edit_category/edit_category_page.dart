@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:grocery_flutter/components/show_confirmation.dart';
 import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/category/category_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
@@ -15,7 +16,8 @@ class EditCategoryPage extends StatefulWidget {
 }
 
 class _EditCategoryPageState extends State<EditCategoryPage> {
-  EditCategoryArgs? args;
+  EditCategoryArgs? args = null;
+  TextEditingController? nameEditController;
 
   void delete() async {
     assert(args != null);
@@ -32,40 +34,27 @@ class _EditCategoryPageState extends State<EditCategoryPage> {
     }
   }
 
-  void confirmDelete() async {
-    assert(args != null);
-    showDialog(
-      context: context,
-      builder: (context) {
-        final name = args!.category.name;
-        return AlertDialog(
-          title: Text("Do you want to delete category $name?"),
-          actionsAlignment: MainAxisAlignment.spaceBetween,
-          actions: [
-            OutlinedButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text("Cancel"),
-            ),
-            FilledButton(
-              onPressed: () async => delete(),
-              child: const Text("Ok"),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     args ??= ModalRoute.of(context)!.settings.arguments as EditCategoryArgs;
+    nameEditController ??= TextEditingController(text: args!.category.name);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Edit category"),
         actions: [
-          IconButton(onPressed: confirmDelete, icon: Icon(Icons.delete)),
+          IconButton(
+            onPressed:
+                () => showConfirmation(
+                  context,
+                  delete,
+                  () => cancelAction(context),
+                  "Are you sure you want to delete category '${args!.category.name}'?",
+                ),
+            icon: Icon(Icons.delete),
+          ),
         ],
       ),
+      body: Column(children: [TextField(controller: nameEditController!)]),
     );
   }
 }

@@ -17,8 +17,10 @@ class CreateItemPage extends StatefulWidget {
 class _CreateItemPageState extends State<CreateItemPage> {
   bool hasInitialized = false;
   String categoryId = '';
-
   TextEditingController itemNameController = TextEditingController();
+
+  final itemController = ItemController(jwt!);
+
   isEmptyValidator(value) {
     return value == null || value.isEmpty ? "Please enter a value" : null;
   }
@@ -50,7 +52,6 @@ class _CreateItemPageState extends State<CreateItemPage> {
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as CreateItemArgs;
-    final controller = ItemController(jwt!);
     if (!hasInitialized) {
       setState(() {
         hasInitialized = true;
@@ -84,7 +85,7 @@ class _CreateItemPageState extends State<CreateItemPage> {
             FilledButton(
               onPressed:
                   () => submitItem(
-                    controller,
+                    itemController,
                     CreateItemModel(
                       categoryId: categoryId,
                       name: itemNameController.text,
