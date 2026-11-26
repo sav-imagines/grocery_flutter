@@ -53,6 +53,8 @@ dependencies:
   collection: ^1.19.1
   flutter_cache_manager: ^3.4.1
   hive: ^2.2.3
+  material_ui: ^0.0.1
+  flutter_riverpod: ^2.6.1
 
 dev_dependencies:
   flutter_test:
