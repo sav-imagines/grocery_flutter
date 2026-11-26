@@ -1,17 +1,17 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:grocery_flutter/http/auth/auth_controller.dart';
 import 'package:grocery_flutter/http/recipe/create_recipe_model.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/models/recipe_info.dart';
 import 'package:grocery_flutter/models/short_item.dart';
+import 'package:grocery_flutter/state/global_state.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-import 'package:uuid/v4.dart';
-import 'package:grocery_flutter/state/global_state.dart';
-
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:uuid/v4.dart';
 
 part 'recipe_controller.g.dart';
 
@@ -37,7 +37,13 @@ Future<List<RecipeInfo>> getAllRecipes(Ref ref) async {
 
 @riverpod
 Future<Uint8List> getPicture(Ref ref, String fileName) async {
-  // TODO: use caching
+  final cacheManager = DefaultCacheManager();
+  final cachedFile =
+      await (await cacheManager.getFileFromCache(
+        "recipePicture/$fileName",
+      ))?.file.readAsBytes();
+  if (cachedFile != null) return cachedFile;
+
   final uri = Uri.parse("$baseUrl/api/recipe/picture/$fileName");
   final response = await http.get(
     uri,
@@ -46,6 +52,7 @@ Future<Uint8List> getPicture(Ref ref, String fileName) async {
       "Authorization": "Bearer $jwt",
     },
   );
+  await cacheManager.putFile('recipePicture/$fileName', response.bodyBytes);
   return response.bodyBytes;
 }
 
