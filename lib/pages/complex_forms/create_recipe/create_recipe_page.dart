@@ -45,7 +45,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
 
   int currentPage = 0;
 
-  final recipeController = RecipeController(jwt!);
+  // final recipeController = RecipeController(jwt!);
   final itemController = ItemController(jwt!);
 
   bool canSubmit() {
@@ -54,21 +54,23 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
   }
 
   Future<void> submit() async {
-    final response = await recipeController.createRecipe(
-      CreateRecipeModel(
-        name: nameController.text,
-        description: descriptionController.text,
-        instructions: instructionsController.text,
-        pictures: imageBytes,
-        items: selectedIngredients,
-      ),
-    );
-    if (!mounted) return;
-    if (response is RequestSuccess) {
-      Navigator.of(context).pop();
-    } else {
-      showError(context, response as RequestError);
-    }
+    return;
+    //   final response = await recipeController.createRecipe(
+    //     CreateRecipeModel(
+    //       name: nameController.text,
+    //       description: descriptionController.text,
+    //       instructions: instructionsController.text,
+    //       pictures: imageBytes,
+    //       items: selectedIngredients,
+    //     ),
+    //   );
+    //   if (!mounted) return;
+    //   if (response is RequestSuccess) {
+    //     Navigator.of(context).pop();
+    //   } else {
+    //     showError(context, response as RequestError);
+    //   }
+    // }
   }
 
   Future<void> runSearchQuery(String query) async {

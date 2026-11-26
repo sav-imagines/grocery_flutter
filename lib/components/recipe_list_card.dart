@@ -1,14 +1,22 @@
-import 'package:flutter/material.dart';
-import 'package:grocery_flutter/models/recipe_display.dart';
+import 'dart:typed_data';
 
-class RecipeListCard extends StatelessWidget {
-  final RecipeDisplay info;
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:grocery_flutter/http/recipe/recipe_controller.dart';
+import 'package:grocery_flutter/models/recipe_info.dart';
+
+class RecipeListCard extends ConsumerWidget {
+  final RecipeInfo info;
   final void Function()? onTap;
 
   const RecipeListCard({super.key, required this.info, required this.onTap});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    AsyncValue<Uint8List>? image = null;
+    if (info.pictureName != null)
+      image = ref.watch(getPictureProvider(info.pictureName!));
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -23,17 +31,16 @@ class RecipeListCard extends StatelessWidget {
           child: Row(
             spacing: 20,
             children: <Widget>[
-              info.imageBytes == null
-                  ? (const Icon(Icons.image, size: 90))
-                  : ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                    clipBehavior: Clip.hardEdge,
-                    child: Image.memory(
-                      info.imageBytes!,
-                      width: 90,
-                      height: 90,
-                    ),
-                  ),
+              switch (image) {
+                null => (const Icon(Icons.image, size: 90)),
+                AsyncData(:final value) => ClipRRect(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  clipBehavior: Clip.hardEdge,
+                  child: Image.memory(value, width: 90, height: 90),
+                ),
+                AsyncError() => const Icon(Icons.broken_image, size: 90),
+                AsyncValue() => (const Icon(Icons.image, size: 90)),
+              },
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,10 +51,10 @@ class RecipeListCard extends StatelessWidget {
                       overflow: TextOverflow.clip,
                       softWrap: true,
                       maxLines: 2,
-                      info.info.name,
+                      info.name,
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
-                    Text(info.info.description),
+                    Text(info.description),
                   ],
                 ),
               ),

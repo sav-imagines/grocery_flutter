@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:grocery_flutter/pages/complex_forms/create_account/create_account_page.dart';
 import 'package:grocery_flutter/pages/complex_forms/edit_category/edit_category_page.dart';
@@ -21,7 +22,7 @@ import 'package:grocery_flutter/pages/settings_page.dart';
 import 'package:grocery_flutter/pages/simple_forms/create_group/create_group_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

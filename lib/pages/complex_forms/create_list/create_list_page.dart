@@ -18,6 +18,7 @@ import 'package:grocery_flutter/pages/complex_forms/create_list/create_list_args
 import 'package:grocery_flutter/pages/complex_forms/edit_category/edit_category_args.dart';
 import 'package:grocery_flutter/pages/simple_forms/create_list_item/create_list_item_args.dart';
 import 'package:grocery_flutter/state/global_state.dart';
+import 'package:http/http.dart';
 
 class CreateListPage extends StatefulWidget {
   const CreateListPage({super.key});
@@ -35,39 +36,40 @@ class _CreateListPageState extends State<CreateListPage> {
   get currentState => CreateListArgs(items ?? [], recipes ?? []);
 
   final requestController = RequestController(jwt!);
-  final recipeController = RecipeController(jwt!);
   final itemController = ItemController(jwt!);
 
   Future<void> getRecipes() async {
-    final RequestResult<void> result = await recipeController.getAllRecipes();
-    if (!mounted) return;
-    if (result is RequestSuccess<List<RecipeInfo>>) {
-      setState(() {
-        recipes =
-            result.result
-                .map((x) => FullRecipeModel(recipe: x, items: null))
-                .toList();
-      });
-      for (int i = 0; i < recipes!.length; i++) {
-        Future.microtask(() async {
-          final ingredientsResult = await recipeController.getIngredients(
-            recipes![i].recipe.id,
-          );
-          if (!mounted) return;
-          if (ingredientsResult is RequestSuccess<List<ShortItem>>) {
-            setState(() {
-              recipes![i].items = ingredientsResult.result;
-            });
-          } else {
-            showError(context, ingredientsResult as RequestError);
-          }
-        });
-      }
-    } else {
-      setState(() {
-        recipes = List.empty();
-      });
-    }
+    return;
+    //   final RequestResult<void> result = await recipeController.getAllRecipes();
+    //   if (!mounted) return;
+    //   if (result is RequestSuccess<List<RecipeInfo>>) {
+    //     setState(() {
+    //       recipes =
+    //           result.result
+    //               .map((x) => FullRecipeModel(recipe: x, items: null))
+    //               .toList();
+    //     });
+    //     for (int i = 0; i < recipes!.length; i++) {
+    //       Future.microtask(() async {
+    //         final ingredientsResult = await recipeController.getIngredients(
+    //           recipes![i].recipe.id,
+    //         );
+    //         if (!mounted) return;
+    //         if (ingredientsResult is RequestSuccess<List<ShortItem>>) {
+    //           setState(() {
+    //             recipes![i].items = ingredientsResult.result;
+    //           });
+    //         } else {
+    //           showError(context, ingredientsResult as RequestError);
+    //         }
+    //       });
+    //     }
+    //   } else {
+    //     setState(() {
+    //       recipes = List.empty();
+    //     });
+    //   }
+    // }
   }
 
   Future<void> getItems() async {
