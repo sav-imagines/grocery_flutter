@@ -1,12 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:grocery_flutter/components/show_error.dart';
-import 'package:grocery_flutter/http/item/item_controller.dart';
-import 'package:grocery_flutter/http/requests/request_controller.dart';
-import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/models/grocery_list_item_display.dart';
-import 'package:grocery_flutter/models/short_item.dart';
-import 'package:grocery_flutter/state/global_state.dart';
 
 class RequestItemPage extends StatefulWidget {
   const RequestItemPage({super.key});
@@ -25,30 +18,30 @@ class _RequestItemPageState extends State<RequestItemPage> {
     return value == null || value.isEmpty ? "Please enter a value" : null;
   }
 
-  submitRequestItem(RequestController controller, ShortItem item) async {
-    var result = await controller.requestItem(item);
-    if (mounted) {
-      if (result is RequestSuccess) {
-        Navigator.of(context).pop();
-      } else if (result is RequestError) {
-        if (mounted) showError(context, result);
-      }
-    }
-  }
+  // submitRequestItem(ShortItem item) async {
+  //   var result = await controller.requestItem(item);
+  //   if (mounted) {
+  //     if (result is RequestSuccess) {
+  //       Navigator.of(context).pop();
+  //     } else if (result is RequestError) {
+  //       if (mounted) showError(context, result);
+  //     }
+  //   }
+  // }
 
-  Future<void> search(ItemController itemController, String query) async {
-    final RequestResult<List<GroceryListItemDisplay>> result =
-        await itemController.searchItems(query);
-    if (result is RequestSuccess<List<GroceryListItemDisplay>>) {
-      if (mounted) {
-        setState(() {
-          searchIngredientsResults = result.result;
-        });
-      }
-    } else {
-      Fluttertoast.showToast(msg: (result as RequestError).error);
-    }
-  }
+  // Future<void> search(String query) async {
+  //   // final RequestResult<List<GroceryListItemDisplay>> result =
+  //   //     await itemController.searchItems(query);
+  //   if (result is RequestSuccess<List<GroceryListItemDisplay>>) {
+  //     if (mounted) {
+  //       setState(() {
+  //         searchIngredientsResults = result.result;
+  //       });
+  //     }
+  //   } else {
+  //     Fluttertoast.showToast(msg: (result as RequestError).error);
+  //   }
+  // }
 
   void unSearch() {
     setState(() {
@@ -125,7 +118,7 @@ class _RequestItemPageState extends State<RequestItemPage> {
                       if (newText.isEmpty) {
                         unSearch();
                       } else {
-                        search(ItemController(jwt!), newText);
+                        // search(ItemController(jwt!), newText);
                       }
                     },
                   ),
@@ -149,16 +142,16 @@ class _RequestItemPageState extends State<RequestItemPage> {
             //     IconButton(onPressed: null, icon: Icon(Icons.add)),
             //   ],
             // ),
-            FilledButton(
-              onPressed:
-                  selectedItem == null
-                      ? null
-                      : () => submitRequestItem(
-                        RequestController(jwt!),
-                        searchIngredientsResults![0].toShortItem(),
-                      ),
-              child: Text('Request'),
-            ),
+            // FilledButton(
+            //   onPressed:
+            //       selectedItem == null
+            //           ? null
+            //           : () => submitRequestItem(
+            //             RequestController(jwt!),
+            //             searchIngredientsResults![0].toShortItem(),
+            //           ),
+            // child: Text('Request'),
+            // ),
           ],
         ),
       ),

@@ -25,9 +25,7 @@ class RecipesPage extends ConsumerWidget {
       ),
       body: switch (recipes) {
         AsyncValue(:final value?) => RefreshIndicator(
-          onRefresh: () async {
-            // TODO: invalidate cache
-          },
+          onRefresh: () => ref.refresh(getAllRecipesProvider.future),
           child:
               value.isEmpty
                   ? const Center(child: Text("You don't have any recipes"))

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:grocery_flutter/pages/complex_forms/create_account/create_account_page.dart';
+import 'package:grocery_flutter/pages/complex_forms/create_list/create_list_container.dart';
 import 'package:grocery_flutter/pages/complex_forms/edit_category/edit_category_page.dart';
 import 'package:grocery_flutter/pages/simple_forms/create_category/create_category_page.dart';
 import 'package:grocery_flutter/pages/simple_forms/create_list_item/create_list_item_page.dart';
@@ -63,10 +64,10 @@ class MyApp extends StatelessWidget {
         '/sent-invites': (context) => const SentInvitesPage(),
         '/settings': (context) => const SettingsPage(),
         '/view-grocery-list': (context) => const GroceryListHistoryPage(),
-        '/create-list': (context) => const CreateListPage(),
+        '/create-list': (context) => const CreateListContainer(),
         '/create-list-item': (context) => const CreateItemPage(),
         '/create-recipe': (context) => const CreateRecipePage(),
-        '/create-recipe-item': (context) => const CreateRecipeItemPage(),
+        '/create-recipe-item': (context) => CreateRecipeItemPage(),
         '/create-category': (context) => const CreateCategoryPage(),
         '/request-item': (context) => const RequestItemPage(),
         '/edit-category': (context) => EditCategoryPage(),

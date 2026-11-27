@@ -2,17 +2,10 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_flutter/components/image_source_button.dart';
-import 'package:grocery_flutter/components/show_error.dart';
-import 'package:grocery_flutter/http/item/item_controller.dart';
-import 'package:grocery_flutter/http/recipe/create_recipe_model.dart';
-import 'package:grocery_flutter/http/recipe/recipe_controller.dart';
-import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/pages/complex_forms/create_recipe/create_recipe_args.dart';
 import 'package:grocery_flutter/models/grocery_list_item_display.dart';
 import 'package:grocery_flutter/pages/complex_forms/create_recipe/widgets/ingredient_selection.dart';
-import 'package:grocery_flutter/state/global_state.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CreateRecipePage extends StatefulWidget {
@@ -46,7 +39,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
   int currentPage = 0;
 
   // final recipeController = RecipeController(jwt!);
-  final itemController = ItemController(jwt!);
+  // final itemController = ItemController(jwt!);
 
   bool canSubmit() {
     return (_formKey.currentState?.validate() ?? false) &&
@@ -73,19 +66,19 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
     // }
   }
 
-  Future<void> runSearchQuery(String query) async {
-    final RequestResult<List<GroceryListItemDisplay>> result =
-        await itemController.searchItems(query);
-    if (result is RequestSuccess<List<GroceryListItemDisplay>>) {
-      if (mounted) {
-        setState(() {
-          searchIngredientsResults = result.result;
-        });
-      }
-    } else {
-      Fluttertoast.showToast(msg: (result as RequestError).error);
-    }
-  }
+  // Future<void> runSearchQuery(String query) async {
+  // final RequestResult<List<GroceryListItemDisplay>> result =
+  //     await itemController.searchItems(query);
+  //   if (result is RequestSuccess<List<GroceryListItemDisplay>>) {
+  //     if (mounted) {
+  //       setState(() {
+  //         searchIngredientsResults = result.result;
+  //       });
+  //     }
+  //   } else {
+  //     Fluttertoast.showToast(msg: (result as RequestError).error);
+  //   }
+  // }
 
   void clearSearchQuery() {
     setState(() {
@@ -342,7 +335,7 @@ class _CreateRecipePageState extends State<CreateRecipePage> {
                                 ),
                                 onChanged: (value) {
                                   if (value.isNotEmpty) {
-                                    runSearchQuery(value);
+                                    // runSearchQuery(value);
                                   } else {
                                     clearSearchQuery();
                                   }

@@ -1,11 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:grocery_flutter/components/show_error.dart';
-import 'package:grocery_flutter/http/item/create_item_model.dart';
-import 'package:grocery_flutter/http/item/item_controller.dart';
-import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/pages/simple_forms/create_list_item/create_list_item_args.dart';
-import 'package:grocery_flutter/models/short_item.dart';
-import 'package:grocery_flutter/state/global_state.dart';
 
 class CreateItemPage extends StatefulWidget {
   const CreateItemPage({super.key});
@@ -19,35 +13,35 @@ class _CreateItemPageState extends State<CreateItemPage> {
   String categoryId = '';
   TextEditingController itemNameController = TextEditingController();
 
-  final itemController = ItemController(jwt!);
+  // final itemController = ItemController(jwt!);
 
-  isEmptyValidator(value) {
+  String? isEmptyValidator(value) {
     return value == null || value.isEmpty ? "Please enter a value" : null;
   }
 
-  submitItem(
-    ItemController controller,
-    CreateItemModel item,
-    CreateItemArgs args,
-  ) async {
-    var result = await controller.createItem(item);
-
-    if (mounted) {
-      if (result is RequestSuccess<String>) {
-        args.state.items
-            .firstWhere((category) => category.id == item.categoryId)
-            .items
-            .add(ShortItem(id: result.result, name: item.name, quantity: 1));
-        Navigator.of(context).pop();
-        Navigator.of(
-          context,
-        ).popAndPushNamed('/create-list', arguments: args.state);
-      } else if (result is RequestError<String>) {
-        if (!mounted) return;
-        showError(context, result);
-      }
-    }
-  }
+  // void submitItem(
+  //   // ItemController controller,
+  //   CreateItemModel item,
+  //   CreateItemArgs args,
+  // ) async {
+  //   // var result = await controller.createItem(item);
+  //
+  //   if (mounted) {
+  //     if (result is RequestSuccess<String>) {
+  //       args.state.items
+  //           .firstWhere((category) => category.id == item.categoryId)
+  //           .items
+  //           .add(ShortItem(id: result.result, name: item.name, quantity: 1));
+  //       Navigator.of(context).pop();
+  //       Navigator.of(
+  //         context,
+  //       ).popAndPushNamed('/create-list', arguments: args.state);
+  //     } else if (result is RequestError<String>) {
+  //       if (!mounted) return;
+  //       showError(context, result);
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -83,16 +77,16 @@ class _CreateItemPageState extends State<CreateItemPage> {
               validator: (value) => isEmptyValidator(value),
             ),
             FilledButton(
-              onPressed:
-                  () => submitItem(
-                    itemController,
-                    CreateItemModel(
-                      categoryId: categoryId,
-                      name: itemNameController.text,
-                    ),
-                    args,
-                  ),
+              onPressed: null,
 
+              // () => submitItem(
+              //   itemController,
+              //   CreateItemModel(
+              //     categoryId: categoryId,
+              //     name: itemNameController.text,
+              //   ),
+              //   args,
+              // ),
               child: Text('Create'),
             ),
           ],

@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:grocery_flutter/components/ingredient_card.dart';
 import 'package:grocery_flutter/models/full_recipe_model.dart';
@@ -5,8 +7,8 @@ import 'package:grocery_flutter/models/short_item.dart';
 
 class RecipeSelectCard extends StatelessWidget {
   final List<FullRecipeModel> recipes;
-  final void Function(String id) onDecrement;
-  final void Function(String id) onIncrement;
+  final void Function(int idx) onDecrement;
+  final void Function(int idx) onIncrement;
 
   const RecipeSelectCard({
     super.key,
@@ -35,15 +37,18 @@ class RecipeSelectCard extends StatelessWidget {
                   ),
                 )
               else
-                for (var item in recipes)
+                for (var (item, idx) in Iterable.generate(
+                  recipes.length,
+                  (idx) => (recipes[idx], idx),
+                ))
                   IngredientCard(
                     info: ShortItem(
                       id: "",
                       name: item.recipe.name,
                       quantity: item.quantity,
                     ),
-                    onDecrement: () => onDecrement(item.recipe.id),
-                    onIncrement: () => onIncrement(item.recipe.id),
+                    onDecrement: () => onDecrement(idx),
+                    onIncrement: () => onIncrement(idx),
                     onRemove: null,
                   ),
             ],

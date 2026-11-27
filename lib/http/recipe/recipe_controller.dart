@@ -5,6 +5,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:grocery_flutter/http/auth/auth_controller.dart';
 import 'package:grocery_flutter/http/recipe/create_recipe_model.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
+import 'package:grocery_flutter/models/full_recipe_model.dart';
 import 'package:grocery_flutter/models/recipe_info.dart';
 import 'package:grocery_flutter/models/short_item.dart';
 import 'package:grocery_flutter/state/global_state.dart';
@@ -94,4 +95,19 @@ Future<List<ShortItem>> getIngredients(Ref ref, String recipeId) async {
   return (jsonDecode(response.body) as List)
       .map((e) => ShortItem.fromJson(e))
       .toList();
+}
+
+@riverpod
+Future<List<FullRecipeModel>> getFullRecipeModels(Ref ref) async {
+  final recipes = await getAllRecipes(ref);
+  return Future.wait(
+    recipes
+        .map(
+          (recipe) async => FullRecipeModel(
+            recipe: recipe,
+            items: await getIngredients(ref, recipe.id),
+          ),
+        )
+        .toList(),
+  );
 }

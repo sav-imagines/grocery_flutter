@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_flutter/components/ingredient_card.dart';
-import 'package:grocery_flutter/http/requests/request_controller.dart';
-import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/models/short_item.dart';
 import 'package:grocery_flutter/state/global_state.dart';
 
@@ -17,52 +14,52 @@ class _RequestsPageState extends State<RequestsPage> {
   List<ShortItem>? requestedItems = null;
   List<ShortItem> changedItems = [];
 
-  void getRequests(RequestController controller) async {
-    final RequestResult<List<ShortItem>> result =
-        await controller.getRequestedItems();
-    if (result is RequestSuccess<List<ShortItem>>) {
-      if (mounted) {
-        setState(() {
-          requestedItems = result.result;
-        });
-      }
-    } else {
-      var errorResult = result as RequestError<List<ShortItem>?>;
-      if (mounted) {
-        setState(() {
-          requestedItems = List.empty();
-        });
-      }
-      Fluttertoast.showToast(msg: "Error '${errorResult.error}' >:[");
-    }
-  }
+  // void getRequests(RequestController controller) async {
+  //   final RequestResult<List<ShortItem>> result =
+  //       await controller.getRequestedItems();
+  //   if (result is RequestSuccess<List<ShortItem>>) {
+  //     if (mounted) {
+  //       setState(() {
+  //         requestedItems = result.result;
+  //       });
+  //     }
+  //   } else {
+  //     var errorResult = result as RequestError<List<ShortItem>?>;
+  //     if (mounted) {
+  //       setState(() {
+  //         requestedItems = List.empty();
+  //       });
+  //     }
+  //     Fluttertoast.showToast(msg: "Error '${errorResult.error}' >:[");
+  //   }
+  // }
 
-  void updateRequests(RequestController controller) async {
-    final RequestResult<void> result = await controller.updateItems(
-      changedItems,
-    );
-    if (result is RequestSuccess<void>) {
-      if (mounted) {
-        for (var item in changedItems) {
-          var existingItem = requestedItems!.firstWhere((x) => x.id == item.id);
-          setState(() {
-            existingItem.quantity = item.quantity;
-          });
-          if (existingItem.quantity == 0) {
-            setState(() {
-              requestedItems!.remove(existingItem);
-            });
-          }
-        }
-        setState(() {
-          changedItems = [];
-        });
-      }
-    } else {
-      var errorResult = result as RequestError<void>;
-      Fluttertoast.showToast(msg: "Error '${errorResult.error}' >:[");
-    }
-  }
+  // void updateRequests(RequestController controller) async {
+  //   final RequestResult<void> result = await controller.updateItems(
+  //     changedItems,
+  //   );
+  //   if (result is RequestSuccess<void>) {
+  //     if (mounted) {
+  //       for (var item in changedItems) {
+  //         var existingItem = requestedItems!.firstWhere((x) => x.id == item.id);
+  //         setState(() {
+  //           existingItem.quantity = item.quantity;
+  //         });
+  //         if (existingItem.quantity == 0) {
+  //           setState(() {
+  //             requestedItems!.remove(existingItem);
+  //           });
+  //         }
+  //       }
+  //       setState(() {
+  //         changedItems = [];
+  //       });
+  //     }
+  //   } else {
+  //     var errorResult = result as RequestError<void>;
+  //     Fluttertoast.showToast(msg: "Error '${errorResult.error}' >:[");
+  //   }
+  // }
 
   updateItem(ShortItem item, int newQuantity) {
     if (mounted) {
@@ -83,7 +80,7 @@ class _RequestsPageState extends State<RequestsPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (requestedItems == null) getRequests(RequestController(jwt!));
+    // if (requestedItems == null) getRequests(RequestController(jwt!));
     return Scaffold(
       appBar: AppBar(title: const Text('Requests')),
       floatingActionButton: Column(
@@ -99,7 +96,8 @@ class _RequestsPageState extends State<RequestsPage> {
           ),
           changedItems.isNotEmpty
               ? FloatingActionButton(
-                onPressed: () => updateRequests(RequestController(jwt!)),
+                // onPressed: () => updateRequests(RequestController(jwt!)),
+                onPressed: null,
                 child: Icon(Icons.save),
               )
               : SizedBox.shrink(),
@@ -110,7 +108,7 @@ class _RequestsPageState extends State<RequestsPage> {
               ? const Center(child: CircularProgressIndicator())
               : RefreshIndicator(
                 onRefresh: () async {
-                  getRequests(RequestController(jwt!));
+                  // getRequests(RequestController(jwt!));
                   setState(() {
                     changedItems = [];
                   });

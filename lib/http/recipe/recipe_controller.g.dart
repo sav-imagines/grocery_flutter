@@ -277,3 +277,45 @@ final class GetIngredientsFamily extends $Family
   @override
   String toString() => r'getIngredientsProvider';
 }
+
+@ProviderFor(getFullRecipeModels)
+const getFullRecipeModelsProvider = GetFullRecipeModelsProvider._();
+
+final class GetFullRecipeModelsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<FullRecipeModel>>,
+          List<FullRecipeModel>,
+          FutureOr<List<FullRecipeModel>>
+        >
+    with
+        $FutureModifier<List<FullRecipeModel>>,
+        $FutureProvider<List<FullRecipeModel>> {
+  const GetFullRecipeModelsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'getFullRecipeModelsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$getFullRecipeModelsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<FullRecipeModel>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<FullRecipeModel>> create(Ref ref) {
+    return getFullRecipeModels(ref);
+  }
+}
+
+String _$getFullRecipeModelsHash() =>
+    r'0f606c6e05bdc0be24ac6b8c0bf61e294e017306';

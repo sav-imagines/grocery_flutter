@@ -9,3 +9,6 @@ publish:
 
 start-emulator:
   emulator -avd psp &> /dev/null &
+
+gen:
+  dart run build_runner watch
