@@ -1,8 +1,4 @@
-import 'package:carousel_slider/carousel_slider.dart';
-import 'package:collection/collection.dart';
-import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_flutter/components/category_view.dart';

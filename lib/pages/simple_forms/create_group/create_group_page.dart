@@ -1,40 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/http/social/social_controller.dart';
-import 'package:grocery_flutter/state/global_state.dart';
 
-class CreateGroupPage extends StatefulWidget {
-  const CreateGroupPage({super.key});
+class CreateGroupPage extends ConsumerWidget {
+  final TextEditingController groupNameController = TextEditingController();
 
-  @override
-  State<CreateGroupPage> createState() => _CreateGroupPageState();
-}
-
-class _CreateGroupPageState extends State<CreateGroupPage> {
-  TextEditingController groupNameController = TextEditingController();
-  final socialController = SocialController(jwt!);
+  CreateGroupPage({super.key});
 
   isEmptyValidator(value) {
     return value == null || value.isEmpty ? "Please enter a value" : null;
   }
 
-  submitGroup(SocialController controller) async {
-    var result = await controller.createGroup(groupNameController.text);
-    if (mounted) {
+  void submitGroup(BuildContext context) async {
+    var result = await createGroup(groupNameController.text);
+    if (context.mounted) {
       if (result is RequestSuccess) {
         Fluttertoast.showToast(msg: "Created a group successfully");
         Navigator.of(context).pop();
         Navigator.of(context).popAndPushNamed('/redirect-group');
       } else if (result is RequestError) {
-        if (mounted) showError(context, result);
+        if (context.mounted) showError(context, result);
       }
     }
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(title: Text('New group')),
       body: Padding(
@@ -62,7 +56,7 @@ class _CreateGroupPageState extends State<CreateGroupPage> {
               validator: (value) => isEmptyValidator(value),
             ),
             FilledButton(
-              onPressed: () => submitGroup(socialController),
+              onPressed: () => submitGroup(context),
               child: Text('Create'),
             ),
             SizedBox.square(dimension: 40),

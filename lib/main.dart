@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
         '/redirect-group': (context) => const RedirectGroupPage(),
         '/login': (context) => const LoginPage(),
         '/create-account': (context) => const CreateAccountPage(),
-        '/create-group': (context) => const CreateGroupPage(),
+        '/create-group': (context) => CreateGroupPage(),
         '/home': (context) => const MyHomePage(),
         '/invite': (context) => const CreateInvitePage(),
         '/invite-person': (context) => const PersonInvitePage(),

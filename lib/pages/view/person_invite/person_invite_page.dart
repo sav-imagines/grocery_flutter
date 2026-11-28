@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:grocery_flutter/components/show_error.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/http/social/social_controller.dart';
 import 'package:grocery_flutter/http/social/user_info.dart';
 import 'package:grocery_flutter/pages/view/person_invite/person_invite_args.dart';
-import 'package:grocery_flutter/state/global_state.dart';
 
-class PersonInvitePage extends StatefulWidget {
+class PersonInvitePage extends ConsumerStatefulWidget {
   const PersonInvitePage({super.key});
 
   @override
-  State<PersonInvitePage> createState() => _PersonInvitePageState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _PersonInvitePageState();
 }
 
-class _PersonInvitePageState extends State<PersonInvitePage> {
-  bool? isInvited = null;
-  final SocialController controller = SocialController(jwt!);
+class _PersonInvitePageState extends ConsumerState<PersonInvitePage> {
+  bool wasInvited = false;
 
   static String getDescription(Duration timeDelta) {
     if (timeDelta.inDays > 365) {
@@ -35,25 +34,9 @@ class _PersonInvitePageState extends State<PersonInvitePage> {
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as PersonInviteArgs;
-    var person = args.person;
-    if (isInvited == null) {
-      controller
-          .isInvited(person.id)
-          .then(
-            (result) => {
-              if (result is RequestSuccess<bool>)
-                {
-                  setState(() {
-                    isInvited = result.result;
-                  }),
-                }
-              else if (result is RequestError<bool>)
-                {
-                  if (context.mounted) {showError(context, result)},
-                },
-            },
-          );
-    }
+    final person = args.person;
+    final isInvited = ref.watch(isInvitedProvider(person.id));
+
     return Scaffold(
       appBar: AppBar(title: const Text("View user")),
       body: Column(
@@ -82,38 +65,34 @@ class _PersonInvitePageState extends State<PersonInvitePage> {
               ),
             ],
           ),
-          person.isInGroup
-              ? FilledButton(
+          switch (person) {
+            UserInfo(:final isInGroup) when isInGroup => FilledButton(
+              onPressed: null,
+              child: Text("Person is already in a group."),
+            ),
+            UserInfo() => switch (isInvited) {
+              AsyncData(:final value) when value && wasInvited => FilledButton(
                 onPressed: null,
-                child: Text("Person is already in a group."),
-              )
-              : isInvited == null
-              ? CircularProgressIndicator()
-              : (isInvited!
-                  ? FilledButton(
-                    onPressed: null,
-                    style: Theme.of(context).filledButtonTheme.style,
-                    child: const Text("Person was invited"),
-                  )
-                  : FilledButton(
-                    onPressed: () async {
-                      var result = await controller.inviteUser(person.id);
-                      if (result is RequestSuccess) {
-                        setState(() {
-                          person = UserInfo(
-                            id: person.id,
-                            name: person.name,
-                            joinedAt: person.joinedAt,
-                            isInGroup: true,
-                          );
-                          isInvited = true;
-                        });
-                      } else if (result is RequestError) {
-                        Fluttertoast.showToast(msg: result.error);
-                      }
-                    },
-                    child: const Text("Invite"),
-                  )),
+                style: Theme.of(context).filledButtonTheme.style,
+                child: const Text("Person was invited"),
+              ),
+              AsyncData() => FilledButton(
+                onPressed: () async {
+                  var result = await inviteUser(person.id);
+                  if (result is RequestSuccess) {
+                    setState(() {
+                      wasInvited = true;
+                    });
+                  } else if (result is RequestError) {
+                    Fluttertoast.showToast(msg: result.error);
+                  }
+                },
+                child: const Text("Invite"),
+              ),
+              AsyncError(:final error) => ErrorWidget(error),
+              AsyncLoading() => CircularProgressIndicator(),
+            },
+          },
         ],
       ),
     );

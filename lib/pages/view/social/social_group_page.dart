@@ -1,51 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:grocery_flutter/components/show_confirmation.dart';
-import 'package:grocery_flutter/components/show_error.dart';
-import 'package:grocery_flutter/http/social/group_info.dart';
-import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/http/social/social_controller.dart';
 import 'package:grocery_flutter/components/person_card.dart';
-import 'package:grocery_flutter/state/global_state.dart';
 
-class SocialGroupPage extends StatefulWidget {
+class SocialGroupPage extends ConsumerWidget {
   const SocialGroupPage({super.key});
 
-  @override
-  State<SocialGroupPage> createState() => _SocialGroupPageState();
-}
-
-class _SocialGroupPageState extends State<SocialGroupPage> {
-  bool startedFetching = false;
-  GroupInfo? groupInfo = null;
-
-  final controller = SocialController(jwt!);
-
-  void getGroupInfo() async {
-    final result = await controller.getOwnGroup();
-    if (!mounted) return;
-    if (result is RequestSuccess) {
-      setState(() => groupInfo = (result as RequestSuccess).result);
-    } else {
-      showError(context, result as RequestError);
-    }
-  }
-
-  void logout() async {
+  logout(BuildContext context) => () async {
     await FlutterSecureStorage().delete(key: 'jwt');
-    if (!mounted) return;
+    if (!context.mounted) return;
     Navigator.of(context).pop();
     Navigator.of(context).popAndPushNamed('/');
-  }
+  };
 
   @override
-  Widget build(BuildContext context) {
-    if (!startedFetching) {
-      setState(() {
-        startedFetching = true;
-      });
-      getGroupInfo();
-    }
+  Widget build(BuildContext context, WidgetRef ref) {
+    final groupInfo = ref.watch(getOwnGroupProvider);
     return Scaffold(
       appBar: AppBar(
         actions: [
@@ -65,7 +37,7 @@ class _SocialGroupPageState extends State<SocialGroupPage> {
             onPressed:
                 () => showConfirmation(
                   context,
-                  logout,
+                  logout(context),
                   () => cancelAction(context),
                   "Are you sure you want to log out?",
                 ),
@@ -74,29 +46,30 @@ class _SocialGroupPageState extends State<SocialGroupPage> {
         ],
         title: const Text('Your group'),
       ),
-      body:
-          groupInfo == null
-              ? Center(child: const CircularProgressIndicator())
-              : Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
-                child: ListView(
-                  children: [
-                    Column(
-                      spacing: 10,
-                      children:
-                          groupInfo!.users
-                              .map(
-                                (user) => PersonCard(
-                                  userInfo: user,
-                                  onTap: () {},
-                                  isOwner: user.name == groupInfo!.owner,
-                                ),
-                              )
-                              .toList(),
-                    ),
-                  ],
-                ),
+      body: switch (groupInfo) {
+        AsyncData(:final value) => Padding(
+          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 15),
+          child: ListView(
+            children: [
+              Column(
+                spacing: 10,
+                children:
+                    value.users
+                        .map(
+                          (user) => PersonCard(
+                            userInfo: user,
+                            onTap: () {},
+                            isOwner: user.name == value.owner,
+                          ),
+                        )
+                        .toList(),
               ),
+            ],
+          ),
+        ),
+        AsyncError(:final error) => ErrorWidget(error),
+        AsyncLoading() => const Center(child: CircularProgressIndicator()),
+      },
     );
   }
 }
