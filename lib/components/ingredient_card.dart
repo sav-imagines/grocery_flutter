@@ -38,8 +38,8 @@ class IngredientCard extends StatelessWidget {
           decoration: BoxDecoration(
             color:
                 info.quantity <= 0
-                    ? theme.colorScheme.surface
-                    : theme.colorScheme.primaryContainer,
+                    ? theme.colorScheme.surfaceContainer
+                    : theme.colorScheme.secondaryContainer,
             borderRadius: BorderRadiusGeometry.circular(12),
           ),
           child: Row(

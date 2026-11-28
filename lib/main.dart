@@ -28,29 +28,31 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+  static const color = Color(0xffeda6e1);
 
   static const storage = FlutterSecureStorage();
+
+  ThemeData getTheme(Brightness lightness) {
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: color,
+      brightness: lightness,
+    );
+    return ThemeData(
+      brightness: lightness,
+      colorScheme: colorScheme,
+      // appBarTheme: AppBarTheme(
+      //   foregroundColor: colorScheme.onSurface,
+      //   backgroundColor: colorScheme.surface,
+      // ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    const color = Colors.purple;
     return MaterialApp(
       title: 'Grocery app',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: color),
-        appBarTheme: AppBarTheme(
-          foregroundColor:
-              ColorScheme.fromSeed(
-                brightness: Brightness.light,
-                seedColor: color,
-              ).onPrimary,
-          backgroundColor:
-              ColorScheme.fromSeed(
-                brightness: Brightness.light,
-                seedColor: color,
-              ).inversePrimary,
-        ),
-      ),
-      // initialRoute: '/test',
+      theme: getTheme(Brightness.light),
+      darkTheme: getTheme(Brightness.dark),
       routes: {
         '/': (context) => const RedirectLoginPage(),
         '/redirect-group': (context) => const RedirectGroupPage(),
@@ -72,12 +74,6 @@ class MyApp extends StatelessWidget {
         '/request-item': (context) => const RequestItemPage(),
         '/edit-category': (context) => EditCategoryPage(),
       },
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          brightness: Brightness.dark,
-          seedColor: color,
-        ),
-      ),
     );
   }
 }
