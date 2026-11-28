@@ -17,11 +17,8 @@ import 'package:uuid/v4.dart';
 part 'recipe_controller.g.dart';
 
 const String baseUrl = AuthController.baseUrl;
-// final String jwt;
 
-// RecipeController(this.jwt);
-
-@riverpod
+@Riverpod(keepAlive: true)
 Future<List<RecipeInfo>> getAllRecipes(Ref ref) async {
   final uri = Uri.parse("$baseUrl/api/recipe");
   final response = await http.get(
@@ -36,7 +33,7 @@ Future<List<RecipeInfo>> getAllRecipes(Ref ref) async {
       .toList();
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<Uint8List> getPicture(Ref ref, String fileName) async {
   final cacheManager = DefaultCacheManager();
   final cachedFile =
@@ -57,7 +54,7 @@ Future<Uint8List> getPicture(Ref ref, String fileName) async {
   return response.bodyBytes;
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<RequestResult<void>> createRecipe(
   Ref ref,
   CreateRecipeModel recipe,
@@ -82,7 +79,7 @@ Future<RequestResult<void>> createRecipe(
   return RequestResult.empty(response);
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<List<ShortItem>> getIngredients(Ref ref, String recipeId) async {
   final uri = Uri.parse("$baseUrl/api/recipe/ingredients/$recipeId");
   final response = await http.get(
@@ -97,7 +94,7 @@ Future<List<ShortItem>> getIngredients(Ref ref, String recipeId) async {
       .toList();
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<List<FullRecipeModel>> getFullRecipeModels(Ref ref) async {
   final recipes = await getAllRecipes(ref);
   return Future.wait(

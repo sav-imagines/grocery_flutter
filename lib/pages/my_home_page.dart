@@ -36,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: switch (currentIndex) {
         0 => const RequestsPage(),
-        1 => const ViewGroceryListsPage(),
+        1 => ViewGroceryListsPage(),
         2 => const RecipesPage(),
         3 => const SocialGroupPage(),
         _ => const Align(

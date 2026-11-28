@@ -63,7 +63,7 @@ class MyApp extends StatelessWidget {
         '/received-invites': (context) => const ReceivedInvitesPage(),
         '/sent-invites': (context) => const SentInvitesPage(),
         '/settings': (context) => const SettingsPage(),
-        '/view-grocery-list': (context) => const GroceryListHistoryPage(),
+        '/view-grocery-list': (context) => GroceryListHistoryPage(),
         '/create-list': (context) => const CreateListContainer(),
         '/create-list-item': (context) => const CreateItemPage(),
         '/create-recipe': (context) => const CreateRecipePage(),

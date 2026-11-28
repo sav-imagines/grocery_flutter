@@ -26,7 +26,7 @@ final class GetAllRecipesProvider
         argument: null,
         retry: null,
         name: r'getAllRecipesProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -46,7 +46,7 @@ final class GetAllRecipesProvider
   }
 }
 
-String _$getAllRecipesHash() => r'087a8a99ea0fc0e7280e7fa15c59bef9466612ce';
+String _$getAllRecipesHash() => r'f85039ba25101abcad20c7bf6e3c5defe96a27dd';
 
 @ProviderFor(getPicture)
 const getPictureProvider = GetPictureFamily._();
@@ -65,7 +65,7 @@ final class GetPictureProvider
   }) : super(
          retry: null,
          name: r'getPictureProvider',
-         isAutoDispose: true,
+         isAutoDispose: false,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -102,7 +102,7 @@ final class GetPictureProvider
   }
 }
 
-String _$getPictureHash() => r'7443ba517ac0ebfdecb87ae3ec7f7dae077d2e26';
+String _$getPictureHash() => r'f8cf945985f31f6db31cac691eea821a0288606f';
 
 final class GetPictureFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<Uint8List>, String> {
@@ -112,7 +112,7 @@ final class GetPictureFamily extends $Family
         name: r'getPictureProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: true,
+        isAutoDispose: false,
       );
 
   GetPictureProvider call(String fileName) =>
@@ -141,7 +141,7 @@ final class CreateRecipeProvider
   }) : super(
          retry: null,
          name: r'createRecipeProvider',
-         isAutoDispose: true,
+         isAutoDispose: false,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -179,7 +179,7 @@ final class CreateRecipeProvider
   }
 }
 
-String _$createRecipeHash() => r'011565226edd3fbff376e24ee17534490ed1872f';
+String _$createRecipeHash() => r'f1a6a4d22aee76380c4ff0aa62d686e06b02f5ab';
 
 final class CreateRecipeFamily extends $Family
     with
@@ -193,7 +193,7 @@ final class CreateRecipeFamily extends $Family
         name: r'createRecipeProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: true,
+        isAutoDispose: false,
       );
 
   CreateRecipeProvider call(CreateRecipeModel recipe) =>
@@ -220,7 +220,7 @@ final class GetIngredientsProvider
   }) : super(
          retry: null,
          name: r'getIngredientsProvider',
-         isAutoDispose: true,
+         isAutoDispose: false,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -258,7 +258,7 @@ final class GetIngredientsProvider
   }
 }
 
-String _$getIngredientsHash() => r'402caf74ed17cd2f2a66b296ebf9d380b87e7400';
+String _$getIngredientsHash() => r'1cfd58db269f8efd6256e2d2b6114c805ee85ce2';
 
 final class GetIngredientsFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<List<ShortItem>>, String> {
@@ -268,7 +268,7 @@ final class GetIngredientsFamily extends $Family
         name: r'getIngredientsProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: true,
+        isAutoDispose: false,
       );
 
   GetIngredientsProvider call(String recipeId) =>
@@ -297,7 +297,7 @@ final class GetFullRecipeModelsProvider
         argument: null,
         retry: null,
         name: r'getFullRecipeModelsProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -318,4 +318,4 @@ final class GetFullRecipeModelsProvider
 }
 
 String _$getFullRecipeModelsHash() =>
-    r'0f606c6e05bdc0be24ac6b8c0bf61e294e017306';
+    r'f2a4562a85eee4f8d2c314635b6401c1710b9c87';

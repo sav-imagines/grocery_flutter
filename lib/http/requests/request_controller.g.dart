@@ -26,7 +26,7 @@ final class GetRequestedItemsProvider
         argument: null,
         retry: null,
         name: r'getRequestedItemsProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -46,7 +46,7 @@ final class GetRequestedItemsProvider
   }
 }
 
-String _$getRequestedItemsHash() => r'0bd5aba1aaae9e4cd458f35d4699be7f84502aad';
+String _$getRequestedItemsHash() => r'007f2a755b640c484c28f8908a40fe315313c901';
 
 @ProviderFor(requestItem)
 const requestItemProvider = RequestItemFamily._();
@@ -60,7 +60,7 @@ final class RequestItemProvider
   }) : super(
          retry: null,
          name: r'requestItemProvider',
-         isAutoDispose: true,
+         isAutoDispose: false,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -97,7 +97,7 @@ final class RequestItemProvider
   }
 }
 
-String _$requestItemHash() => r'4f3b8fbf48538ef23dad1b3a87dc83cebf5afbbf';
+String _$requestItemHash() => r'45a7013819ef010494ec6a6a804e71f52715cdcb';
 
 final class RequestItemFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<bool>, ShortItem> {
@@ -107,7 +107,7 @@ final class RequestItemFamily extends $Family
         name: r'requestItemProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: true,
+        isAutoDispose: false,
       );
 
   RequestItemProvider call(ShortItem requestItem) =>
@@ -129,7 +129,7 @@ final class UpdateItemsProvider
   }) : super(
          retry: null,
          name: r'updateItemsProvider',
-         isAutoDispose: true,
+         isAutoDispose: false,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -166,7 +166,7 @@ final class UpdateItemsProvider
   }
 }
 
-String _$updateItemsHash() => r'ce47ba6c0c374fb20afc91af9f341fc6c0d04fb8';
+String _$updateItemsHash() => r'3bbe00dae9a7feb1b11e73dce3b051c64fac2269';
 
 final class UpdateItemsFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<bool>, List<ShortItem>> {
@@ -176,7 +176,7 @@ final class UpdateItemsFamily extends $Family
         name: r'updateItemsProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: true,
+        isAutoDispose: false,
       );
 
   UpdateItemsProvider call(List<ShortItem> items) =>
@@ -198,7 +198,7 @@ final class DeleteAllRequestsProvider
         argument: null,
         retry: null,
         name: r'deleteAllRequestsProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -217,4 +217,4 @@ final class DeleteAllRequestsProvider
   }
 }
 
-String _$deleteAllRequestsHash() => r'c3527d243ee451631d0c651e7c4c7661836502ff';
+String _$deleteAllRequestsHash() => r'9bb0c05e39f41f8d2220003fb376d781ebd5e148';

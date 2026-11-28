@@ -17,7 +17,7 @@ get usualHeaders => {
   "Authorization": "Bearer $jwt",
 };
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<List<ShortItem>> getRequestedItems(Ref ref) async {
   final uri = Uri.parse("$baseUrl/api/requests");
   final response = await http.get(headers: usualHeaders, uri);
@@ -26,7 +26,7 @@ Future<List<ShortItem>> getRequestedItems(Ref ref) async {
       .toList());
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<bool> requestItem(Ref ref, ShortItem requestItem) async {
   final url = Uri.parse("$baseUrl/api/requests");
   final body = RequestItemModel.fromShortItem(requestItem).toJson();
@@ -37,7 +37,7 @@ Future<bool> requestItem(Ref ref, ShortItem requestItem) async {
   return true;
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<bool> updateItems(Ref ref, List<ShortItem> items) async {
   // TODO: consider a batch endpoint
   final url = Uri.parse("$baseUrl/api/requests");
@@ -51,7 +51,7 @@ Future<bool> updateItems(Ref ref, List<ShortItem> items) async {
   return true;
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<bool> deleteAllRequests(Ref ref) async {
   final url = Uri.parse("$baseUrl/api/requests/reset");
   final response = await http.delete(url, headers: usualHeaders);

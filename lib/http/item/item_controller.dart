@@ -14,7 +14,7 @@ part 'item_controller.g.dart';
 
 const String baseUrl = AuthController.baseUrl;
 
-@riverpod
+@Riverpod(keepAlive: true)
 Future<List<CategoryModel>> getItemsInGroup(Ref ref) async {
   final url = Uri.parse("$baseUrl/api/item/by-group");
   final response = await http.get(
@@ -28,8 +28,7 @@ Future<List<CategoryModel>> getItemsInGroup(Ref ref) async {
       .toList();
 }
 
-@riverpod
-Future<String> createItem(Ref ref, CreateItemModel newItem) async {
+Future<AsyncValue<String>> createItem(Ref ref, CreateItemModel newItem) async {
   final url = Uri.parse("$baseUrl/api/item");
   final response = await http.post(
     url,
@@ -40,16 +39,13 @@ Future<String> createItem(Ref ref, CreateItemModel newItem) async {
     body: newItem.toJson(),
   );
   if (response.isSuccess()) {
-    return (response.body);
+    return AsyncData(response.body);
   }
-  throw Exception();
+  return AsyncError("Unsuccessful", StackTrace.current);
 }
 
-@riverpod
-Future<RequestResult<List<GroceryListItemDisplay>>> searchItems(
-  Ref ref,
-  String query,
-) async {
+@Riverpod(keepAlive: true)
+Future<List<GroceryListItemDisplay>> searchItems(Ref ref, String query) async {
   final url = Uri.parse("$baseUrl/api/item/search/$query");
   final response = await http.get(
     url,
@@ -58,19 +54,17 @@ Future<RequestResult<List<GroceryListItemDisplay>>> searchItems(
   if (!response.isSuccess()) {
     throw Exception();
   }
-  return RequestSuccess(
-    response.body.isEmpty
-        ? List.empty(growable: true)
-        : (jsonDecode(response.body) as List)
-            .map(
-              (item) => GroceryListItemDisplay(
-                id: item['id'],
-                name: item['name'],
-                quantity: 1,
-                categoryId: item['categoryId'],
-                categoryName: item['categoryName'],
-              ),
-            )
-            .toList(),
-  );
+  return response.body.isEmpty
+      ? List.empty(growable: true)
+      : (jsonDecode(response.body) as List)
+          .map(
+            (item) => GroceryListItemDisplay(
+              id: item['id'],
+              name: item['name'],
+              quantity: 1,
+              categoryId: item['categoryId'],
+              categoryName: item['categoryName'],
+            ),
+          )
+          .toList();
 }

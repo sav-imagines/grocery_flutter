@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:grocery_flutter/components/ingredient_card.dart';
+import 'package:grocery_flutter/http/requests/request_controller.dart';
 import 'package:grocery_flutter/models/short_item.dart';
 import 'package:grocery_flutter/state/global_state.dart';
 
-class RequestsPage extends StatefulWidget {
+class RequestsPage extends ConsumerStatefulWidget {
   const RequestsPage({super.key});
 
   @override
-  State<RequestsPage> createState() => _RequestsPageState();
+  ConsumerState<RequestsPage> createState() => _RequestsPageState();
 }
 
-class _RequestsPageState extends State<RequestsPage> {
-  List<ShortItem>? requestedItems = null;
+class _RequestsPageState extends ConsumerState<RequestsPage> {
   List<ShortItem> changedItems = [];
 
   // void getRequests(RequestController controller) async {
@@ -80,7 +81,7 @@ class _RequestsPageState extends State<RequestsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // if (requestedItems == null) getRequests(RequestController(jwt!));
+    final requestedItems = ref.watch(getRequestedItemsProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Requests')),
       floatingActionButton: Column(
@@ -96,66 +97,65 @@ class _RequestsPageState extends State<RequestsPage> {
           ),
           changedItems.isNotEmpty
               ? FloatingActionButton(
-                // onPressed: () => updateRequests(RequestController(jwt!)),
-                onPressed: null,
+                onPressed:
+                    () async => ref.refresh(getRequestedItemsProvider.future),
                 child: Icon(Icons.save),
               )
               : SizedBox.shrink(),
         ],
       ),
-      body:
-          requestedItems == null
-              ? const Center(child: CircularProgressIndicator())
-              : RefreshIndicator(
-                onRefresh: () async {
-                  // getRequests(RequestController(jwt!));
-                  setState(() {
-                    changedItems = [];
-                  });
-                },
-                child: Padding(
-                  padding: EdgeInsets.all(5),
-                  child:
-                      requestedItems!.isEmpty
-                          ? ListView(
-                            children: [
-                              Center(
-                                child: Text("No items have been requested"),
-                              ),
-                            ],
-                          )
-                          : ListView.separated(
-                            separatorBuilder:
-                                (context, i) => SizedBox.square(dimension: 5),
-                            itemCount: requestedItems!.length,
-                            itemBuilder: (context, index) {
-                              var item = requestedItems![index];
-                              item = changedItems.firstWhere(
-                                (x) => x.id == item.id,
-                                orElse: () => item,
-                              );
-                              return IngredientCard(
-                                info: item,
-                                onDecrement: () {
-                                  updateItem(item, item.quantity - 1);
-                                },
-                                onIncrement: () {
-                                  updateItem(
-                                    item,
-                                    item.quantity < 99 ? item.quantity + 1 : 99,
-                                  );
-                                },
-                                onRemove: () {
-                                  updateItem(
-                                    item,
-                                    item.quantity > 0 ? item.quantity - 1 : 0,
-                                  );
-                                },
-                              );
-                            },
-                          ),
-                ),
-              ),
+      body: switch (requestedItems) {
+        AsyncData(:final value) => RefreshIndicator(
+          onRefresh: () async {
+            // getRequests(RequestController(jwt!));
+            setState(() {
+              changedItems = [];
+            });
+          },
+          child: Padding(
+            padding: EdgeInsets.all(5),
+            child:
+                value.isEmpty
+                    ? ListView(
+                      children: [
+                        Center(child: Text("No items have been requested")),
+                      ],
+                    )
+                    : ListView.separated(
+                      separatorBuilder:
+                          (context, i) => SizedBox.square(dimension: 5),
+                      itemCount: value.length,
+                      itemBuilder: (context, index) {
+                        var item = value[index];
+                        item = changedItems.firstWhere(
+                          (x) => x.id == item.id,
+                          orElse: () => item,
+                        );
+                        return IngredientCard(
+                          info: item,
+                          onDecrement: () {
+                            updateItem(item, item.quantity - 1);
+                          },
+                          onIncrement: () {
+                            updateItem(
+                              item,
+                              item.quantity < 99 ? item.quantity + 1 : 99,
+                            );
+                          },
+                          onRemove: () {
+                            updateItem(
+                              item,
+                              item.quantity > 0 ? item.quantity - 1 : 0,
+                            );
+                          },
+                        );
+                      },
+                    ),
+          ),
+        ),
+        AsyncError(:final error) => Center(child: Text(error.toString())),
+        _ => const Center(child: CircularProgressIndicator()),
+      },
     );
   }
 }
