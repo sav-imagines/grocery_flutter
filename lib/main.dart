@@ -6,7 +6,6 @@ import 'package:grocery_flutter/pages/complex_forms/create_list/create_list_cont
 import 'package:grocery_flutter/pages/complex_forms/edit_category/edit_category_page.dart';
 import 'package:grocery_flutter/pages/simple_forms/create_category/create_category_page.dart';
 import 'package:grocery_flutter/pages/simple_forms/create_list_item/create_list_item_page.dart';
-import 'package:grocery_flutter/pages/complex_forms/create_list/create_list_page.dart';
 import 'package:grocery_flutter/pages/complex_forms/create_recipe/create_recipe_page.dart';
 import 'package:grocery_flutter/pages/simple_forms/create_recipe_item/create_recipe_item_page.dart';
 import 'package:grocery_flutter/pages/simple_forms/request_item/request_item_page.dart';
@@ -40,7 +39,7 @@ class MyApp extends StatelessWidget {
     return ThemeData(
       brightness: lightness,
       colorScheme: colorScheme,
-      // appBarTheme: AppBarTheme(
+      // scaf: AppBarTheme(
       //   foregroundColor: colorScheme.onSurface,
       //   backgroundColor: colorScheme.surface,
       // ),

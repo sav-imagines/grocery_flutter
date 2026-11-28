@@ -1,8 +1,11 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:collection/collection.dart';
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:grocery_flutter/components/category_view.dart';
 import 'package:grocery_flutter/http/grocery-list/grocery_list_controller.dart';
 import 'package:grocery_flutter/http/social/request_result.dart';
 import 'package:grocery_flutter/pages/view/grocery_list_info/grocery_list_info_args.dart';
@@ -10,11 +13,6 @@ import 'package:grocery_flutter/models/grocery_list_item_display.dart';
 
 class GroceryListHistoryPage extends ConsumerWidget {
   const GroceryListHistoryPage({super.key});
-
-  // Map<String, List<GroceryListItemDisplay>>? items = null;
-  // CarouselSliderController carouselSliderController =
-  //     CarouselSliderController();
-  // int _currentPage = 0;
 
   Map<String, List<GroceryListItemDisplay>> sortInBuckets(
     List<GroceryListItemDisplay> items,
@@ -24,7 +22,7 @@ class GroceryListHistoryPage extends ConsumerWidget {
       if (out[item.categoryName] == null) {
         out[item.categoryName] = [item];
       } else {
-        out[item.categoryName]?.add(item);
+        out[item.categoryName]!.add(item);
       }
     }
     return out;
@@ -49,7 +47,7 @@ class GroceryListHistoryPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final args =
         ModalRoute.of(context)!.settings.arguments as GroceryListInfoArgs;
-    final items = ref.watch(getAllListsProvider);
+    final items = ref.watch(getListInfoProvider(args.list.listId));
 
     return Scaffold(
       appBar: AppBar(
@@ -73,73 +71,28 @@ class GroceryListHistoryPage extends ConsumerWidget {
           ),
         ],
       ),
-      body:
-          items == null
-              ? Center(child: CircularProgressIndicator())
-              : items.hasValue
-              ? const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.shopping_cart_outlined, size: 72),
-                    Text("Empty cart"),
-                  ],
-                ),
-              )
-              : Column(
-                children: [
-                  Expanded(
-                    child: CarouselSlider(
-                      carouselController: null,
-                      items:
-                          items.value!
-                              .map(
-                                (entry) => Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 15),
-                                  child: Text(entry.itemsCount.toString()),
-                                ),
-                              )
-                              .toList(),
-                      options: CarouselOptions(
-                        scrollPhysics: PageScrollPhysics(),
-                        enlargeCenterPage: true,
-                        animateToClosest: false,
-                        viewportFraction: 0.95,
-                        height: 600,
-                        enableInfiniteScroll: false,
-                        onPageChanged: (index, reason) {
-                          // setState(() {
-                          //   _currentPage = index;
-                          // });
-                        },
-                      ),
-                    ),
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(2),
-                    decoration: ShapeDecoration(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(11)),
-                      ),
-                      color:
-                          Theme.of(
-                            context,
-                          ).buttonTheme.colorScheme!.onSecondary,
-                    ),
-                    child: DotsIndicator(
-                      dotsCount: items.value!.length,
-                      position: 0,
-                      onTap: null,
-                      decorator: DotsDecorator(
-                        activeColor: Theme.of(context).colorScheme.primary,
-                        size: Size.square(8.0),
-                        activeSize: Size.square(12.0),
-                      ),
-                    ),
-                  ),
-                  SizedBox.square(dimension: 20),
-                ],
-              ),
+      body: switch (items) {
+        AsyncData(:final value) when value.isEmpty => const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.shopping_cart_outlined, size: 72),
+              Text("Empty cart"),
+            ],
+          ),
+        ),
+        AsyncData(:final value) => () {
+          final buckets = sortInBuckets(value).entries;
+          return ListView.separated(
+            separatorBuilder: (ctx, i) => SizedBox(height: 12),
+            itemCount: buckets.length,
+            // padding: EdgeInsetsGeometry.all(24),
+            itemBuilder: (ctx, i) => CategoryView(items: buckets.skip(i).first),
+          );
+        }(),
+        AsyncError(:final error) => ErrorWidget(error),
+        AsyncLoading() => Center(child: CircularProgressIndicator()),
+      },
     );
   }
 }
